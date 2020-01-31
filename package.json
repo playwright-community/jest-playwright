@@ -1,5 +1,5 @@
 {
-  "name": "jest-playwright",
+  "name": "jest-playwright-preset",
   "version": "0.0.1",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",

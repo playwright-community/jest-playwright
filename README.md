@@ -3,7 +3,7 @@
 Running your tests using Jest & Playwright
 
 ```
-npm install jest-playwright playwright
+npm install jest-playwright-preset playwright
 ```
 
 ## Usage
@@ -12,7 +12,7 @@ Update your Jest configuration:
 
 ```json
 "jest": {
-    "preset": "jest-playwright"
+    "preset": "jest-playwright-preset"
   }
 ```
 
