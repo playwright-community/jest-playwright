@@ -1,6 +1,6 @@
 # Jest Playwright
 
-Running your tests using Jest & Playwright
+Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
 ```
 npm install jest-playwright-preset playwright
