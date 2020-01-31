@@ -1,24 +1,32 @@
 {
   "name": "jest-playwright",
   "version": "0.0.1",
-  "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mmarkelov/jest-playwright.git"
-  },
+  "description": "Running tests using Jest & Playwright.",
   "keywords": [
     "jest",
     "playwright",
     "jest-playwright"
   ],
   "author": "mmarkelov",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/mmarkelov/jest-playwright/issues"
   },
-  "homepage": "https://github.com/mmarkelov/jest-playwright#readme"
+  "homepage": "https://github.com/mmarkelov/jest-playwright#readme",
+  "scripts": {
+    "build": "rm -rf lib/ && babel src -d lib",
+    "prepublishOnly": "yarn run build"
+  },
+  "peerDependencies": {
+    "jest-environment-node": "^25.1.0",
+    "playwright": "^0.9.24"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
+    "jest": "^25.1.0",
+    "jest-environment-node": "^25.1.0",
+    "playwright": "^0.9.24"
+  }
 }
