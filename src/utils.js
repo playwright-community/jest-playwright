@@ -26,7 +26,7 @@ export async function readConfig() {
     const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG;
     const configPath =
         process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js';
-    const absConfigPath = path.resolve(process.cwd(), configPath)
+    const absConfigPath = path.resolve(process.cwd(), configPath);
     const configExists = await exists(absConfigPath);
 
     if (hasCustomConfigPath && !configExists) {
