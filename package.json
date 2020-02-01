@@ -28,6 +28,7 @@
     "@babel/preset-env": "^7.8.4",
     "jest": "^25.1.0",
     "jest-environment-node": "^25.1.0",
-    "playwright": "^0.9.24"
+    "playwright": "^0.9.24",
+    "rimraf": "^3.0.1"
   }
 }
