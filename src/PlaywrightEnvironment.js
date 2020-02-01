@@ -2,6 +2,7 @@ import fs from 'fs'
 import NodeEnvironment from 'jest-environment-node'
 import playwright from 'playwright'
 import { WS_ENDPOINT_PATH } from './constants'
+import { checkBrowserEnv, getBrowserType, readConfig } from "./utils";
 
 const handleError = error => {
   process.emit('uncaughtException', error)
@@ -9,7 +10,6 @@ const handleError = error => {
 
 class PlaywrightEnvironment extends NodeEnvironment {
   async teardown() {
-    console.log('Teardown Test Environment.');
     await super.teardown()
   }
 
@@ -18,11 +18,13 @@ class PlaywrightEnvironment extends NodeEnvironment {
     if (!wsEndpoint) {
       throw new Error('wsEndpoint not found')
     }
-    const browserType = process.env.BROWSER;
-    this.global.browser = await playwright[browserType].connect({
-      browserWSEndpoint: wsEndpoint,
-    });
-    this.global.context = await this.global.browser.newContext();
+    const config = await readConfig();
+    const browserType = getBrowserType(config);
+    checkBrowserEnv(browserType);
+    const { connect, context } = config;
+    const connectOptions = Object.assign({}, { browserWSEndpoint: wsEndpoint }, connect );
+    this.global.browser = await playwright[browserType].connect(connectOptions);
+    this.global.context = await this.global.browser.newContext(context);
     this.global.page = await this.global.context.newPage();
     this.global.page.on('pageerror', handleError)
   }
