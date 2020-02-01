@@ -7,7 +7,7 @@ const handleError = error => {
   process.emit('uncaughtException', error)
 };
 
-class PuppeteerEnvironment extends NodeEnvironment {
+class PlaywrightEnvironment extends NodeEnvironment {
   async teardown() {
     console.log('Teardown Test Environment.');
     await super.teardown()
@@ -33,4 +33,4 @@ class PuppeteerEnvironment extends NodeEnvironment {
   }
 }
 
-export default PuppeteerEnvironment
+export default PlaywrightEnvironment
