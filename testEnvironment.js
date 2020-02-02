@@ -1,1 +1,1 @@
-module.exports = require('./lib/PuppeteerEnvironment').default
+module.exports = require("./lib/PlaywrightEnvironment").default;
