@@ -38,20 +38,21 @@ You can specify browser in multiple ways:
 If you don't pass any value it will be use `chromium` as default
 
 Use Playwright in your tests:
+
 ```json
 "test": "BROWSER=chromium jest"
 ```
 
 ```js
 describe('Google', () => {
-    beforeAll(async () => {
-        await page.goto('https://whatismybrowser.com/')
-    })
+  beforeAll(async () => {
+    await page.goto('https://whatismybrowser.com/')
+  })
 
-    it('should display "google" text on page', async () => {
-        const browser = await page.$eval('.string-major a', el => el.text);
-        expect(browser).toContain('Chrome')
-    })
+  it('should display "google" text on page', async () => {
+    const browser = await page.$eval('.string-major a', el => el.text)
+    expect(browser).toContain('Chrome')
+  })
 })
 ```
 
