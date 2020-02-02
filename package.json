@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "jest-environment-node": "^25.1.0",
-    "playwright": "^0.9.24"
+    "playwright": "*"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
