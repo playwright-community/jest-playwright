@@ -17,18 +17,32 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { connect, context } = config
+    const { connect, context, device } = config
     const connectOptions = { browserWSEndpoint: wsEndpoint, ...connect }
+    let contextOptions = context
     this.global.browser = await playwright[browserType].connect(connectOptions)
-    this.global.context = await this.global.browser.newContext(context)
+    const availableDevices = Object.keys(playwright.devices)
+    if (device) {
+      if (!availableDevices.includes(device)) {
+        throw new Error(
+          `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
+        )
+      } else {
+        const { viewport, userAgent } = playwright.devices[device]
+        contextOptions = { ...contextOptions, viewport, userAgent }
+      }
+    }
+    this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)
   }
 
   async teardown() {
     await super.teardown()
-    this.global.page.removeListener('pageerror', handleError)
-    await this.global.page.close()
+    if (this.global.page) {
+      this.global.page.removeListener('pageerror', handleError)
+      await this.global.page.close()
+    }
   }
 }
 
