@@ -1,1 +1,1 @@
-module.exports = require("./lib/PlaywrightEnvironment").default;
+module.exports = require('./lib/PlaywrightEnvironment').default
