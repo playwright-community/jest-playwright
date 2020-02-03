@@ -26,6 +26,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `chromium` Each test runs Chromium.
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
+- `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
 - `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
 
 ## Browser type
