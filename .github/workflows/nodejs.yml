@@ -19,7 +19,7 @@ jobs:
           ${{ runner.os }}-node-
     - name: Install Dependencies
       run: npm install
-    - name: Lint Source Code
-      run: npm run lint
     - name: Build Project
       run: npm run build
+    - name: Lint Source Code
+      run: npm run lint
