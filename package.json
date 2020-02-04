@@ -50,7 +50,7 @@
     "jest": "^25.1.0",
     "jest-environment-node": "^25.1.0",
     "lint-staged": "^10.0.7",
-    "playwright": "^0.9.24",
+    "playwright": "^0.10.0",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.1"
   }

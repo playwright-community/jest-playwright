@@ -1,26 +1,49 @@
-import fs from 'fs'
 import NodeEnvironment from 'jest-environment-node'
 import playwright from 'playwright'
-import { WS_ENDPOINT_PATH } from './constants'
 import { checkBrowserEnv, getBrowserType, readConfig } from './utils'
 
 const handleError = error => {
   process.emit('uncaughtException', error)
 }
 
-class PlaywrightEnvironment extends NodeEnvironment {
-  async setup() {
-    const wsEndpoint = fs.readFileSync(WS_ENDPOINT_PATH, 'utf8')
-    if (!wsEndpoint) {
-      throw new Error('wsEndpoint not found')
-    }
+let browserPerProcess = null
+let browserShutdownTimeout = 0
+
+function resetBrowserCloseWatchdog() {
+  if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
+}
+
+// Since there are no per-worker hooks, we have to setup a timer to
+// close the browser.
+//
+// @see https://github.com/facebook/jest/issues/8708 (and upvote plz!)
+function startBrowserCloseWatchdog() {
+  resetBrowserCloseWatchdog()
+  browserShutdownTimeout = setTimeout(async () => {
+    const browser = browserPerProcess
+    browserPerProcess = null
+    if (browser) await browser.close()
+  }, 50)
+}
+
+async function getBrowserPerProcess() {
+  if (!browserPerProcess) {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { connect, context, device } = config
-    const connectOptions = { browserWSEndpoint: wsEndpoint, ...connect }
+    const { launchBrowserApp } = config
+    browserPerProcess = await playwright[browserType].launch(launchBrowserApp)
+  }
+  return browserPerProcess
+}
+
+class PlaywrightEnvironment extends NodeEnvironment {
+  async setup() {
+    resetBrowserCloseWatchdog()
+    const config = await readConfig()
+    const { device, context } = config
     let contextOptions = context
-    this.global.browser = await playwright[browserType].connect(connectOptions)
+
     const availableDevices = Object.keys(playwright.devices)
     if (device) {
       if (!availableDevices.includes(device)) {
@@ -32,6 +55,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         contextOptions = { ...contextOptions, viewport, userAgent }
       }
     }
+    this.global.browser = await getBrowserPerProcess()
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)
@@ -43,6 +67,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       this.global.page.removeListener('pageerror', handleError)
       await this.global.page.close()
     }
+    startBrowserCloseWatchdog()
   }
 }
 
