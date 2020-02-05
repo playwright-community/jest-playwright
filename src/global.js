@@ -1,5 +1,4 @@
-export async function setup() {
-}
+// TODO Check this global methods
+export function setup() {}
 
-export async function teardown() {
-}
+export function teardown() {}
