@@ -1,5 +1,7 @@
 # Jest Playwright
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mmarkelov/jest-playwright.svg)](https://greenkeeper.io/)
+
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
 ```
