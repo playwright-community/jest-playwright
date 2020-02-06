@@ -1,6 +1,10 @@
 import NodeEnvironment from 'jest-environment-node'
-import playwright from 'playwright'
-import { checkBrowserEnv, getBrowserType, readConfig } from './utils'
+import {
+  checkBrowserEnv,
+  getBrowserType,
+  getPlaywrightInstance,
+  readConfig,
+} from './utils'
 
 const handleError = error => {
   process.emit('uncaughtException', error)
@@ -31,8 +35,12 @@ async function getBrowserPerProcess() {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { launchBrowserApp } = config
-    browserPerProcess = await playwright[browserType].launch(launchBrowserApp)
+    const { launchBrowserApp, useStandaloneVersion } = config
+    const playwrightInstance = getPlaywrightInstance(
+      browserType,
+      useStandaloneVersion,
+    )
+    browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
   return browserPerProcess
 }
@@ -41,17 +49,23 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup() {
     resetBrowserCloseWatchdog()
     const config = await readConfig()
-    const { device, context } = config
+    const browserType = getBrowserType(config)
+    checkBrowserEnv(browserType)
+    const { device, context, useStandaloneVersion } = config
+    const playwrightInstance = getPlaywrightInstance(
+      browserType,
+      useStandaloneVersion,
+    )
     let contextOptions = context
 
-    const availableDevices = Object.keys(playwright.devices)
+    const availableDevices = Object.keys(playwrightInstance.devices)
     if (device) {
       if (!availableDevices.includes(device)) {
         throw new Error(
           `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
         )
       } else {
-        const { viewport, userAgent } = playwright.devices[device]
+        const { viewport, userAgent } = playwrightInstance.devices[device]
         contextOptions = { ...contextOptions, viewport, userAgent }
       }
     }

@@ -21,6 +21,18 @@ export function getBrowserType(config) {
   return config.browser || CHROMIUM
 }
 
+export function getPlaywrightInstance(
+  browserType,
+  useStandaloneVersion = process.env.USE_STANDALONE_VERSION,
+) {
+  if (useStandaloneVersion) {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    return require(`playwright-${browserType}`)
+  }
+  // eslint-disable-next-line global-require
+  return require('playwright')[browserType]
+}
+
 export async function readConfig() {
   const defaultConfig = DEFAULT_CONFIG
 
