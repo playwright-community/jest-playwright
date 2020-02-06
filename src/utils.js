@@ -46,12 +46,12 @@ export async function readConfig() {
     ...defaultConfig,
     launchBrowserApp: {
       ...defaultConfig.launchBrowserApp,
-      ...(localConfig.launchBrowserApp || {})
+      ...(localConfig.launchBrowserApp || {}),
     },
     context: {
       ...defaultConfig.context,
-      ...(localConfig.context || {})
+      ...(localConfig.context || {}),
     },
-    ...localConfig
+    ...localConfig,
   }
 }
