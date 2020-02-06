@@ -42,5 +42,16 @@ export async function readConfig() {
 
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const localConfig = await require(absConfigPath)
-  return { ...defaultConfig, ...localConfig }
+  return {
+    ...defaultConfig,
+    launchBrowserApp: {
+      ...defaultConfig.launchBrowserApp,
+      ...(localConfig.launchBrowserApp || {})
+    },
+    context: {
+      ...defaultConfig.context,
+      ...(localConfig.context || {})
+    },
+    ...localConfig
+  }
 }
