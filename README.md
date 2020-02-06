@@ -12,11 +12,24 @@ npm install jest-playwright-preset playwright
 
 Update your Jest configuration:
 
+- with `package.json`:
+
 ```json
 "jest": {
     "preset": "jest-playwright-preset"
   }
 ```
+
+- with `jest.config.js`:
+
+```javascript
+module.exports = {
+    preset: "jest-playwright-preset",
+    ...
+}
+```
+
+**NOTE**: Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
 ## Configuration
 
