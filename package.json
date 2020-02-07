@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/mmarkelov/jest-playwright#readme",
   "scripts": {
-    "build": "rm -rf lib/ && babel src -d lib",
+    "build": "rm -rf lib/ && babel src -d lib --ignore '**/*.test.js'",
     "format": "prettier --write \"*.{js,md}\" \"src/*.js\"",
     "lint": "eslint .",
     "prepublishOnly": "yarn run build",
