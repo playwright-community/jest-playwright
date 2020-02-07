@@ -18,17 +18,15 @@ describe('readConfig', () => {
     fs.exists.mockImplementationOnce((_, cb) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => {
-        return {
-          launchBrowserApp: {
-            headless: true,
-          },
-          browser: 'chromium',
-          context: {
-            ignoreHTTPSErrors: true,
-          },
-        }
-      },
+      () => ({
+        launchBrowserApp: {
+          headless: true,
+        },
+        browser: 'chromium',
+        context: {
+          ignoreHTTPSErrors: true,
+        },
+      }),
       { virtual: true },
     )
     const config = await readConfig()
@@ -49,16 +47,14 @@ describe('readConfig', () => {
     fs.exists.mockImplementationOnce((_, cb) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => {
-        return {
-          launchBrowserApp: {
-            headless: true,
-          },
-          context: {
-            foo: true,
-          },
-        }
-      },
+      () => ({
+        launchBrowserApp: {
+          headless: true,
+        },
+        context: {
+          foo: true,
+        },
+      }),
       { virtual: true },
     )
     const config = await readConfig()
@@ -78,7 +74,7 @@ describe('readConfig', () => {
 })
 
 describe('getBrowserType', () => {
-  it('should return "chronium" as default', async () => {
+  it('should return "chromium" as default', async () => {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     expect(browserType).toBe(CHROMIUM)
