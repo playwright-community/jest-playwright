@@ -23,3 +23,8 @@ jobs:
       run: npm run build
     - name: Lint Source Code
       run: npm run lint
+    - name: Run Tests
+      run: |
+        BROWSER=chromium npm run test
+        BROWSER=webkit npm run test
+        BROWSER=firefox npm run test

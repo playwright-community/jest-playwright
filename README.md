@@ -16,8 +16,8 @@ Update your Jest configuration:
 
 ```json
 "jest": {
-    "preset": "jest-playwright-preset"
-  }
+  "preset": "jest-playwright-preset"
+}
 ```
 
 - with `jest.config.js`:

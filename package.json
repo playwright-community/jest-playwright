@@ -23,7 +23,8 @@
     "build": "rm -rf lib/ && babel src -d lib",
     "format": "prettier --write \"*.{js,md}\" \"src/*.js\"",
     "lint": "eslint .",
-    "prepublishOnly": "yarn run build"
+    "prepublishOnly": "yarn run build",
+    "test": "jest"
   },
   "husky": {
     "hooks": {
