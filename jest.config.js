@@ -3,4 +3,5 @@ module.exports = {
   globalSetup: './setup.js',
   globalTeardown: './teardown.js',
   testEnvironment: './testEnvironment.js',
+  collectCoverage: true,
 }
