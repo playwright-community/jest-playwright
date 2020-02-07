@@ -72,6 +72,14 @@ describe('Google', () => {
 })
 ```
 
+## Put in debug mode
+
+Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
+
+```javascript
+await jestPlaywright.debug()
+```
+
 ## Inspiration
 
 Thanks to [Smooth Code](https://github.com/smooth-code) for great [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
