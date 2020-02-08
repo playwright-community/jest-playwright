@@ -17,9 +17,15 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Install Dependencies
+    - name: Install dependencies
       run: npm install
-    - name: Build Project
+    - name: Install required apt dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install libgbm-dev
+    - name: Build project
       run: npm run build
     - name: Lint Source Code
       run: npm run lint
+    - name: Run tests
+      run: npm run test

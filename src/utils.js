@@ -44,6 +44,7 @@ export async function readConfig() {
   const localConfig = await require(absConfigPath)
   return {
     ...defaultConfig,
+    ...localConfig,
     launchBrowserApp: {
       ...defaultConfig.launchBrowserApp,
       ...(localConfig.launchBrowserApp || {}),
@@ -52,6 +53,5 @@ export async function readConfig() {
       ...defaultConfig.context,
       ...(localConfig.context || {}),
     },
-    ...localConfig,
   }
 }
