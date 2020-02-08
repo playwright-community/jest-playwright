@@ -1,6 +1,7 @@
 import NodeEnvironment from 'jest-environment-node'
 import playwright from 'playwright'
 import { checkBrowserEnv, getBrowserType, readConfig } from './utils'
+// import { CHROMIUM, FIREFOX, WEBKIT } from './constants'
 
 const handleError = error => {
   process.emit('uncaughtException', error)
@@ -32,10 +33,9 @@ function startBrowserCloseWatchdog() {
   }, 50)
 }
 
-async function getBrowserPerProcess() {
+async function getBrowserPerProcess(browserType) {
   if (!browserPerProcess) {
     const config = await readConfig()
-    const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { launchBrowserApp } = config
     browserPerProcess = await playwright[browserType].launch(launchBrowserApp)
@@ -58,7 +58,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup() {
     resetBrowserCloseWatchdog()
     const config = await readConfig()
-    const { device, context } = config
+    const { device, context, browsers } = config
     let contextOptions = context
 
     const availableDevices = Object.keys(playwright.devices)
@@ -72,10 +72,39 @@ class PlaywrightEnvironment extends NodeEnvironment {
         contextOptions = { ...contextOptions, viewport, userAgent }
       }
     }
-    this.global.browser = await getBrowserPerProcess()
-    this.global.context = await this.global.browser.newContext(contextOptions)
-    this.global.page = await this.global.context.newPage()
-    this.global.page.on('pageerror', handleError)
+    if (browsers) {
+      // Browsers
+      await Promise.all(browsers.map(getBrowserPerProcess)).then(data =>
+        data.forEach((item, index) => {
+          this.global[`${browsers[index]}Browser`] = item
+        }),
+      )
+      // Contexts
+      await Promise.all(
+        browsers.map(browser =>
+          this.global[`${browser}Browser`].newContext(contextOptions),
+        ),
+      ).then(data =>
+        data.forEach((item, index) => {
+          this.global[`${browsers[index]}Context`] = item
+        }),
+      )
+      // Pages
+      await Promise.all(
+        browsers.map(browser => this.global[`${browser}Context`].newPage()),
+      ).then(data =>
+        data.forEach((item, index) => {
+          this.global[`${browsers[index]}Page`] = item
+          this.global[`${browsers[index]}Page`].on('pageerror', handleError)
+        }),
+      )
+    } else {
+      const browserType = getBrowserType(config)
+      this.global.browser = await getBrowserPerProcess(browserType)
+      this.global.context = await this.global.browser.newContext(contextOptions)
+      this.global.page = await this.global.context.newPage()
+      this.global.page.on('pageerror', handleError)
+    }
     this.global.jestPlaywright = {
       debug: async () => {
         // eslint-disable-next-line no-eval
