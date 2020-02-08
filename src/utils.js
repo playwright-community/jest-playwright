@@ -26,10 +26,15 @@ export function getPlaywrightInstance(
   useStandaloneVersion = process.env.USE_STANDALONE_VERSION,
 ) {
   if (useStandaloneVersion) {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    return require(`playwright-${browserType}`)
+    const playwrightPackage = `playwright-${browserType}`
+    try {
+      // eslint-disable-next-line global-require, import/no-dynamic-require
+      return require(playwrightPackage)
+    } catch (e) {
+      throw new Error(`You need to install ${playwrightPackage}`)
+    }
   }
-  // eslint-disable-next-line global-require
+  // eslint-disable-next-line global-require,import/no-extraneous-dependencies
   return require('playwright')[browserType]
 }
 
