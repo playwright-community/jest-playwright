@@ -36,16 +36,11 @@ function startBrowserCloseWatchdog() {
   }, 50)
 }
 
-async function getBrowserPerProcess() {
+async function getBrowserPerProcess(playwrightInstance, config) {
   if (!browserPerProcess) {
-    const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { launchBrowserApp, useStandaloneVersion } = config
-    const playwrightInstance = getPlaywrightInstance(
-      browserType,
-      useStandaloneVersion,
-    )
+    const { launchBrowserApp } = config
     browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
   return browserPerProcess
@@ -69,7 +64,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { device, context, useStandaloneVersion } = config
-    const playwrightInstance = getPlaywrightInstance(
+    const playwrightInstance = await getPlaywrightInstance(
       browserType,
       useStandaloneVersion,
     )
@@ -86,7 +81,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         contextOptions = { ...contextOptions, viewport, userAgent }
       }
     }
-    this.global.browser = await getBrowserPerProcess()
+    this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)
