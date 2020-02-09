@@ -1,6 +1,10 @@
 import NodeEnvironment from 'jest-environment-node'
-import playwright from 'playwright'
-import { checkBrowserEnv, getBrowserType, readConfig } from './utils'
+import {
+  checkBrowserEnv,
+  getBrowserType,
+  getPlaywrightInstance,
+  readConfig,
+} from './utils'
 
 const handleError = error => {
   process.emit('uncaughtException', error)
@@ -32,13 +36,12 @@ function startBrowserCloseWatchdog() {
   }, 50)
 }
 
-async function getBrowserPerProcess() {
+async function getBrowserPerProcess(playwrightInstance, config) {
   if (!browserPerProcess) {
-    const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { launchBrowserApp } = config
-    browserPerProcess = await playwright[browserType].launch(launchBrowserApp)
+    browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
   return browserPerProcess
 }
@@ -58,21 +61,24 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup() {
     resetBrowserCloseWatchdog()
     const config = await readConfig()
+    const browserType = getBrowserType(config)
+    checkBrowserEnv(browserType)
     const { device, context } = config
+    const playwrightInstance = await getPlaywrightInstance(browserType)
     let contextOptions = context
 
-    const availableDevices = Object.keys(playwright.devices)
+    const availableDevices = Object.keys(playwrightInstance.devices)
     if (device) {
       if (!availableDevices.includes(device)) {
         throw new Error(
           `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
         )
       } else {
-        const { viewport, userAgent } = playwright.devices[device]
+        const { viewport, userAgent } = playwrightInstance.devices[device]
         contextOptions = { ...contextOptions, viewport, userAgent }
       }
     }
-    this.global.browser = await getBrowserPerProcess()
+    this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)

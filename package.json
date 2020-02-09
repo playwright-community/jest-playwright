@@ -24,7 +24,8 @@
     "format": "prettier --write \"*.{js,md}\" \"src/*.js\"",
     "lint": "eslint .",
     "prepublishOnly": "yarn run build",
-    "test": "jest"
+    "test:utils": "jest src/utils.test.js",
+    "test": "npm run test:utils && jest tests"
   },
   "husky": {
     "hooks": {
@@ -38,8 +39,13 @@
     "*.js": "eslint --fix"
   },
   "peerDependencies": {
-    "jest-environment-node": "^25.1.0",
-    "playwright": "*"
+    "jest-environment-node": "^25.1.0"
+  },
+  "optionalDependencies": {
+    "playwright": "*",
+    "playwright-chromium": "*",
+    "playwright-firefox": "*",
+    "playwright-webkit": "*"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",

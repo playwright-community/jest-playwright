@@ -8,6 +8,13 @@ Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright]
 npm install jest-playwright-preset playwright
 ```
 
+Also you can use `jest-playwright-preset` with specific playwright packages:
+`playwright-webkit`, `playwright-chromium` and `playwright-firefox`
+
+```
+npm install jest-playwright-preset playwright-firefox
+```
+
 ## Usage
 
 Update your Jest configuration:
@@ -47,6 +54,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 ## Browser type
 
 You can specify browser in multiple ways:
+**Note**: You should do it only if you are using whole playwright package
 
 - With `BROWSER` environment variable
 - With your `jest-playwright.config.js`
@@ -56,7 +64,7 @@ If you don't pass any value it will be use `chromium` as default
 Use Playwright in your tests:
 
 ```json
-"test": "BROWSER=chromium jest"
+"test": "jest"
 ```
 
 ```js
