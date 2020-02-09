@@ -12,11 +12,24 @@ npm install jest-playwright-preset playwright
 
 Update your Jest configuration:
 
+- with `package.json`:
+
 ```json
 "jest": {
-    "preset": "jest-playwright-preset"
-  }
+  "preset": "jest-playwright-preset"
+}
 ```
+
+- with `jest.config.js`:
+
+```javascript
+module.exports = {
+    preset: "jest-playwright-preset",
+    ...
+}
+```
+
+**NOTE**: Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
 ## Configuration
 
@@ -57,6 +70,14 @@ describe('Google', () => {
     expect(browser).toContain('Chrome')
   })
 })
+```
+
+## Put in debug mode
+
+Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
+
+```javascript
+await jestPlaywright.debug()
 ```
 
 ## Inspiration
