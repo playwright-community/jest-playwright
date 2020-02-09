@@ -54,6 +54,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 ## Browser type
 
 You can specify browser in multiple ways:
+
 **Note**: You should do it only if you are using whole playwright package
 
 - With `BROWSER` environment variable
