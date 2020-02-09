@@ -24,7 +24,8 @@
     "format": "prettier --write \"*.{js,md}\" \"src/*.js\"",
     "lint": "eslint .",
     "prepublishOnly": "yarn run build",
-    "test": "jest"
+    "test:utils": "jest src/utils.test.js",
+    "test": "npm run test:utils && jest tests"
   },
   "husky": {
     "hooks": {
