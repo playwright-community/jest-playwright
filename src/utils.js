@@ -5,6 +5,15 @@ import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG } from './constants'
 
 const exists = promisify(fs.exists)
 
+const checkDependencies = dependencies => {
+  if (!dependencies) return null
+  if (dependencies.playwright) return 'playwright'
+  if (dependencies[`playwright-${CHROMIUM}`]) return `playwright-${CHROMIUM}`
+  if (dependencies[`playwright-${FIREFOX}`]) return `playwright-${FIREFOX}`
+  if (dependencies[`playwright-${WEBKIT}`]) return `playwright-${WEBKIT}`
+  return null
+}
+
 export function checkBrowserEnv(param) {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
@@ -21,21 +30,28 @@ export function getBrowserType(config) {
   return config.browser || CHROMIUM
 }
 
-export function getPlaywrightInstance(
-  browserType,
-  useStandaloneVersion = process.env.USE_STANDALONE_VERSION,
-) {
-  if (useStandaloneVersion) {
-    const playwrightPackage = `playwright-${browserType}`
-    try {
-      // eslint-disable-next-line global-require, import/no-dynamic-require
-      return require(playwrightPackage)
-    } catch (e) {
-      throw new Error(`You need to install ${playwrightPackage}`)
-    }
+export async function readPackage() {
+  const packagePath = 'package.json'
+  const absConfigPath = path.resolve(process.cwd(), packagePath)
+  // eslint-disable-next-line global-require,import/no-dynamic-require
+  const packageConfig = await require(absConfigPath)
+  const playwright =
+    checkDependencies(packageConfig.dependencies) ||
+    checkDependencies(packageConfig.devDependencies)
+  if (!playwright) {
+    throw new Error('None of playwright packages was not found in dependencies')
   }
-  // eslint-disable-next-line global-require,import/no-extraneous-dependencies
-  return require('playwright')[browserType]
+  return playwright
+}
+
+export async function getPlaywrightInstance(browserType) {
+  const playwrightPackage = await readPackage()
+  if (playwrightPackage === 'playwright') {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    return require(playwrightPackage)[browserType]
+  }
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  return require(playwrightPackage)
 }
 
 export async function readConfig() {
