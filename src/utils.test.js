@@ -73,6 +73,17 @@ describe('readConfig', () => {
     }
     expect(config).toMatchObject(expectedConfig)
   })
+  it('should throw error if JEST_PLAYWRIGHT_CONFIG is defined but does not exist', async () => {
+    process.env.JEST_PLAYWRIGHT_CONFIG = 'unreached.js'
+    let error
+    try {
+      await readConfig()
+    } catch (e) {
+      error = e
+    }
+    expect(error).toBeTruthy()
+    delete process.env.JEST_PLAYWRIGHT_CONFIG
+  })
 })
 
 describe('getBrowserType', () => {
@@ -80,6 +91,12 @@ describe('getBrowserType', () => {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     expect(browserType).toBe(CHROMIUM)
+  })
+  it('should return BROWSER if defined', async () => {
+    process.env.BROWSER = 'webkit'
+    const browserType = getBrowserType()
+    expect(browserType).toBe(process.env.BROWSER)
+    delete process.env.BROWSER
   })
 })
 
