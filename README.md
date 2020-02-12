@@ -5,14 +5,14 @@
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
 ```
-npm install --save-dev jest jest-playwright-preset playwright
+npm install -D jest jest-playwright-preset playwright
 ```
 
 Also you can use `jest-playwright-preset` with specific playwright packages:
 `playwright-webkit`, `playwright-chromium` and `playwright-firefox`
 
 ```
-npm install --save-dev jest jest-playwright-preset playwright-firefox
+npm install -D jest jest-playwright-preset playwright-firefox
 ```
 
 ## Usage
