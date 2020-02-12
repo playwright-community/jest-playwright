@@ -5,19 +5,19 @@
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
 ```
-npm install jest-playwright-preset playwright
+npm install --save-dev jest jest-playwright-preset playwright
 ```
 
 Also you can use `jest-playwright-preset` with specific playwright packages:
 `playwright-webkit`, `playwright-chromium` and `playwright-firefox`
 
 ```
-npm install jest-playwright-preset playwright-firefox
+npm install --save-dev jest jest-playwright-preset playwright-firefox
 ```
 
 ## Usage
 
-Update your Jest configuration:
+Update your Jest configuration, either:
 
 - with `package.json`:
 
@@ -38,34 +38,16 @@ module.exports = {
 
 **NOTE**: Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
-## Configuration
-
-You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
-
-- `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchbrowserappoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
-- `context` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
-- `browser` <[string]>. Define a [browser](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
-  - `chromium` Each test runs Chromium.
-  - `firefox` Each test runs Firefox.
-  - `webkit` Each test runs Webkit.
-- `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
-- `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
-
-## Browser type
-
-You can specify browser in multiple ways:
-
-**Note**: You should do it only if you are using whole playwright package
-
-- With `BROWSER` environment variable
-- With your `jest-playwright.config.js`
-
-If you don't pass any value it will be use `chromium` as default
-
 Use Playwright in your tests:
 
+- with `package.json`
+
 ```json
-"test": "jest"
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
 ```
 
 ```js
@@ -80,6 +62,21 @@ describe('Google', () => {
   })
 })
 ```
+
+## Configuration
+
+You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
+
+- `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchbrowserappoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
+- `context` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
+- `browser` <[string]>. Define a [browser](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
+  - `chromium` Each test runs Chromium (default).
+  - `firefox` Each test runs Firefox.
+  - `webkit` Each test runs Webkit.
+- `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
+- `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
+
+**Note**: You can also specify browser with `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
 
 ## Put in debug mode
 
