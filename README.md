@@ -89,6 +89,26 @@ Debugging tests can be hard sometimes and it is very useful to be able to pause 
 await jestPlaywright.debug()
 ```
 
+## Unstable and experimental API
+
+From version **0.0.7** you can run you tests for multiple browsers.
+
+- You must have installed **playwright** package
+- You must define browser to test with your `jest-playwright.config.js`:
+
+```javascript
+module.exports = {
+    browsers: ["chromium", "webkit"],
+    ...
+}
+```
+
+- You must run your tests with **jest-playwright**
+
+```json
+"test:parallel": "jest-playwright --parallel"
+```
+
 ## Inspiration
 
 Thanks to [Smooth Code](https://github.com/smooth-code) for great [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
