@@ -76,7 +76,9 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 - `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
 - `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
 
-**Note**: You can also specify browser with `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
+**Note**: 
+- You can also specify browser with `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
+- You can specify device with `DEVICE` environment variable.
 
 ## Put in debug mode
 
