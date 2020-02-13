@@ -22,6 +22,22 @@ export function checkBrowserEnv(param) {
   }
 }
 
+export function checkDeviceEnv(device, availableDevices) {
+  if (!availableDevices.includes(device)) {
+    throw new Error(
+      `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
+    )
+  }
+}
+
+export function getDeviceType(config) {
+  const processDevice = process.env.DEVICE
+  if (processDevice) {
+    return processDevice
+  }
+  return config.device
+}
+
 export function getBrowserType(config) {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {

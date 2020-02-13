@@ -1,8 +1,13 @@
-import { checkBrowserEnv, readPackage } from './utils'
-
 const fs = require('fs')
 const path = require('path')
-const { readConfig, getBrowserType } = require('./utils')
+const {
+  readConfig,
+  getBrowserType,
+  getDeviceType,
+  checkBrowserEnv,
+  checkDeviceEnv,
+  readPackage,
+} = require('./utils')
 const { DEFAULT_CONFIG, CHROMIUM } = require('./constants')
 
 jest.spyOn(fs, 'exists')
@@ -100,6 +105,20 @@ describe('getBrowserType', () => {
   })
 })
 
+describe('getDeviceType', () => {
+  it('should return "undefined" when there is no device', async () => {
+    const config = await readConfig()
+    const device = getDeviceType(config)
+    expect(device).toBe(undefined)
+  })
+  it('should return BROWSER if defined', async () => {
+    process.env.DEVICE = 'iPhone 11'
+    const device = getDeviceType()
+    expect(device).toBe(process.env.DEVICE)
+    delete process.env.DEVICE
+  })
+})
+
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
     fs.exists.mockImplementationOnce((_, cb) => cb(true))
@@ -113,6 +132,14 @@ describe('checkBrowserEnv', () => {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     expect(() => checkBrowserEnv(browserType)).toThrow()
+  })
+})
+
+describe('checkDeviceEnv', () => {
+  it('should throw Error with unknown type', async () => {
+    const device = 'unknown'
+    const devices = ['iPhone 11', 'Pixel 2', 'Nexus 4']
+    expect(() => checkDeviceEnv(device, devices)).toThrow()
   })
 })
 

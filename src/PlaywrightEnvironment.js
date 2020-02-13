@@ -1,7 +1,9 @@
 import NodeEnvironment from 'jest-environment-node'
 import {
   checkBrowserEnv,
+  checkDeviceEnv,
   getBrowserType,
+  getDeviceType,
   getPlaywrightInstance,
   readConfig,
 } from './utils'
@@ -63,20 +65,16 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { device, context } = config
+    const { context } = config
+    const device = getDeviceType(config)
     const playwrightInstance = await getPlaywrightInstance(browserType)
     let contextOptions = context
 
     const availableDevices = Object.keys(playwrightInstance.devices)
     if (device) {
-      if (!availableDevices.includes(device)) {
-        throw new Error(
-          `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
-        )
-      } else {
-        const { viewport, userAgent } = playwrightInstance.devices[device]
-        contextOptions = { ...contextOptions, viewport, userAgent }
-      }
+      checkDeviceEnv(device, availableDevices)
+      const { viewport, userAgent } = playwrightInstance.devices[device]
+      contextOptions = { ...contextOptions, viewport, userAgent }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
     this.global.context = await this.global.browser.newContext(contextOptions)
