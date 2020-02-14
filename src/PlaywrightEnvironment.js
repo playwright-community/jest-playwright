@@ -74,7 +74,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     if (device) {
       checkDeviceEnv(device, availableDevices)
       const { viewport, userAgent } = playwrightInstance.devices[device]
-      contextOptions = { ...contextOptions, viewport, userAgent }
+      contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
     this.global.context = await this.global.browser.newContext(contextOptions)
