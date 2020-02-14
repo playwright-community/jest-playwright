@@ -117,6 +117,37 @@ describe('getDeviceType', () => {
     expect(device).toBe(process.env.DEVICE)
     delete process.env.DEVICE
   })
+  it('should return an object if a custom viewport is defined', async () => {
+    // TODO: How to test this?
+    // use case, where one can define a custom device, just like with raw playwright:
+    // in jest-playwright.config.js
+    // module.exports = {
+    //   device: {
+    //     name: "Apple MacBook Pro 13-inch (Retina display)",
+    //     viewPort: {
+    //       width: 1280,
+    //       height: 800,
+    //       deviceScaleFactor: 2,
+    //       isMobile: false,
+    //     }
+    //   },
+    // }
+  })
+  it('should return an object if a custom viewport in BROWSER is defined', async () => {
+    const deviceJSON = {
+      name: 'Apple MacBook Pro 13-inch (Retina display)',
+      viewPort: {
+        width: 1280,
+        height: 800,
+        deviceScaleFactor: 2,
+        isMobile: false,
+      },
+    }
+    process.env.DEVICE = JSON.stringify(deviceJSON)
+    const device = getDeviceType()
+    expect(device).toStrictEqual(deviceJSON)
+    delete process.env.DEVICE
+  })
 })
 
 describe('checkBrowserEnv', () => {

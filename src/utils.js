@@ -33,7 +33,11 @@ export function checkDeviceEnv(device, availableDevices) {
 export function getDeviceType(config) {
   const processDevice = process.env.DEVICE
   if (processDevice) {
-    return processDevice
+    try {
+      return JSON.parse(processDevice)
+    } catch (e) {
+      return processDevice
+    }
   }
   return config.device
 }
