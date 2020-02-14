@@ -124,7 +124,7 @@ describe('getDeviceType', () => {
     // module.exports = {
     //   device: {
     //     name: "Apple MacBook Pro 13-inch (Retina display)",
-    //     viewPort: {
+    //     viewport: {
     //       width: 1280,
     //       height: 800,
     //       deviceScaleFactor: 2,
@@ -136,7 +136,7 @@ describe('getDeviceType', () => {
   it('should return an object if a custom viewport in BROWSER is defined', async () => {
     const deviceJSON = {
       name: 'Apple MacBook Pro 13-inch (Retina display)',
-      viewPort: {
+      viewport: {
         width: 1280,
         height: 800,
         deviceScaleFactor: 2,
