@@ -127,6 +127,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
 
   async teardown() {
     await super.teardown()
+    if (this.global.browser) {
+      await this.global.browser.close()
+    }
     if (this.global.page) {
       this.global.page.removeListener('pageerror', handleError)
       await this.global.page.close()
