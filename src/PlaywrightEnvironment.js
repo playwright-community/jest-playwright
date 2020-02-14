@@ -155,9 +155,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async teardown() {
+  async teardown(jestConfig = {}) {
     await super.teardown()
-    if (teardownServer) {
+    if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()
     }
     if (this.global.page) {
