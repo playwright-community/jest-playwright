@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import NodeEnvironment from 'jest-environment-node'
 import {
   checkBrowserEnv,
@@ -18,6 +19,7 @@ const KEYS = {
   ENTER: '\r',
 }
 
+let teardownServer = null
 let browserPerProcess = null
 let browserShutdownTimeout = 0
 
@@ -65,10 +67,38 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { context } = config
+    const { context, server } = config
     const device = getDeviceType(config)
     const playwrightInstance = await getPlaywrightInstance(browserType)
     let contextOptions = context
+
+    if (server) {
+      // eslint-disable-next-line global-require, import/no-dynamic-require,import/no-extraneous-dependencies
+      const devServer = require('jest-dev-server')
+      const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
+      teardownServer = devServer.teardown
+      try {
+        await setup(config.server)
+      } catch (error) {
+        if (error.code === ERROR_TIMEOUT) {
+          console.log('')
+          console.error(error.message)
+          console.error(
+            `\n☝️ You can set "server.launchTimeout" in jest-playwright.config.js`,
+          )
+          process.exit(1)
+        }
+        if (error.code === ERROR_NO_COMMAND) {
+          console.log('')
+          console.error(error.message)
+          console.error(
+            `\n☝️ You must set "server.command" in jest-playwright.config.js`,
+          )
+          process.exit(1)
+        }
+        throw error
+      }
+    }
 
     const availableDevices = Object.keys(playwrightInstance.devices)
     if (device) {
@@ -125,10 +155,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async teardown() {
+  async teardown(jestConfig = {}) {
     await super.teardown()
-    if (this.global.browser) {
-      await this.global.browser.close()
+    if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
+      await teardownServer()
     }
     if (this.global.page) {
       this.global.page.removeListener('pageerror', handleError)
