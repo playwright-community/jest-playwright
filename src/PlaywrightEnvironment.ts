@@ -8,8 +8,10 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
+import { Config } from './constants'
+import { Browser, BrowserType } from 'playwright'
 
-const handleError = error => {
+const handleError = (error: Error) => {
   process.emit('uncaughtException', error)
 }
 
@@ -20,7 +22,7 @@ const KEYS = {
 }
 
 let teardownServer = null
-let browserPerProcess = null
+let browserPerProcess: Browser | null = null
 let browserShutdownTimeout = 0
 
 function resetBrowserCloseWatchdog() {
@@ -40,7 +42,7 @@ function startBrowserCloseWatchdog() {
   }, 50)
 }
 
-async function getBrowserPerProcess(playwrightInstance, config) {
+async function getBrowserPerProcess(playwrightInstance: BrowserType, config: Config): Browser {
   if (!browserPerProcess) {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
@@ -126,7 +128,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         return new Promise(resolve => {
           const { stdin } = process
           const listening = stdin.listenerCount('data') > 0
-          const onKeyPress = key => {
+          const onKeyPress = (key: string) => {
             if (
               key === KEYS.CONTROL_C ||
               key === KEYS.CONTROL_D ||

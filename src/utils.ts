@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG } from './constants'
+import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG, Config } from './constants'
 
 const exists = promisify(fs.exists)
 
-const checkDependencies = dependencies => {
+const checkDependencies = (dependencies: Record<string, string>) => {
   if (!dependencies) return null
   if (dependencies.playwright) return 'playwright'
   if (dependencies[`playwright-${CHROMIUM}`]) return `playwright-${CHROMIUM}`
@@ -14,7 +14,7 @@ const checkDependencies = dependencies => {
   return null
 }
 
-export function checkBrowserEnv(param) {
+export function checkBrowserEnv(param: string) {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
       `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
@@ -22,7 +22,7 @@ export function checkBrowserEnv(param) {
   }
 }
 
-export function checkDeviceEnv(device, availableDevices) {
+export function checkDeviceEnv(device: string, availableDevices: string[]) {
   if (!availableDevices.includes(device)) {
     throw new Error(
       `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
@@ -30,7 +30,7 @@ export function checkDeviceEnv(device, availableDevices) {
   }
 }
 
-export function getDeviceType(config) {
+export function getDeviceType(config: Config) {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
@@ -38,7 +38,7 @@ export function getDeviceType(config) {
   return config.device
 }
 
-export function getBrowserType(config) {
+export function getBrowserType(config: Config) {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {
     return processBrowser
@@ -60,7 +60,7 @@ export async function readPackage() {
   return playwright
 }
 
-export async function getPlaywrightInstance(browserType) {
+export async function getPlaywrightInstance(browserType: string) {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === 'playwright') {
     // eslint-disable-next-line global-require, import/no-dynamic-require
