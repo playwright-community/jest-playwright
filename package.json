@@ -46,6 +46,7 @@
     "jest-environment-node": "^25.1.0"
   },
   "optionalDependencies": {
+    "jest-dev-server": "*",
     "playwright": "*",
     "playwright-chromium": "*",
     "playwright-firefox": "*",
