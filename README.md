@@ -88,6 +88,24 @@ Debugging tests can be hard sometimes and it is very useful to be able to pause 
 await jestPlaywright.debug()
 ```
 
+## Start a server
+
+Jest Playwright integrates a functionality to start a server when running your test suite, like [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer/blob/master/README.md#start-a-server). It automatically closes the server when tests are done.
+
+To use it, specify a server section in your `jest-playwright.config.js`.
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  server: {
+    command: 'node server.js',
+    port: 4444,
+  },
+}
+```
+
+Other options are documented in [jest-dev-server](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server).
+
 ## Unstable and experimental API
 
 From version **0.0.7** you can run you tests for multiple browsers.
