@@ -53,7 +53,7 @@ export async function readPackage() {
   const packageConfig = await require(absConfigPath)
   // for handling the local tests
   if (packageConfig.name === 'jest-playwright-preset') {
-    return 'playwright'
+    return 'playwright-core'
   }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
