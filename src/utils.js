@@ -53,7 +53,8 @@ export async function readPackage() {
   const packageConfig = await require(absConfigPath)
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
-    checkDependencies(packageConfig.devDependencies)
+    checkDependencies(packageConfig.devDependencies) ||
+    checkDependencies(packageConfig.optionalDependencies)
   if (!playwright) {
     throw new Error('None of playwright packages was not found in dependencies')
   }
@@ -62,12 +63,9 @@ export async function readPackage() {
 
 export async function getPlaywrightInstance(browserType) {
   const playwrightPackage = await readPackage()
-  if (playwrightPackage === 'playwright') {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    return require(playwrightPackage)[browserType]
-  }
+
   // eslint-disable-next-line global-require, import/no-dynamic-require
-  return require(playwrightPackage)
+  return require(playwrightPackage)[browserType]
 }
 
 export async function readConfig() {
