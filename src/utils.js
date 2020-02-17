@@ -51,10 +51,13 @@ export async function readPackage() {
   const absConfigPath = path.resolve(process.cwd(), packagePath)
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const packageConfig = await require(absConfigPath)
+  // for handling the local tests
+  if (packageConfig.name === 'jest-playwright-preset') {
+    return 'playwright'
+  }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
-    checkDependencies(packageConfig.devDependencies) ||
-    checkDependencies(packageConfig.optionalDependencies)
+    checkDependencies(packageConfig.devDependencies)
   if (!playwright) {
     throw new Error('None of playwright packages was not found in dependencies')
   }
