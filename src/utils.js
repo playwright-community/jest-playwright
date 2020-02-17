@@ -8,6 +8,7 @@ const exists = promisify(fs.exists)
 const checkDependencies = dependencies => {
   if (!dependencies) return null
   if (dependencies.playwright) return 'playwright'
+  if (dependencies['playwright-core']) return 'playwright-core'
   if (dependencies[`playwright-${CHROMIUM}`]) return `playwright-${CHROMIUM}`
   if (dependencies[`playwright-${FIREFOX}`]) return `playwright-${FIREFOX}`
   if (dependencies[`playwright-${WEBKIT}`]) return `playwright-${WEBKIT}`
@@ -65,6 +66,12 @@ export async function getPlaywrightInstance(browserType) {
   if (playwrightPackage === 'playwright') {
     // eslint-disable-next-line global-require, import/no-dynamic-require
     return require(playwrightPackage)[browserType]
+  }
+  if (playwrightPackage === 'playwright-core') {
+    // eslint-disable-next-line global-require, import/no-dynamic-require
+    const browser = require(playwrightPackage)[browserType]
+    await browser.downloadBrowserIfNeeded()
+    return browser
   }
   // eslint-disable-next-line global-require, import/no-dynamic-require
   return require(playwrightPackage)
