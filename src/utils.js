@@ -8,9 +8,10 @@ const exists = promisify(fs.exists)
 const checkDependencies = dependencies => {
   if (!dependencies) return null
   if (dependencies.playwright) return 'playwright'
-  if (dependencies[`playwright-${CHROMIUM}`]) return `playwright-${CHROMIUM}`
-  if (dependencies[`playwright-${FIREFOX}`]) return `playwright-${FIREFOX}`
-  if (dependencies[`playwright-${WEBKIT}`]) return `playwright-${WEBKIT}`
+  if (dependencies['playwright-core']) return 'core'
+  if (dependencies[`playwright-${CHROMIUM}`]) return CHROMIUM
+  if (dependencies[`playwright-${FIREFOX}`]) return FIREFOX
+  if (dependencies[`playwright-${WEBKIT}`]) return WEBKIT
   return null
 }
 
@@ -53,7 +54,7 @@ export async function readPackage() {
   const packageConfig = await require(absConfigPath)
   // for handling the local tests
   if (packageConfig.name === 'jest-playwright-preset') {
-    return 'playwright-core'
+    return 'core'
   }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
@@ -66,9 +67,18 @@ export async function readPackage() {
 
 export async function getPlaywrightInstance(browserType) {
   const playwrightPackage = await readPackage()
-
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  return require(playwrightPackage)[browserType]
+  if (playwrightPackage === 'playwright') {
+    // eslint-disable-next-line global-require, import/no-dynamic-require,import/no-unresolved
+    return require('playwright')[browserType]
+  }
+  if (playwrightPackage === 'core') {
+    // eslint-disable-next-line global-require, import/no-dynamic-require,import/no-extraneous-dependencies
+    const browser = require('playwright-core')[browserType]
+    await browser.downloadBrowserIfNeeded()
+    return browser
+  }
+  // eslint-disable-next-line global-require, import/no-dynamic-require,import/no-unresolved
+  return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }
 
 export async function readConfig() {
