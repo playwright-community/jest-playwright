@@ -51,6 +51,10 @@ export async function readPackage() {
   const absConfigPath = path.resolve(process.cwd(), packagePath)
   // eslint-disable-next-line global-require,import/no-dynamic-require
   const packageConfig = await require(absConfigPath)
+  // for handling the local tests
+  if (packageConfig.name === 'jest-playwright-preset') {
+    return 'playwright-core'
+  }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
     checkDependencies(packageConfig.devDependencies)
@@ -62,12 +66,9 @@ export async function readPackage() {
 
 export async function getPlaywrightInstance(browserType) {
   const playwrightPackage = await readPackage()
-  if (playwrightPackage === 'playwright') {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    return require(playwrightPackage)[browserType]
-  }
+
   // eslint-disable-next-line global-require, import/no-dynamic-require
-  return require(playwrightPackage)
+  return require(playwrightPackage)[browserType]
 }
 
 export async function readConfig() {
