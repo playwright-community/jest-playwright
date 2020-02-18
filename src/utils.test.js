@@ -191,6 +191,21 @@ describe('readPackage', () => {
     )
 
     const playwright = await readPackage()
-    expect(playwright).toEqual('playwright-firefox')
+    expect(playwright).toEqual('firefox')
+  })
+  it('should return playwright-core when it is defined', async () => {
+    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    jest.mock(
+      path.join(__dirname, '..', 'package.json'),
+      () => ({
+        devDependencies: {
+          'playwright-core': '*',
+        },
+      }),
+      { virtual: true },
+    )
+
+    const playwright = await readPackage()
+    expect(playwright).toEqual('core')
   })
 })
