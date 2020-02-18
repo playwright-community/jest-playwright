@@ -47,10 +47,10 @@
   },
   "optionalDependencies": {
     "jest-dev-server": "^4.4.0",
-    "playwright-chromium": "^0.11.1",
-    "playwright-core": "^0.11.1",
-    "playwright-firefox": "^0.11.1",
-    "playwright-webkit": "^0.11.1"
+    "playwright-chromium": ">=0.11.0",
+    "playwright-core": ">=0.11.0",
+    "playwright-firefox": ">=0.11.0",
+    "playwright-webkit": ">=0.11.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
