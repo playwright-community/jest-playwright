@@ -3,6 +3,10 @@ module.exports = {
   extends: ['airbnb-base', 'prettier'],
   plugins: ['eslint-plugin-prettier'],
   rules: {
+    'global-require': 'off',
+    'import/no-extraneous-dependencies': 'off',
+    'import/no-dynamic-require': 'off',
+    'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
   },
   parser: 'babel-eslint',
