@@ -47,6 +47,7 @@
   },
   "optionalDependencies": {
     "jest-dev-server": "^4.4.0",
+    "playwright": ">=0.11.0",
     "playwright-chromium": ">=0.11.0",
     "playwright-core": ">=0.11.0",
     "playwright-firefox": ">=0.11.0",
