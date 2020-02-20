@@ -8,9 +8,10 @@ const exists = promisify(fs.exists)
 const checkDependencies = (dependencies: Record<string, string>) => {
   if (!dependencies) return null
   if (dependencies.playwright) return 'playwright'
-  if (dependencies[`playwright-${CHROMIUM}`]) return `playwright-${CHROMIUM}`
-  if (dependencies[`playwright-${FIREFOX}`]) return `playwright-${FIREFOX}`
-  if (dependencies[`playwright-${WEBKIT}`]) return `playwright-${WEBKIT}`
+  if (dependencies['playwright-core']) return 'core'
+  if (dependencies[`playwright-${CHROMIUM}`]) return CHROMIUM
+  if (dependencies[`playwright-${FIREFOX}`]) return FIREFOX
+  if (dependencies[`playwright-${WEBKIT}`]) return WEBKIT
   return null
 }
 
@@ -49,8 +50,11 @@ export function getBrowserType(config: Config) {
 export async function readPackage() {
   const packagePath = 'package.json'
   const absConfigPath = path.resolve(process.cwd(), packagePath)
-  // eslint-disable-next-line global-require,import/no-dynamic-require
   const packageConfig = await require(absConfigPath)
+  // for handling the local tests
+  if (packageConfig.name === 'jest-playwright-preset') {
+    return 'core'
+  }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
     checkDependencies(packageConfig.devDependencies)
@@ -63,11 +67,14 @@ export async function readPackage() {
 export async function getPlaywrightInstance(browserType: string) {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === 'playwright') {
-    // eslint-disable-next-line global-require, import/no-dynamic-require
-    return require(playwrightPackage)[browserType]
+    return require('playwright')[browserType]
   }
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  return require(playwrightPackage)
+  if (playwrightPackage === 'core') {
+    const browser = require('playwright-core')[browserType]
+    await browser.downloadBrowserIfNeeded()
+    return browser
+  }
+  return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }
 
 export async function readConfig() {
@@ -89,7 +96,6 @@ export async function readConfig() {
     return defaultConfig
   }
 
-  // eslint-disable-next-line global-require,import/no-dynamic-require
   const localConfig = await require(absConfigPath)
   return {
     ...defaultConfig,

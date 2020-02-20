@@ -75,7 +75,6 @@ class PlaywrightEnvironment extends NodeEnvironment {
     let contextOptions = context
 
     if (server) {
-      // eslint-disable-next-line global-require, import/no-dynamic-require,import/no-extraneous-dependencies
       const devServer = require('jest-dev-server')
       const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
       teardownServer = devServer.teardown

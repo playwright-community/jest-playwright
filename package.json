@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -46,11 +46,12 @@
     "jest-environment-node": "^25.1.0"
   },
   "optionalDependencies": {
-    "jest-dev-server": "*",
-    "playwright": "*",
-    "playwright-chromium": "*",
-    "playwright-firefox": "*",
-    "playwright-webkit": "*"
+    "jest-dev-server": "^4.4.0",
+    "playwright": ">=0.11.0",
+    "playwright-chromium": ">=0.11.0",
+    "playwright-core": ">=0.11.0",
+    "playwright-firefox": ">=0.11.0",
+    "playwright-webkit": ">=0.11.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -66,11 +67,8 @@
     "eslint-plugin-prettier": "^3.1.2",
     "husky": "^4.2.1",
     "jest": "^25.1.0",
-    "jest-dev-server": "^4.4.0",
     "jest-environment-node": "^25.1.0",
     "lint-staged": "^10.0.7",
-    "playwright": "^0.10.0",
-    "playwright-core": "^0.11.1",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.1",
     "typescript": "^3.7.5"

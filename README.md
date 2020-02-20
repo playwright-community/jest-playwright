@@ -67,7 +67,7 @@ describe('Google', () => {
 
 You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
 
-- `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchbrowserappoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
+- `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
 - `context` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
 - `browser` <[string]>. Define a [browser](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
   - `chromium` Each test runs Chromium (default).
