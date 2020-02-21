@@ -77,9 +77,7 @@ export async function getPlaywrightInstance(browserType: string) {
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }
 
-export async function readConfig() {
-  const defaultConfig = DEFAULT_CONFIG
-
+export async function readConfig(): Promise<Config> {
   const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
   const configPath =
     process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js'
@@ -93,19 +91,19 @@ export async function readConfig() {
   }
 
   if (!hasCustomConfigPath && !configExists) {
-    return defaultConfig
+    return DEFAULT_CONFIG
   }
 
   const localConfig = await require(absConfigPath)
   return {
-    ...defaultConfig,
+    ...DEFAULT_CONFIG,
     ...localConfig,
     launchBrowserApp: {
-      ...defaultConfig.launchBrowserApp,
+      ...DEFAULT_CONFIG.launchBrowserApp,
       ...(localConfig.launchBrowserApp || {}),
     },
     context: {
-      ...defaultConfig.context,
+      ...DEFAULT_CONFIG.context,
       ...(localConfig.context || {}),
     },
   }

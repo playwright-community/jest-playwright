@@ -1,7 +1,7 @@
 import { checkBrowserEnv } from '../utils'
 
 /* eslint import/prefer-default-export:0 */
-export function checkBrowsers(browsers) {
+export function checkBrowsers(browsers?: string[]) {
   if (!browsers || !browsers.length) {
     throw new Error(
       'You should define browsers with your jest-playwright.config.js',

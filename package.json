@@ -27,9 +27,7 @@
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "eslint .",
     "prepublishOnly": "yarn run build",
-    "test:bin": "jest src/bin/utils.test.js",
-    "test:utils": "jest src/utils.test.js",
-    "test": "npm run test:utils && npm run test:bin && jest tests"
+    "test": "jest -c jest.test.config.js"
   },
   "husky": {
     "hooks": {
@@ -57,6 +55,7 @@
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.8.4",
     "@babel/preset-env": "^7.8.4",
+    "@types/debug": "^4.1.5",
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.1",
     "babel-eslint": "^10.0.3",
@@ -71,6 +70,7 @@
     "lint-staged": "^10.0.7",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.1",
+    "ts-jest": "^25.2.1",
     "typescript": "^3.7.5"
   }
 }

@@ -13,7 +13,7 @@ export interface Config {
   browser?: string
   browsers?: string[]
   device?: string
-  server: any
+  server?: any
 }
 
 export const DEFAULT_CONFIG: Config = {
