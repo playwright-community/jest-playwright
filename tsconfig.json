@@ -7,9 +7,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": [
+  "files": [
     "types/global.d.ts",
-    "src/**/*",
-    "tests/**/*"
+  ],
+  "include": [
+    "src/**/*"
   ],
 }
