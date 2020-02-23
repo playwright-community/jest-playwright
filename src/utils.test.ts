@@ -22,7 +22,7 @@ describe('readConfig', () => {
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
   it('should overwrite with a custom configuration', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
@@ -40,7 +40,6 @@ describe('readConfig', () => {
     const expectedConfig = {
       launchBrowserApp: {
         headless: true,
-        webSocket: true,
       },
       context: {
         ignoreHTTPSErrors: true,
@@ -51,7 +50,7 @@ describe('readConfig', () => {
     expect(config).toMatchObject(expectedConfig)
   })
   it('should overwrite with a custom configuration and spread the "launchBrowserApp" and "context" setting', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
@@ -68,7 +67,6 @@ describe('readConfig', () => {
     const expectedConfig = {
       launchBrowserApp: {
         headless: true,
-        webSocket: true,
       },
       context: {
         foo: true,
@@ -121,7 +119,7 @@ describe('getDeviceType', () => {
 
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
@@ -145,7 +143,7 @@ describe('checkDeviceEnv', () => {
 
 describe('readPackage', () => {
   it('should return null when dependencies does not passed', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
       () => ({
@@ -164,7 +162,7 @@ describe('readPackage', () => {
     )
   })
   it('should return playwright when it is defined', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
       () => ({
@@ -179,7 +177,7 @@ describe('readPackage', () => {
     expect(playwright).toEqual('playwright')
   })
   it('should return playwright-firefox when it is defined', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
       () => ({
@@ -194,7 +192,7 @@ describe('readPackage', () => {
     expect(playwright).toEqual('firefox')
   })
   it('should return playwright-core when it is defined', async () => {
-    fs.exists.mockImplementationOnce((_, cb) => cb(true))
+    fs.exists.mockImplementationOnce((_: any, cb: (exists: boolean) => void) => cb(true))
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
       () => ({

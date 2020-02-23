@@ -1,4 +1,5 @@
 import { checkBrowsers } from './utils'
+import { BrowserType } from '../constants'
 
 describe('checkBrowsers', () => {
   it('should throw an error without arguments', () => {
@@ -12,6 +13,6 @@ describe('checkBrowsers', () => {
     )
   })
   it('should throw an error when passed wrong browser', () => {
-    expect(() => checkBrowsers(['chromium', 'unknown'])).toThrow()
+    expect(() => checkBrowsers(['chromium', 'unknown' as BrowserType])).toThrow()
   })
 })

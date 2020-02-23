@@ -8,8 +8,10 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
+import { Config } from './constants'
+import { Browser, BrowserType } from 'playwright'
 
-const handleError = error => {
+const handleError = (error: Error) => {
   process.emit('uncaughtException', error)
 }
 
@@ -19,9 +21,9 @@ const KEYS = {
   ENTER: '\r',
 }
 
-let teardownServer = null
-let browserPerProcess = null
-let browserShutdownTimeout = 0
+let teardownServer: any = null
+let browserPerProcess: Browser | null = null
+let browserShutdownTimeout: any = 0
 
 function resetBrowserCloseWatchdog() {
   if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
@@ -40,7 +42,7 @@ function startBrowserCloseWatchdog() {
   }, 50)
 }
 
-async function getBrowserPerProcess(playwrightInstance, config) {
+async function getBrowserPerProcess(playwrightInstance: BrowserType, config: Config): Promise<Browser> {
   if (!browserPerProcess) {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
@@ -53,11 +55,13 @@ async function getBrowserPerProcess(playwrightInstance, config) {
 class PlaywrightEnvironment extends NodeEnvironment {
   // Jest is not available here, so we have to reverse engineer
   // the setTimeout function, see https://github.com/facebook/jest/blob/v23.1.0/packages/jest-runtime/src/index.js#L823
-  setTimeout(timeout) {
+  setTimeout(timeout: any) {
     if (this.global.jasmine) {
       // eslint-disable-next-line no-underscore-dangle
+      // @ts-ignore
       this.global.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout
     } else {
+      // @ts-ignore
       this.global[Symbol.for('TEST_TIMEOUT_SYMBOL')] = timeout
     }
   }
@@ -125,7 +129,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         return new Promise(resolve => {
           const { stdin } = process
           const listening = stdin.listenerCount('data') > 0
-          const onKeyPress = key => {
+          const onKeyPress = (key: string) => {
             if (
               key === KEYS.CONTROL_C ||
               key === KEYS.CONTROL_D ||
@@ -154,7 +158,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async teardown(jestConfig = {}) {
+  async teardown(jestConfig: any = {}) {
     await super.teardown()
     if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()

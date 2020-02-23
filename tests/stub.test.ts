@@ -1,4 +1,4 @@
-const path = require('path')
+import path from 'path'
 
 describe('Example HTML file', () => {
   it('should detect the heading "Example" on page', async () => {
