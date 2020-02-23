@@ -8,6 +8,7 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
+import { CHROMIUM } from './constants'
 
 const handleError = error => {
   process.emit('uncaughtException', error)
@@ -45,6 +46,10 @@ async function getBrowserPerProcess(playwrightInstance, config) {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { launchBrowserApp } = config
+    // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
+    if (browserType !== CHROMIUM && launchBrowserApp.args) {
+      launchBrowserApp.args = []
+    }
     browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
   return browserPerProcess
