@@ -23,10 +23,11 @@
   },
   "homepage": "https://github.com/mmarkelov/jest-playwright#readme",
   "scripts": {
+    "start": "npm run build -- --watch",
     "build": "tsc",
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "eslint . --ext .js,.ts",
-    "prepublishOnly": "yarn run build",
+    "prepublishOnly": "npm run build",
     "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts"
   },
   "husky": {

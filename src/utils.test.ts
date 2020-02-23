@@ -101,7 +101,7 @@ describe('getBrowserType', () => {
   })
   it('should return BROWSER if defined', async () => {
     process.env.BROWSER = 'webkit'
-    const browserType = getBrowserType()
+    const browserType = getBrowserType({ exitOnPageError: false })
     expect(browserType).toBe(process.env.BROWSER)
     delete process.env.BROWSER
   })
@@ -115,7 +115,7 @@ describe('getDeviceType', () => {
   })
   it('should return BROWSER if defined', async () => {
     process.env.DEVICE = 'iPhone 11'
-    const device = getDeviceType()
+    const device = getDeviceType({ exitOnPageError: false })
     expect(device).toBe(process.env.DEVICE)
     delete process.env.DEVICE
   })
