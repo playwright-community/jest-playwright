@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG, Config } from './constants'
+import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG, Config, BrowserType } from './constants'
 
 const exists = promisify(fs.exists)
 
@@ -15,7 +15,7 @@ const checkDependencies = (dependencies: Record<string, string>) => {
   return null
 }
 
-export function checkBrowserEnv(param: string) {
+export function checkBrowserEnv(param: BrowserType) {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
       `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
@@ -64,7 +64,7 @@ export async function readPackage() {
   return playwright
 }
 
-export async function getPlaywrightInstance(browserType: string) {
+export async function getPlaywrightInstance(browserType: BrowserType) {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === 'playwright') {
     return require('playwright')[browserType]
