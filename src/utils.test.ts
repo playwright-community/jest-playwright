@@ -22,7 +22,7 @@ describe('readConfig', () => {
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
   it('should overwrite with a custom configuration', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
@@ -52,7 +52,7 @@ describe('readConfig', () => {
     expect(config).toMatchObject(expectedConfig)
   })
   it('should overwrite with a custom configuration and spread the "launchBrowserApp" and "context" setting', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
@@ -123,7 +123,7 @@ describe('getDeviceType', () => {
 
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
@@ -149,7 +149,7 @@ describe('checkDeviceEnv', () => {
 
 describe('readPackage', () => {
   it('should return null when dependencies does not passed', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
@@ -170,7 +170,7 @@ describe('readPackage', () => {
     )
   })
   it('should return playwright when it is defined', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
@@ -187,7 +187,7 @@ describe('readPackage', () => {
     expect(playwright).toEqual('playwright')
   })
   it('should return playwright-firefox when it is defined', async () => {
-    ;((fs.exists as unknown) as jest.Mock)(
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_: any, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
