@@ -11,6 +11,6 @@
     "types/global.d.ts",
   ],
   "include": [
-    "src/**/*"
+    "src/**/*",
   ],
 }
