@@ -27,7 +27,7 @@ const checkDependencies = (
   return null
 }
 
-export function checkBrowserEnv(param: BrowserType): void {
+export const checkBrowserEnv = (param: BrowserType): void => {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
       `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
@@ -35,10 +35,10 @@ export function checkBrowserEnv(param: BrowserType): void {
   }
 }
 
-export function checkDeviceEnv(
+export const checkDeviceEnv = (
   device: string,
   availableDevices: string[],
-): void {
+): void => {
   if (!availableDevices.includes(device)) {
     throw new Error(
       `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
@@ -46,7 +46,7 @@ export function checkDeviceEnv(
   }
 }
 
-export function getDeviceType(config: Config): string | undefined {
+export const getDeviceType = (config: Config): string | undefined => {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
@@ -54,7 +54,7 @@ export function getDeviceType(config: Config): string | undefined {
   return config.device
 }
 
-export function getBrowserType(config: Config): BrowserType {
+export const getBrowserType = (config: Config): BrowserType => {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {
     return processBrowser as BrowserType
@@ -62,7 +62,7 @@ export function getBrowserType(config: Config): BrowserType {
   return config.browser || CHROMIUM
 }
 
-export async function readPackage(): Promise<PlaywrightRequireType> {
+export const readPackage = async (): Promise<PlaywrightRequireType> => {
   const packagePath = 'package.json'
   const absConfigPath = path.resolve(process.cwd(), packagePath)
   const packageConfig = await require(absConfigPath)
@@ -79,9 +79,9 @@ export async function readPackage(): Promise<PlaywrightRequireType> {
   return playwright
 }
 
-export async function getPlaywrightInstance(
+export const getPlaywrightInstance = async (
   browserType: BrowserType,
-): Promise<PlayWrightBrowserType> {
+): Promise<PlayWrightBrowserType> => {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === 'playwright') {
     return require('playwright')[browserType]
@@ -94,7 +94,7 @@ export async function getPlaywrightInstance(
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }
 
-export async function readConfig(): Promise<Config> {
+export const readConfig = async (): Promise<Config> => {
   const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
   const configPath =
     process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js'

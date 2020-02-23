@@ -26,7 +26,7 @@ let teardownServer: (() => Promise<void>) | null = null
 let browserPerProcess: Browser | null = null
 let browserShutdownTimeout: NodeJS.Timeout | null = null
 
-function resetBrowserCloseWatchdog(): void {
+const resetBrowserCloseWatchdog = (): void => {
   if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
 }
 
@@ -34,7 +34,7 @@ function resetBrowserCloseWatchdog(): void {
 // close the browser.
 //
 // @see https://github.com/facebook/jest/issues/8708 (and upvote plz!)
-function startBrowserCloseWatchdog(): void {
+const startBrowserCloseWatchdog = (): void => {
   resetBrowserCloseWatchdog()
   browserShutdownTimeout = setTimeout(async () => {
     const browser = browserPerProcess
@@ -43,10 +43,10 @@ function startBrowserCloseWatchdog(): void {
   }, 50)
 }
 
-async function getBrowserPerProcess(
+const getBrowserPerProcess = async (
   playwrightInstance: BrowserType,
   config: Config,
-): Promise<Browser> {
+): Promise<Browser> => {
   if (!browserPerProcess) {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
