@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import NodeEnvironment from 'jest-environment-node'
+import { Config as JestConfig } from '@jest/types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -21,11 +22,11 @@ const KEYS = {
   ENTER: '\r',
 }
 
-let teardownServer: any = null
+let teardownServer: (() => Promise<void>) | null = null
 let browserPerProcess: Browser | null = null
-let browserShutdownTimeout: any = 0
+let browserShutdownTimeout: NodeJS.Timeout | null = null
 
-function resetBrowserCloseWatchdog() {
+function resetBrowserCloseWatchdog(): void {
   if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
 }
 
@@ -33,7 +34,7 @@ function resetBrowserCloseWatchdog() {
 // close the browser.
 //
 // @see https://github.com/facebook/jest/issues/8708 (and upvote plz!)
-function startBrowserCloseWatchdog() {
+function startBrowserCloseWatchdog(): void {
   resetBrowserCloseWatchdog()
   browserShutdownTimeout = setTimeout(async () => {
     const browser = browserPerProcess
@@ -64,7 +65,7 @@ async function getBrowserPerProcess(
 class PlaywrightEnvironment extends NodeEnvironment {
   // Jest is not available here, so we have to reverse engineer
   // the setTimeout function, see https://github.com/facebook/jest/blob/v23.1.0/packages/jest-runtime/src/index.js#L823
-  setTimeout(timeout: any) {
+  setTimeout(timeout: number): void {
     if (this.global.jasmine) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -76,7 +77,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async setup() {
+  async setup(): Promise<void> {
     resetBrowserCloseWatchdog()
     const config = await readConfig()
     const browserType = getBrowserType(config)
@@ -125,7 +126,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)
     this.global.jestPlaywright = {
-      debug: async () => {
+      debug: async (): Promise<void> => {
         // eslint-disable-next-line no-eval
         // Set timeout to 4 days
         this.setTimeout(345600000)
@@ -140,7 +141,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         return new Promise(resolve => {
           const { stdin } = process
           const listening = stdin.listenerCount('data') > 0
-          const onKeyPress = (key: string) => {
+          const onKeyPress = (key: string): void => {
             if (
               key === KEYS.CONTROL_C ||
               key === KEYS.CONTROL_D ||
@@ -169,7 +170,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async teardown(jestConfig: any = {}) {
+  async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
     await super.teardown()
     if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()

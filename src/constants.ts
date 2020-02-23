@@ -1,5 +1,6 @@
 import { LaunchOptions } from 'playwright-core/lib/server/browserType'
 import { BrowserContextOptions } from 'playwright-core/lib/browserContext'
+import { JestDevServerOptions } from 'jest-dev-server'
 
 export type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
@@ -16,7 +17,7 @@ export interface Config {
   browser?: BrowserType
   browsers?: BrowserType[]
   device?: string
-  server?: any
+  server?: JestDevServerOptions
 }
 
 export const DEFAULT_CONFIG: Config = {

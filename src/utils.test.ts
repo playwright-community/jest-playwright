@@ -23,7 +23,7 @@ describe('readConfig', () => {
   })
   it('should overwrite with a custom configuration', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
@@ -53,7 +53,7 @@ describe('readConfig', () => {
   })
   it('should overwrite with a custom configuration and spread the "launchBrowserApp" and "context" setting', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
@@ -124,7 +124,7 @@ describe('getDeviceType', () => {
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
@@ -150,7 +150,7 @@ describe('checkDeviceEnv', () => {
 describe('readPackage', () => {
   it('should return null when dependencies does not passed', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
@@ -171,7 +171,7 @@ describe('readPackage', () => {
   })
   it('should return playwright when it is defined', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
@@ -188,7 +188,7 @@ describe('readPackage', () => {
   })
   it('should return playwright-firefox when it is defined', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
@@ -205,7 +205,7 @@ describe('readPackage', () => {
   })
   it('should return playwright-core when it is defined', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_: any, cb: (exists: boolean) => void) => cb(true),
+      (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
