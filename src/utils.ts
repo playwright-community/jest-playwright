@@ -39,10 +39,10 @@ export function getDeviceType(config: Config) {
   return config.device
 }
 
-export function getBrowserType(config: Config) {
+export function getBrowserType(config: Config): BrowserType {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {
-    return processBrowser
+    return processBrowser as BrowserType
   }
   return config.browser || CHROMIUM
 }
