@@ -27,7 +27,8 @@
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "eslint .",
     "prepublishOnly": "yarn run build",
-    "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts"
+    "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "husky": {
     "hooks": {
@@ -59,6 +60,7 @@
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.1",
     "babel-eslint": "^10.0.3",
+    "coveralls": "^3.0.9",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.10.0",
