@@ -11,7 +11,7 @@ import {
 import { Config, CHROMIUM } from './constants'
 import { Browser, BrowserType } from 'playwright'
 
-const handleError = (error: Error) => {
+const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
 }
 
@@ -66,10 +66,11 @@ class PlaywrightEnvironment extends NodeEnvironment {
   // the setTimeout function, see https://github.com/facebook/jest/blob/v23.1.0/packages/jest-runtime/src/index.js#L823
   setTimeout(timeout: any) {
     if (this.global.jasmine) {
-      // eslint-disable-next-line no-underscore-dangle
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       this.global.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout
     } else {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       this.global[Symbol.for('TEST_TIMEOUT_SYMBOL')] = timeout
     }
@@ -86,6 +87,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     let contextOptions = context
 
     if (server) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const devServer = require('jest-dev-server')
       const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
       teardownServer = devServer.teardown

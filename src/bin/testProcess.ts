@@ -12,9 +12,13 @@ const getSpawnOptions = (browser: BrowserType): SpawnSyncOptions => ({
   },
 })
 
-const exec = ({ sequence, browser, params }: {
-  sequence: string,
-  browser: BrowserType,
+const exec = ({
+  sequence,
+  browser,
+  params,
+}: {
+  sequence: string
+  browser: BrowserType
   params: string[]
 }) => {
   // TODO Add messages for browser process

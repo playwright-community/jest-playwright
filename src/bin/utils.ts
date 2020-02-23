@@ -1,7 +1,6 @@
 import { checkBrowserEnv } from '../utils'
 import { BrowserType } from '../constants'
 
-/* eslint import/prefer-default-export:0 */
 export function checkBrowsers(browsers?: BrowserType[]) {
   if (!browsers || !browsers.length) {
     throw new Error(

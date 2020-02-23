@@ -1,11 +1,23 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import { CHROMIUM, FIREFOX, WEBKIT, DEFAULT_CONFIG, Config, BrowserType } from './constants'
+import {
+  CHROMIUM,
+  FIREFOX,
+  WEBKIT,
+  DEFAULT_CONFIG,
+  Config,
+  BrowserType,
+} from './constants'
+import { BrowserType as PlayWrightBrowserType } from 'playwright'
 
 const exists = promisify(fs.exists)
 
-const checkDependencies = (dependencies: Record<string, string>) => {
+type PlaywrightRequireType = BrowserType | 'core' | 'playwright'
+
+const checkDependencies = (
+  dependencies: Record<string, string>,
+): PlaywrightRequireType | null => {
   if (!dependencies) return null
   if (dependencies.playwright) return 'playwright'
   if (dependencies['playwright-core']) return 'core'
@@ -15,7 +27,7 @@ const checkDependencies = (dependencies: Record<string, string>) => {
   return null
 }
 
-export function checkBrowserEnv(param: BrowserType) {
+export function checkBrowserEnv(param: BrowserType): void {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
       `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
@@ -23,7 +35,10 @@ export function checkBrowserEnv(param: BrowserType) {
   }
 }
 
-export function checkDeviceEnv(device: string, availableDevices: string[]) {
+export function checkDeviceEnv(
+  device: string,
+  availableDevices: string[],
+): void {
   if (!availableDevices.includes(device)) {
     throw new Error(
       `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
@@ -31,7 +46,7 @@ export function checkDeviceEnv(device: string, availableDevices: string[]) {
   }
 }
 
-export function getDeviceType(config: Config) {
+export function getDeviceType(config: Config): string | undefined {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
@@ -47,7 +62,7 @@ export function getBrowserType(config: Config): BrowserType {
   return config.browser || CHROMIUM
 }
 
-export async function readPackage() {
+export async function readPackage(): Promise<PlaywrightRequireType> {
   const packagePath = 'package.json'
   const absConfigPath = path.resolve(process.cwd(), packagePath)
   const packageConfig = await require(absConfigPath)
@@ -64,7 +79,9 @@ export async function readPackage() {
   return playwright
 }
 
-export async function getPlaywrightInstance(browserType: BrowserType) {
+export async function getPlaywrightInstance(
+  browserType: BrowserType,
+): Promise<PlayWrightBrowserType> {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === 'playwright') {
     return require('playwright')[browserType]

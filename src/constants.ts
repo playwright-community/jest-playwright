@@ -1,18 +1,18 @@
 import { LaunchOptions } from 'playwright-core/lib/server/browserType'
 import { BrowserContextOptions } from 'playwright-core/lib/browserContext'
 
-export type BrowserType = "chromium" | "firefox" | "webkit";
+export type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
 export const CHROMIUM: BrowserType = 'chromium'
 export const FIREFOX: BrowserType = 'firefox'
 export const WEBKIT: BrowserType = 'webkit'
 
-export const PARALLEL: string = '--parallel'
+export const PARALLEL = '--parallel'
 
 export interface Config {
   launchBrowserApp?: LaunchOptions
-  context?: BrowserContextOptions,
-  exitOnPageError: boolean,
+  context?: BrowserContextOptions
+  exitOnPageError: boolean
   browser?: BrowserType
   browsers?: BrowserType[]
   device?: string
@@ -25,4 +25,3 @@ export const DEFAULT_CONFIG: Config = {
   browser: CHROMIUM,
   exitOnPageError: true,
 }
-
