@@ -12,11 +12,15 @@ const getSpawnOptions = (browser: BrowserType): SpawnSyncOptions => ({
   },
 })
 
-const exec = ({ sequence, browser, params }: {
-  sequence: string,
-  browser: BrowserType,
+const exec = ({
+  sequence,
+  browser,
+  params,
+}: {
+  sequence: string
+  browser: BrowserType
   params: string[]
-}) => {
+}): void => {
   // TODO Add messages for browser process
   const options = getSpawnOptions(browser)
   if (sequence === PARALLEL) {
@@ -26,7 +30,7 @@ const exec = ({ sequence, browser, params }: {
   }
 }
 
-const runner = async (sequence: string, params: string[]) => {
+const runner = async (sequence: string, params: string[]): Promise<void> => {
   const { browsers = [] } = await readConfig()
   checkBrowsers(browsers)
   browsers.forEach(browser => exec({ sequence, browser, params }))

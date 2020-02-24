@@ -1,4 +1,4 @@
-import { Page, Browser, BrowserContext } from 'playwright-core';
+import { Page, Browser, BrowserContext } from 'playwright-core'
 
 interface JestPlaywright {
   /**
@@ -16,8 +16,8 @@ interface JestPlaywright {
 }
 
 declare global {
-  var page: Page;
-  var browser: Browser
-  var context: BrowserContext
-  var jestPlaywright: JestPlaywright
+  const page: Page
+  const browser: Browser
+  const context: BrowserContext
+  const jestPlaywright: JestPlaywright
 }

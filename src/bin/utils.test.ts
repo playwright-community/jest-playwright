@@ -13,6 +13,8 @@ describe('checkBrowsers', () => {
     )
   })
   it('should throw an error when passed wrong browser', () => {
-    expect(() => checkBrowsers(['chromium', 'unknown' as BrowserType])).toThrow()
+    expect(() =>
+      checkBrowsers(['chromium', 'unknown' as BrowserType]),
+    ).toThrow()
   })
 })
