@@ -17,6 +17,7 @@
   "bin": {
     "jest-playwright": "./lib/bin/index.js"
   },
+  "types": "./types/global.d.ts",
   "repository": {
     "url": "https://github.com/mmarkelov/jest-playwright.git",
     "type": "git"
