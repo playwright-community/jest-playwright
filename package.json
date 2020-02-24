@@ -28,7 +28,8 @@
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "eslint . --ext .js,.ts",
     "prepublishOnly": "npm run build",
-    "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts"
+    "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "husky": {
     "hooks": {
@@ -59,6 +60,7 @@
     "@types/node": "^13.7.1",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
+    "coveralls": "^3.0.9",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.10.0",
