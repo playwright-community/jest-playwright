@@ -1,4 +1,6 @@
 // TODO Check this global methods
-export function setup() {}
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const setup = (): void => {}
 
-export function teardown() {}
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const teardown = (): void => {}

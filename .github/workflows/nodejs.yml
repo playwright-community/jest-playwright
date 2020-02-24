@@ -23,9 +23,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libgbm-dev
-    - name: Build project
-      run: npm run build
     - name: Lint Source Code
       run: npm run lint
+    - name: Build project
+      run: npm run build
     - name: Run tests
       run: npm run test

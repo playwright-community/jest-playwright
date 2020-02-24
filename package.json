@@ -23,10 +23,11 @@
   },
   "homepage": "https://github.com/mmarkelov/jest-playwright#readme",
   "scripts": {
+    "start": "npm run build -- --watch",
     "build": "tsc",
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
-    "lint": "eslint .",
-    "prepublishOnly": "yarn run build",
+    "lint": "eslint . --ext .js,.ts",
+    "prepublishOnly": "npm run build",
     "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts"
   },
   "husky": {
@@ -52,13 +53,12 @@
     "playwright-webkit": ">=0.11.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
     "@types/debug": "^4.1.5",
     "@types/jest": "^25.1.2",
+    "@types/jest-dev-server": "^4.2.0",
     "@types/node": "^13.7.1",
-    "babel-eslint": "^10.0.3",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.10.0",
@@ -69,8 +69,7 @@
     "jest-environment-node": "^25.1.0",
     "lint-staged": "^10.0.7",
     "prettier": "^1.19.1",
-    "rimraf": "^3.0.1",
     "ts-jest": "^25.2.1",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.2"
   }
 }
