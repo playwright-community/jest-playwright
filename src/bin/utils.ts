@@ -18,7 +18,7 @@ export const getLogMessage = (
   browser: BrowserType,
   status: number | null,
   device: string | null,
-) => {
+): string => {
   return `${getResultByStatus(status)} tests for browser: ${browser} ${
     device ? `and device: ${device}` : ''
   }\n\n`
