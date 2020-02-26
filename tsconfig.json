@@ -8,9 +8,13 @@
     "forceConsistentCasingInFileNames": true
   },
   "files": [
-    "types/global.d.ts",
+    "types/global.d.ts"
   ],
   "include": [
-    "src/**/*",
+    "src/**/*"
   ],
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts"
+  ]
 }
