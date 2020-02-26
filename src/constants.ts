@@ -17,6 +17,7 @@ export interface Config {
   browser?: BrowserType
   browsers?: BrowserType[]
   device?: string
+  devices?: string[]
   server?: JestDevServerOptions
 }
 
