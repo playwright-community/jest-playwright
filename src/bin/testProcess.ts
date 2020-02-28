@@ -23,14 +23,18 @@ const exec = ({
 }): void => {
   const options = getSpawnOptions(browser)
   if (sequence === PARALLEL) {
-    const process = spawn('node', [`node_modules/.bin/jest ${params}`], options)
+    const process = spawn(
+      'node',
+      [`node_modules/jest/bin/jest.js ${params}`],
+      options,
+    )
     process.on('close', status => {
       console.log(`${getResultByStatus(status)} tests for ${browser}\n\n`)
     })
   } else {
     const { status } = spawnSync(
       'node',
-      [`node_modules/.bin/jest ${params}`],
+      [`node_modules/jest/bin/jest.js ${params}`],
       options,
     )
     console.log(`${getResultByStatus(status)} tests for ${browser}`)
