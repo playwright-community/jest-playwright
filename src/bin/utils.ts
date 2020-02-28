@@ -1,13 +1,18 @@
 import { checkBrowserEnv } from '../utils'
 import { BrowserType } from '../constants'
 
-export const checkBrowsers = (browsers?: BrowserType[]): void => {
-  if (!browsers || !browsers.length) {
+export const checkCommand = (
+  browsers: BrowserType[],
+  devices: string[],
+): void => {
+  if (!browsers.length && !devices.length) {
     throw new Error(
-      'You should define browsers with your jest-playwright.config.js',
+      'You should define browsers or devices with your jest-playwright.config.js',
     )
   }
   browsers.forEach(checkBrowserEnv)
+  // TODO Add check for devices
+  // devices.forEach(checkDeviceEnv)
 }
 
 export const getResultByStatus = (status: number | null): string => {
