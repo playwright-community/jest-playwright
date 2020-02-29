@@ -26,7 +26,7 @@ const exec = ({
     if (sequence === PARALLEL) {
       const process = spawn(
         'node',
-        [`node_modules/.bin/jest ${params}`],
+        [`node_modules/jest/bin/jest.js ${params}`],
         options,
       )
       process.on('close', status => {
@@ -36,7 +36,7 @@ const exec = ({
     } else {
       const { status } = spawnSync(
         'node',
-        [`node_modules/.bin/jest ${params}`],
+        [`node_modules/jest/bin/jest.js ${params}`],
         options,
       )
       console.log(`${getResultByStatus(status)} tests for ${browser}`)
