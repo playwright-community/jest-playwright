@@ -1,21 +1,15 @@
-import { checkBrowsers, getResultByStatus, getLogMessage } from './utils'
+import { checkCommand, getResultByStatus, getLogMessage } from './utils'
 import { BrowserType } from '../constants'
 
-describe('checkBrowsers', () => {
-  it('should throw an error without arguments', () => {
-    expect(() => checkBrowsers()).toThrow(
-      'You should define browsers with your jest-playwright.config.js',
+describe('checkCommand', () => {
+  it('should throw an error with empty browsers and devices', () => {
+    expect(() => checkCommand([], [])).toThrow(
+      'You should define browsers or devices with your jest-playwright.config.js',
     )
   })
-  it('should throw an error when passed empty array', () => {
-    expect(() => checkBrowsers([])).toThrow(
-      'You should define browsers with your jest-playwright.config.js',
-    )
-  })
+
   it('should throw an error when passed wrong browser', () => {
-    expect(() =>
-      checkBrowsers(['chromium', 'unknown' as BrowserType]),
-    ).toThrow()
+    expect(() => checkCommand(['unknown' as BrowserType], [])).toThrow()
   })
 })
 
