@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -17,6 +17,7 @@
   "bin": {
     "jest-playwright": "./lib/bin/index.js"
   },
+  "types": "./types/global.d.ts",
   "repository": {
     "url": "https://github.com/mmarkelov/jest-playwright.git",
     "type": "git"

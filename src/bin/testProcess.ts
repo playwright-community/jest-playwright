@@ -1,6 +1,6 @@
 import { spawn, spawnSync, SpawnSyncOptions } from 'child_process'
 import { readConfig } from '../utils'
-import { checkBrowsers } from './utils'
+import { checkBrowsers, getResultByStatus } from './utils'
 import { PARALLEL, BrowserType } from '../constants'
 
 const getSpawnOptions = (browser: BrowserType): SpawnSyncOptions => ({
@@ -21,12 +21,23 @@ const exec = ({
   browser: BrowserType
   params: string[]
 }): void => {
-  // TODO Add messages for browser process
   const options = getSpawnOptions(browser)
   if (sequence === PARALLEL) {
-    spawn('node', [`node_modules/.bin/jest ${params}`], options)
+    const process = spawn(
+      'node',
+      [`node_modules/jest/bin/jest.js ${params}`],
+      options,
+    )
+    process.on('close', status => {
+      console.log(`${getResultByStatus(status)} tests for ${browser}\n\n`)
+    })
   } else {
-    spawnSync('node', [`node_modules/.bin/jest ${params}`], options)
+    const { status } = spawnSync(
+      'node',
+      [`node_modules/jest/bin/jest.js ${params}`],
+      options,
+    )
+    console.log(`${getResultByStatus(status)} tests for ${browser}`)
   }
 }
 

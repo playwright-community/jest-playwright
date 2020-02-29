@@ -9,3 +9,7 @@ export const checkBrowsers = (browsers?: BrowserType[]): void => {
   }
   browsers.forEach(checkBrowserEnv)
 }
+
+export const getResultByStatus = (status: number | null): string => {
+  return status !== 0 ? 'Failed' : 'Passed'
+}
