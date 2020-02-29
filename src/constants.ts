@@ -2,11 +2,19 @@ import { LaunchOptions } from 'playwright-core/lib/server/browserType'
 import { BrowserContextOptions } from 'playwright-core/lib/browserContext'
 import { JestDevServerOptions } from 'jest-dev-server'
 
-export type BrowserType = 'chromium' | 'firefox' | 'webkit'
+export const CORE = 'core'
+export const PLAYWRIGHT = 'playwright'
 
-export const CHROMIUM: BrowserType = 'chromium'
-export const FIREFOX: BrowserType = 'firefox'
-export const WEBKIT: BrowserType = 'webkit'
+export const CHROMIUM = 'chromium'
+export const FIREFOX = 'firefox'
+export const WEBKIT = 'webkit'
+
+export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
+
+export type PlaywrightRequireType =
+  | BrowserType
+  | typeof PLAYWRIGHT
+  | typeof CORE
 
 export const PARALLEL = '--parallel'
 

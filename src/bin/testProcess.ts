@@ -1,7 +1,12 @@
 import { spawn, spawnSync, SpawnSyncOptions } from 'child_process'
-import { checkBrowserEnv, readConfig, readPackage } from '../utils'
+import {
+  checkBrowserEnv,
+  getBrowserType,
+  readConfig,
+  readPackage,
+} from '../utils'
 import { checkCommand, getLogMessage } from './utils'
-import { PARALLEL, BrowserType } from '../constants'
+import { BrowserType, CORE, PARALLEL, PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
   browser: BrowserType,
@@ -47,9 +52,18 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
   const { browsers = [], devices = [] } = await readConfig()
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
+    let browserType: BrowserType
     const browser = await readPackage()
-    // TODO Add check for browser
-    devices.forEach(device => exec({ sequence, browser, device, params }))
+    if (browser === PLAYWRIGHT || browser === CORE) {
+      const config = await readConfig()
+      browserType = getBrowserType(config)
+      checkBrowserEnv(browserType)
+    } else {
+      browserType = browser
+    }
+    devices.forEach(device =>
+      exec({ sequence, browser: browserType, device, params }),
+    )
   }
   if (browsers.length) {
     if (devices.length) {
