@@ -1,4 +1,9 @@
-import { checkCommand, getResultByStatus, getLogMessage } from './utils'
+import {
+  checkCommand,
+  getResultByStatus,
+  getLogMessage,
+  getExitCode,
+} from './utils'
 import { BrowserType } from '../constants'
 
 describe('checkCommand', () => {
@@ -38,5 +43,21 @@ describe('getLogMessage', () => {
     expect(getLogMessage('chromium', 1, 'iPhone 6')).toBe(
       'Failed tests for browser: chromium and device: iPhone 6\n\n',
     )
+  })
+})
+
+describe('getExitCode', () => {
+  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    return undefined as never
+  })
+
+  it('should exit with code 1 for some failed tests', () => {
+    getExitCode([0, 0, 1, null])
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
+
+  it('should exit with code 0 for passed tests', () => {
+    getExitCode([0, 0, 0, 0])
+    expect(mockExit).toHaveBeenCalledWith(0)
   })
 })

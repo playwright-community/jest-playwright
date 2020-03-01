@@ -28,3 +28,12 @@ export const getLogMessage = (
     device ? `and device: ${device}` : ''
   }\n\n`
 }
+
+export const getExitCode = (exitCodes: (number | null)[]): void => {
+  if (exitCodes.every(code => code === 0)) {
+    process.exit(0)
+  } else {
+    console.log('One of the test has not passed successfully')
+    process.exit(1)
+  }
+}

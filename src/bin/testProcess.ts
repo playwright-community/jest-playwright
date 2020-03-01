@@ -5,7 +5,7 @@ import {
   readConfig,
   readPackage,
 } from '../utils'
-import { checkCommand, getLogMessage } from './utils'
+import { checkCommand, getExitCode, getLogMessage } from './utils'
 import { BrowserType, CORE, PARALLEL, PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
@@ -57,6 +57,7 @@ const exec = ({
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
   const { browsers = [], devices = [] } = await readConfig()
+  let exitCodes: (number | null)[] = []
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
     let browserType: BrowserType
@@ -68,19 +69,29 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
     } else {
       browserType = browser
     }
-    devices.forEach(device =>
-      exec({ sequence, browser: browserType, device, params }),
+    exitCodes = await Promise.all(
+      devices.map(device =>
+        exec({ sequence, browser: browserType, device, params }),
+      ),
     )
   }
   if (browsers.length) {
     if (devices.length) {
-      browsers.forEach(browser =>
-        devices.forEach(device => exec({ sequence, browser, device, params })),
+      const multipleCodes = await Promise.all(
+        browsers.map(browser =>
+          Promise.all(
+            devices.map(device => exec({ sequence, browser, device, params })),
+          ),
+        ),
       )
+      exitCodes = multipleCodes.reduce((acc, val) => acc.concat(val), [])
     } else {
-      browsers.forEach(browser => exec({ sequence, browser, params }))
+      exitCodes = await Promise.all(
+        browsers.map(browser => exec({ sequence, browser, params })),
+      )
     }
   }
+  getExitCode(exitCodes)
 }
 
 export default runner
