@@ -122,7 +122,7 @@ module.exports = {
 }
 ```
 
-From version **0.0.12** you can run you tests for multiple devices.
+From version **0.0.13** you can run you tests for multiple devices.
 
 ```javascript
 module.exports = {
