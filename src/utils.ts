@@ -2,25 +2,26 @@ import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
 import {
-  CHROMIUM,
-  FIREFOX,
-  WEBKIT,
-  DEFAULT_CONFIG,
-  Config,
   BrowserType,
+  CHROMIUM,
+  Config,
+  CORE,
+  DEFAULT_CONFIG,
+  FIREFOX,
+  PLAYWRIGHT,
+  PlaywrightRequireType,
+  WEBKIT,
 } from './constants'
 import { BrowserType as PlayWrightBrowserType } from 'playwright'
 
 const exists = promisify(fs.exists)
 
-type PlaywrightRequireType = BrowserType | 'core' | 'playwright'
-
 const checkDependencies = (
   dependencies: Record<string, string>,
 ): PlaywrightRequireType | null => {
   if (!dependencies) return null
-  if (dependencies.playwright) return 'playwright'
-  if (dependencies['playwright-core']) return 'core'
+  if (dependencies.playwright) return PLAYWRIGHT
+  if (dependencies[`playwright-${CORE}`]) return CORE
   if (dependencies[`playwright-${CHROMIUM}`]) return CHROMIUM
   if (dependencies[`playwright-${FIREFOX}`]) return FIREFOX
   if (dependencies[`playwright-${WEBKIT}`]) return WEBKIT
@@ -68,7 +69,7 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
   const packageConfig = await require(absConfigPath)
   // for handling the local tests
   if (packageConfig.name === 'jest-playwright-preset') {
-    return 'core'
+    return CORE
   }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
@@ -83,11 +84,11 @@ export const getPlaywrightInstance = async (
   browserType: BrowserType,
 ): Promise<PlayWrightBrowserType> => {
   const playwrightPackage = await readPackage()
-  if (playwrightPackage === 'playwright') {
+  if (playwrightPackage === PLAYWRIGHT) {
     return require('playwright')[browserType]
   }
-  if (playwrightPackage === 'core') {
-    const browser = require('playwright-core')[browserType]
+  if (playwrightPackage === CORE) {
+    const browser = require(`playwright-${CORE}`)[browserType]
     await browser.downloadBrowserIfNeeded()
     return browser
   }

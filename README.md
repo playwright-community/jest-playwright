@@ -122,6 +122,32 @@ module.exports = {
 }
 ```
 
+From version **0.0.13** you can run you tests for multiple devices.
+
+```javascript
+module.exports = {
+    devices: ["iPhone 6", "Pixel 2"],
+    ...
+}
+```
+
+It will run your tests depending on you playwright package.
+
+- If you are using specific playwright package, it will run test for this specific browser
+- With installed **playwright** package you can define browsers with config:
+
+```javascript
+module.exports = {
+   browsers: ["chromium", "firefox"],
+   devices: ["iPhone 6", "Pixel 2"],
+   ...
+}
+```
+
+If there is no defined browsers in config it will run tests for chromium browser.
+
+[More details](https://github.com/mmarkelov/jest-playwright/pull/54#issuecomment-592514337)
+
 - You must run your tests with **jest-playwright**
 
 ```json

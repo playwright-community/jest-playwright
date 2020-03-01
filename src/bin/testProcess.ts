@@ -1,50 +1,97 @@
 import { spawn, spawnSync, SpawnSyncOptions } from 'child_process'
-import { readConfig } from '../utils'
-import { checkBrowsers, getResultByStatus } from './utils'
-import { PARALLEL, BrowserType } from '../constants'
+import {
+  checkBrowserEnv,
+  getBrowserType,
+  readConfig,
+  readPackage,
+} from '../utils'
+import { checkCommand, getExitCode, getLogMessage } from './utils'
+import { BrowserType, CORE, PARALLEL, PLAYWRIGHT } from '../constants'
 
-const getSpawnOptions = (browser: BrowserType): SpawnSyncOptions => ({
+const getSpawnOptions = (
+  browser: BrowserType,
+  device: string | null,
+): SpawnSyncOptions => ({
   stdio: 'inherit',
   shell: true,
   env: {
     ...process.env,
     BROWSER: browser,
+    ...(device ? { DEVICE: device } : {}),
   },
 })
 
 const exec = ({
   sequence,
   browser,
+  device = null,
   params,
 }: {
   sequence: string
   browser: BrowserType
+  device?: string | null
   params: string[]
-}): void => {
-  const options = getSpawnOptions(browser)
-  if (sequence === PARALLEL) {
-    const process = spawn(
-      'node',
-      [`node_modules/jest/bin/jest.js ${params}`],
-      options,
-    )
-    process.on('close', status => {
-      console.log(`${getResultByStatus(status)} tests for ${browser}\n\n`)
-    })
-  } else {
-    const { status } = spawnSync(
-      'node',
-      [`node_modules/jest/bin/jest.js ${params}`],
-      options,
-    )
-    console.log(`${getResultByStatus(status)} tests for ${browser}`)
-  }
-}
+}): Promise<number | null> =>
+  new Promise(resolve => {
+    const options = getSpawnOptions(browser, device)
+    if (sequence === PARALLEL) {
+      const process = spawn(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
+      process.on('close', status => {
+        console.log(getLogMessage(browser, status, device))
+        resolve(status)
+      })
+    } else {
+      const { status } = spawnSync(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
+      console.log(getLogMessage(browser, status, device))
+      resolve(status)
+    }
+  })
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
-  const { browsers = [] } = await readConfig()
-  checkBrowsers(browsers)
-  browsers.forEach(browser => exec({ sequence, browser, params }))
+  const { browsers = [], devices = [] } = await readConfig()
+  let exitCodes: (number | null)[] = []
+  checkCommand(browsers, devices)
+  if (!browsers.length && devices.length) {
+    let browserType: BrowserType
+    const browser = await readPackage()
+    if (browser === PLAYWRIGHT || browser === CORE) {
+      const config = await readConfig()
+      browserType = getBrowserType(config)
+      checkBrowserEnv(browserType)
+    } else {
+      browserType = browser
+    }
+    exitCodes = await Promise.all(
+      devices.map(device =>
+        exec({ sequence, browser: browserType, device, params }),
+      ),
+    )
+  }
+  if (browsers.length) {
+    if (devices.length) {
+      const multipleCodes = await Promise.all(
+        browsers.map(browser =>
+          Promise.all(
+            devices.map(device => exec({ sequence, browser, device, params })),
+          ),
+        ),
+      )
+      exitCodes = multipleCodes.reduce((acc, val) => acc.concat(val), [])
+    } else {
+      exitCodes = await Promise.all(
+        browsers.map(browser => exec({ sequence, browser, params })),
+      )
+    }
+  }
+  getExitCode(exitCodes)
 }
 
 export default runner
