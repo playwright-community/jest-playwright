@@ -20,31 +20,41 @@ const exec = ({
   sequence: string
   browser: BrowserType
   params: string[]
-}): void => {
-  const options = getSpawnOptions(browser)
-  if (sequence === PARALLEL) {
-    const process = spawn(
-      'node',
-      [`node_modules/jest/bin/jest.js ${params}`],
-      options,
-    )
-    process.on('close', status => {
-      console.log(`${getResultByStatus(status)} tests for ${browser}\n\n`)
-    })
-  } else {
-    const { status } = spawnSync(
-      'node',
-      [`node_modules/jest/bin/jest.js ${params}`],
-      options,
-    )
-    console.log(`${getResultByStatus(status)} tests for ${browser}`)
-  }
-}
+}): Promise<number | null> =>
+  new Promise(resolve => {
+    const options = getSpawnOptions(browser)
+    if (sequence === PARALLEL) {
+      const process = spawn(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
+      process.on('close', status => {
+        console.log(`${getResultByStatus(status)} tests for ${browser}\n\n`)
+        resolve(status)
+      })
+    } else {
+      const { status } = spawnSync(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
+      console.log(`${getResultByStatus(status)} tests for ${browser}`)
+      resolve(status)
+    }
+  })
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
   const { browsers = [] } = await readConfig()
   checkBrowsers(browsers)
-  browsers.forEach(browser => exec({ sequence, browser, params }))
+  const exitCodes = await Promise.all(
+    browsers.map(browser => exec({ sequence, browser, params })),
+  )
+  if (exitCodes.every(code => code === 0)) {
+    process.exit(0)
+  } else {
+    process.exit(1)
+  }
 }
 
 export default runner
