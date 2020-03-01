@@ -31,22 +31,29 @@ const exec = ({
   browser: BrowserType
   device?: string | null
   params: string[]
-}): void => {
-  const options = getSpawnOptions(browser, device)
-  if (sequence === PARALLEL) {
-    const process = spawn('node', [`node_modules/.bin/jest ${params}`], options)
-    process.on('close', status => {
+}): Promise<number | null> =>
+  new Promise(resolve => {
+    const options = getSpawnOptions(browser, device)
+    if (sequence === PARALLEL) {
+      const process = spawn(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
+      process.on('close', status => {
+        console.log(getLogMessage(browser, status, device))
+        resolve(status)
+      })
+    } else {
+      const { status } = spawnSync(
+        'node',
+        [`node_modules/jest/bin/jest.js ${params}`],
+        options,
+      )
       console.log(getLogMessage(browser, status, device))
-    })
-  } else {
-    const { status } = spawnSync(
-      'node',
-      [`node_modules/.bin/jest ${params}`],
-      options,
-    )
-    console.log(getLogMessage(browser, status, device))
-  }
-}
+      resolve(status)
+    }
+  })
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
   const { browsers = [], devices = [] } = await readConfig()
