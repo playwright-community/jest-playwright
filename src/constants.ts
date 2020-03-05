@@ -11,6 +11,11 @@ export const WEBKIT = 'webkit'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
+export type SelectorType = {
+  script: string | Function | { path?: string; content?: string }
+  name: string
+}
+
 export type PlaywrightRequireType =
   | BrowserType
   | typeof PLAYWRIGHT
@@ -27,6 +32,7 @@ export interface Config {
   device?: string
   devices?: string[]
   server?: JestDevServerOptions
+  selectors?: SelectorType[]
 }
 
 export const DEFAULT_CONFIG: Config = {
