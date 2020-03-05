@@ -76,6 +76,23 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `webkit` Each test runs Webkit.
 - `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
 - `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
+- `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
+  Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
+  `jest-playwright.config.js`:
+
+```javascript
+const {
+	selectorEngine,
+} = require('query-selector-shadow-dom/plugins/playwright');
+
+module.exports = {
+	selectors: [
+		{name: 'shadow', script: selectorEngine}
+	],
+	...
+}
+
+```
 
 **Note**:
 
