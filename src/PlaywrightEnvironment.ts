@@ -63,6 +63,11 @@ const getBrowserPerProcess = async (
 }
 
 class PlaywrightEnvironment extends NodeEnvironment {
+  private _config: JestConfig.ProjectConfig
+  constructor(config: JestConfig.ProjectConfig) {
+    super(config)
+    this._config = config
+  }
   // Jest is not available here, so we have to reverse engineer
   // the setTimeout function, see https://github.com/facebook/jest/blob/v23.1.0/packages/jest-runtime/src/index.js#L823
   setTimeout(timeout: number): void {
@@ -79,7 +84,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
 
   async setup(): Promise<void> {
     resetBrowserCloseWatchdog()
-    const config = await readConfig()
+    const config = await readConfig(this._config.rootDir)
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { context, server, selectors } = config
