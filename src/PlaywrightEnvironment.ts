@@ -82,9 +82,12 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig()
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { context, server } = config
+    const { context, server, selectors } = config
     const device = getDeviceType(config)
-    const playwrightInstance = await getPlaywrightInstance(browserType)
+    const playwrightInstance = await getPlaywrightInstance(
+      browserType,
+      selectors,
+    )
     let contextOptions = context
 
     if (server) {

@@ -10,6 +10,7 @@ import {
   FIREFOX,
   PLAYWRIGHT,
   PlaywrightRequireType,
+  SelectorType,
   WEBKIT,
 } from './constants'
 import { BrowserType as PlayWrightBrowserType } from 'playwright'
@@ -82,10 +83,20 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
 
 export const getPlaywrightInstance = async (
   browserType: BrowserType,
+  selectors?: SelectorType[],
 ): Promise<PlayWrightBrowserType> => {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === PLAYWRIGHT) {
-    return require('playwright')[browserType]
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const playwright = require('playwright')
+    if (selectors) {
+      await Promise.all(
+        selectors.map(({ engine, name }) =>
+          playwright.selectors.register(engine, { name }),
+        ),
+      )
+    }
+    return playwright[browserType]
   }
   if (playwrightPackage === CORE) {
     const browser = require(`playwright-${CORE}`)[browserType]
