@@ -17,7 +17,7 @@ beforeEach(() => {
 })
 
 describe('readConfig', () => {
-  it('should return the default configuration if there was no seperate configuration specified', async () => {
+  it('should return the default configuration if there was no separate configuration specified', async () => {
     const config = await readConfig()
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })

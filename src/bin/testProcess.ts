@@ -56,14 +56,18 @@ const exec = ({
   })
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
-  const { browsers = [], devices = [] } = await readConfig()
+  // TODO Work only if we pass config through package.json
+  const rootDir = process.env.npm_package_jest_rootDir
+    ? `${process.cwd()}/${process.env.npm_package_jest_rootDir}/`
+    : process.cwd()
+  const config = await readConfig(rootDir)
+  const { browsers = [], devices = [] } = config
   let exitCodes: (number | null)[] = []
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
     let browserType: BrowserType
     const browser = await readPackage()
     if (browser === PLAYWRIGHT || browser === CORE) {
-      const config = await readConfig()
       browserType = getBrowserType(config)
       checkBrowserEnv(browserType)
     } else {
