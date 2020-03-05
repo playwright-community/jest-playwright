@@ -12,7 +12,7 @@ export const WEBKIT = 'webkit'
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
 export type SelectorType = {
-  engine: () => void
+  script: string | Function | { path?: string; content?: string }
   name: string
 }
 
