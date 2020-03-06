@@ -1,14 +1,17 @@
 import fs from 'fs'
 import path from 'path'
-import {
+import * as Utils from './utils'
+import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+
+const {
   readConfig,
   getBrowserType,
   getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
   readPackage,
-} from './utils'
-import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+  getPlaywrightInstance,
+} = Utils
 
 jest.spyOn(fs, 'exists')
 
@@ -219,5 +222,66 @@ describe('readPackage', () => {
 
     const playwright = await readPackage()
     expect(playwright).toEqual('core')
+  })
+})
+
+describe('getPlaywrightInstance', () => {
+  const spy = jest.spyOn(Utils, 'readPackage')
+
+  it('should return specified instance from playwright package', async () => {
+    spy.mockResolvedValue('playwright')
+
+    jest.doMock('playwright', () => ({
+      firefox: 'firefox',
+    }))
+
+    const instance = await getPlaywrightInstance('firefox')
+    expect(instance).toEqual('firefox')
+  })
+
+  it('should register passed selectors for playwright package', async () => {
+    spy.mockResolvedValue('playwright')
+
+    const register = jest.fn().mockResolvedValue('registered')
+
+    jest.doMock('playwright', () => ({
+      firefox: 'firefox',
+      selectors: { register },
+    }))
+
+    const selectors = [{ name: 'test', script: 'test' }]
+
+    const instance = await getPlaywrightInstance('firefox', selectors)
+    expect(register).toHaveBeenLastCalledWith('test', { name: 'test' })
+    expect(instance).toEqual('firefox')
+  })
+
+  it('should return specified instance from specified playwright package', async () => {
+    spy.mockResolvedValue('chromium')
+
+    jest.doMock('playwright-chromium', () => ({
+      chromium: 'chromium',
+    }))
+
+    const instance = await getPlaywrightInstance('chromium')
+    expect(instance).toEqual('chromium')
+  })
+
+  it('should return specified instance from playwright-core package and download if it is needed', async () => {
+    spy.mockResolvedValue('core')
+
+    const downloadBrowserIfNeeded = jest.fn().mockResolvedValue('downloaded')
+
+    const webkit = {
+      downloadBrowserIfNeeded,
+    }
+
+    jest.doMock('playwright-core', () => ({
+      webkit,
+    }))
+
+    const instance = await getPlaywrightInstance('webkit')
+    expect(downloadBrowserIfNeeded).toHaveBeenCalled()
+    expect(instance).toEqual(webkit)
   })
 })
