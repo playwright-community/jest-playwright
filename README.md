@@ -174,6 +174,26 @@ If there is no defined browsers in config it will run tests for chromium browser
 "test:parallel": "jest-playwright --parallel"
 ```
 
+## Known issues
+
+### Error reporting with Jest
+
+If you face into error messages like `UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.` or
+
+```
+Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
+```
+
+and your Jest error reporting will only show that an entire test (`it()` function) has failed, then you need to increase the Jest timeout because the Playwright timeout is greater than the Jest timeout. So Jest in the end will simply stop the execution and no verbose (which exact line) error reporting can be generated.
+
+To fix this behavior simply call
+
+```javascript
+jest.setTimeout(35 * 1000);
+```
+
+in your tests at the top. (30 seconds is the default Playwright timeout for waiting for an specific element.)
+
 ## Inspiration
 
 Thanks to [Smooth Code](https://github.com/smooth-code) for great [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
