@@ -196,7 +196,7 @@ in your tests at the top. (30 seconds is the default Playwright timeout for wait
 
 ### New Browser instance for each test
 
-If for your individaal tests a new entire browser instance spins up each time and it won't be reused, then you probably run them in parallel. If you run them in a syncronous way with the `--runInBand` CLI option for Jest, then the same browser instance will be re-used and this should fix the issue.
+If for your individual tests a new entire browser instance spins up each time and it won't be reused, then you probably run them in parallel. If you run them in a synchronous way with the `--runInBand` CLI option for Jest, then the same browser instance will be re-used and this should fix the issue.
 
 ## Inspiration
 
