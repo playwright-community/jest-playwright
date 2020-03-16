@@ -15,18 +15,11 @@ export const checkCommand = (
   // devices.forEach(checkDeviceEnv)
 }
 
-export const getResultByStatus = (status: number | null): string => {
-  return status !== 0 ? 'Failed' : 'Passed'
-}
-
-export const getLogMessage = (
+export const getDisplayName = (
   browser: BrowserType,
-  status: number | null,
   device: string | null,
 ): string => {
-  return `${getResultByStatus(status)} tests for browser: ${browser} ${
-    device ? `and device: ${device}` : ''
-  }\n\n`
+  return `browser: ${browser}${device ? ` device: ${device}` : ''}`
 }
 
 export const getExitCode = (exitCodes: (number | null)[]): void => {

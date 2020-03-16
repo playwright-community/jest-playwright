@@ -30,6 +30,19 @@ const resetBrowserCloseWatchdog = (): void => {
   if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
 }
 
+const logMessage = ({
+  message,
+  action,
+}: {
+  message: string
+  action: string
+}): void => {
+  console.log('')
+  console.error(message)
+  console.error(`\n☝️ You ${action} in jest-playwright.config.js`)
+  process.exit(1)
+}
+
 // Since there are no per-worker hooks, we have to setup a timer to
 // close the browser.
 //
@@ -68,19 +81,6 @@ class PlaywrightEnvironment extends NodeEnvironment {
     super(config)
     this._config = config
   }
-  // Jest is not available here, so we have to reverse engineer
-  // the setTimeout function, see https://github.com/facebook/jest/blob/v23.1.0/packages/jest-runtime/src/index.js#L823
-  setTimeout(timeout: number): void {
-    if (this.global.jasmine) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      this.global.jasmine.DEFAULT_TIMEOUT_INTERVAL = timeout
-    } else {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      this.global[Symbol.for('TEST_TIMEOUT_SYMBOL')] = timeout
-    }
-  }
 
   async setup(): Promise<void> {
     resetBrowserCloseWatchdog()
@@ -104,20 +104,16 @@ class PlaywrightEnvironment extends NodeEnvironment {
         await setup(config.server)
       } catch (error) {
         if (error.code === ERROR_TIMEOUT) {
-          console.log('')
-          console.error(error.message)
-          console.error(
-            `\n☝️ You can set "server.launchTimeout" in jest-playwright.config.js`,
-          )
-          process.exit(1)
+          logMessage({
+            message: error.message,
+            action: 'can set "server.launchTimeout"',
+          })
         }
         if (error.code === ERROR_NO_COMMAND) {
-          console.log('')
-          console.error(error.message)
-          console.error(
-            `\n☝️ You must set "server.command" in jest-playwright.config.js`,
-          )
-          process.exit(1)
+          logMessage({
+            message: error.message,
+            action: 'must set "server.command"',
+          })
         }
         throw error
       }
@@ -135,9 +131,6 @@ class PlaywrightEnvironment extends NodeEnvironment {
     this.global.page.on('pageerror', handleError)
     this.global.jestPlaywright = {
       debug: async (): Promise<void> => {
-        // eslint-disable-next-line no-eval
-        // Set timeout to 4 days
-        this.setTimeout(345600000)
         // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
         await this.global.page.evaluate(() => {
           // eslint-disable-next-line no-debugger
