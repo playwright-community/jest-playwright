@@ -184,17 +184,15 @@ If you face into error messages like `UnhandledPromiseRejectionWarning: Error: P
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
 
-and your Jest error reporting will only show that an entire test (`it()`) has failed, then you need to increase the Jest timeout because Playwright timeout > Jest timeoout and Jest in the end will simply stop the execution so no verbose (which exact line) error reporting can be shown.
+and your Jest error reporting will only show that an entire test (`it()` function) has failed, then you need to increase the Jest timeout because the Playwright timeout is greater than the Jest timeout. So Jest in the end will simply stop the execution and no verbose (which exact line) error reporting can be generated.
+
 To fix this behavior simply call
 
 ```javascript
 jest.setTimeout(35 * 1000);
 ```
 
-in your tests at the top.
-
-
-
+in your tests at the top. (30 seconds is the default Playwright timeout for waiting for an specific element.)
 
 ## Inspiration
 
