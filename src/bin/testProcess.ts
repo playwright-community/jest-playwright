@@ -5,7 +5,7 @@ import {
   readConfig,
   readPackage,
 } from '../utils'
-import { checkCommand, getExitCode, getLogMessage } from './utils'
+import { checkCommand, getDisplayName, getExitCode } from './utils'
 import { BrowserType, CORE, PARALLEL, PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
@@ -34,23 +34,26 @@ const exec = ({
 }): Promise<number | null> =>
   new Promise(resolve => {
     const options = getSpawnOptions(browser, device)
+    const displayName = getDisplayName(browser, device)
     if (sequence === PARALLEL) {
       const process = spawn(
         'node',
-        [`node_modules/jest/bin/jest.js ${params}`],
+        [
+          `node_modules/jest/bin/jest.js --displayName="${displayName}" ${params}`,
+        ],
         options,
       )
       process.on('close', status => {
-        console.log(getLogMessage(browser, status, device))
         resolve(status)
       })
     } else {
       const { status } = spawnSync(
         'node',
-        [`node_modules/jest/bin/jest.js ${params}`],
+        [
+          `node_modules/jest/bin/jest.js --displayName="${displayName}" ${params}`,
+        ],
         options,
       )
-      console.log(getLogMessage(browser, status, device))
       resolve(status)
     }
   })

@@ -1,9 +1,4 @@
-import {
-  checkCommand,
-  getResultByStatus,
-  getLogMessage,
-  getExitCode,
-} from './utils'
+import { checkCommand, getDisplayName, getExitCode } from './utils'
 import { BrowserType } from '../constants'
 
 describe('checkCommand', () => {
@@ -18,30 +13,14 @@ describe('checkCommand', () => {
   })
 })
 
-describe('getResultByStatus', () => {
-  it('should return "Failed" if passed null', () => {
-    expect(getResultByStatus(null)).toBe('Failed')
+describe('getDisplayName', () => {
+  it('should return right display name for passed browser', () => {
+    expect(getDisplayName('chromium', null)).toBe('browser: chromium')
   })
 
-  it('should return "Failed" if passed code 1', () => {
-    expect(getResultByStatus(1)).toBe('Failed')
-  })
-
-  it('should return "Passed" if passed code 0', () => {
-    expect(getResultByStatus(0)).toBe('Passed')
-  })
-})
-
-describe('getLogMessage', () => {
-  it('should return right log', () => {
-    expect(getLogMessage('chromium', 0, null)).toBe(
-      'Passed tests for browser: chromium \n\n',
-    )
-  })
-
-  it('should return right log', () => {
-    expect(getLogMessage('chromium', 1, 'iPhone 6')).toBe(
-      'Failed tests for browser: chromium and device: iPhone 6\n\n',
+  it('should return right display name for passed browser and device', () => {
+    expect(getDisplayName('chromium', 'iPhone 6')).toBe(
+      'browser: chromium device: iPhone 6',
     )
   })
 })
