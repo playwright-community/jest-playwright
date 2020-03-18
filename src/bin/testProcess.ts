@@ -63,7 +63,7 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
   const rootDir = `${process.cwd()}/${process.env.npm_package_jest_rootDir ||
     ''}/`
   const config = await readConfig(rootDir)
-  const { devices = [] } = config
+  const { devices = [], browser } = config
   let browsers = config.browsers
   if (!browsers) {
     browsers = browser ? [browser] : []
