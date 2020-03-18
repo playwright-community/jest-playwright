@@ -1,4 +1,5 @@
-import { Page, Browser, BrowserContext } from 'playwright-core'
+import { Page, BrowserContext } from 'playwright-core'
+import { BrowserType } from '../src/constants'
 
 interface JestPlaywright {
   /**
@@ -17,7 +18,7 @@ interface JestPlaywright {
 
 declare global {
   const page: Page
-  const browser: Browser
+  const browser: BrowserType
   const context: BrowserContext
   const jestPlaywright: JestPlaywright
 }

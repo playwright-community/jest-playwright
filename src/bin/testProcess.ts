@@ -60,11 +60,14 @@ const exec = ({
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
   // TODO Work only if we pass config through package.json
-  const rootDir = process.env.npm_package_jest_rootDir
-    ? `${process.cwd()}/${process.env.npm_package_jest_rootDir}/`
-    : process.cwd()
+  const rootDir = `${process.cwd()}/${process.env.npm_package_jest_rootDir ||
+    ''}/`
   const config = await readConfig(rootDir)
-  const { browsers = [], devices = [] } = config
+  const { devices = [] } = config
+  let browsers = config.browsers
+  if (!browsers) {
+    browsers = browser ? [browser] : []
+  }
   let exitCodes: (number | null)[] = []
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
