@@ -87,7 +87,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig(this._config.rootDir)
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { context, server, selectors } = config
+    const { context, server, selectors, browsers } = config
     const device = getDeviceType(config)
     const playwrightInstance = await getPlaywrightInstance(
       browserType,
@@ -129,6 +129,59 @@ class PlaywrightEnvironment extends NodeEnvironment {
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     this.global.page.on('pageerror', handleError)
+    if (browsers) {
+      // Browsers
+      const playwrightInstances = await Promise.all(
+        browsers.map(browser => getPlaywrightInstance(browser, selectors)),
+      )
+      await Promise.all(
+        browsers.map((browser, index) =>
+          getBrowserPerProcess(playwrightInstances[index], {
+            ...config,
+            browser,
+          }),
+        ),
+      ).then(data =>
+        data.forEach((item, index) => {
+          // console.log(item)
+          this.global[`${browsers[index]}Browser`] = item
+        }),
+      )
+      // Contexts
+      await Promise.all(
+        browsers.map(browser =>
+          this.global[`${browser}Browser`].newContext(contextOptions),
+        ),
+      ).then(data =>
+        data.forEach((item, index) => {
+          this.global[`${browsers[index]}Context`] = item
+        }),
+      )
+      // Pages
+      await Promise.all(
+        browsers.map(browser => this.global[`${browser}Context`].newPage()),
+      ).then(data =>
+        data.forEach((item, index) => {
+          this.global[`${browsers[index]}Page`] = item
+          this.global[`${browsers[index]}Page`].on('pageerror', handleError)
+        }),
+      )
+    }
+    const callAsync = async (key, ...args) =>
+      await Promise.all(
+        browsers.map(browser =>
+          this.global[`${browser}Page`][key].call(
+            this.global[`${browser}Page`],
+            ...args,
+          ),
+        ),
+      )
+    this.global.pages = new Proxy(
+      {},
+      {
+        get: (obj, key) => (...args) => callAsync(key, ...args),
+      },
+    )
     this.global.jestPlaywright = {
       debug: async (): Promise<void> => {
         // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
