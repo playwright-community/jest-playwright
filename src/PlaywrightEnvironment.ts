@@ -10,7 +10,7 @@ import {
   readConfig,
 } from './utils'
 import { Config, CHROMIUM } from './constants'
-import { Browser, BrowserType } from 'playwright'
+import { Browser, BrowserType, Page } from 'playwright'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -94,51 +94,36 @@ class PlaywrightEnvironment extends NodeEnvironment {
         browsers.map(browser => getPlaywrightInstance(browser, selectors)),
       )
       // Browsers
-      await Promise.all(
+      const playwrightBrowsers = await Promise.all(
         browsers.map((browser, index) =>
           getBrowserPerProcess(playwrightInstances[index], {
             ...config,
             browser,
           }),
         ),
-      ).then(data =>
-        data.forEach((item, index) => {
-          this.global[`${browsers[index]}Browser`] = item
-        }),
       )
       // Contexts
-      await Promise.all(
-        browsers.map(browser =>
-          this.global[`${browser}Browser`].newContext(context),
+      const contexts = await Promise.all(
+        browsers.map((browser, index) =>
+          playwrightBrowsers[index].newContext(context),
         ),
-      ).then(data =>
-        data.forEach((item, index) => {
-          this.global[`${browsers[index]}Context`] = item
-        }),
       )
       // Pages
-      await Promise.all(
-        browsers.map(browser => this.global[`${browser}Context`].newPage()),
-      ).then(data =>
-        data.forEach((item, index) => {
-          this.global[`${browsers[index]}Page`] = item
-          this.global[`${browsers[index]}Page`].on('pageerror', handleError)
-        }),
+      const pages = await Promise.all(
+        browsers.map((browser, index) => contexts[index].newPage()),
       )
-      const callAsync = async (key: string | number | symbol, ...args: any) =>
+      const callAsync = async (key: keyof Page, ...args: any) =>
         await Promise.all(
-          browsers.map(browser =>
-            this.global[`${browser}Page`][key].call(
-              this.global[`${browser}Page`],
-              ...args,
-            ),
+          browsers.map((browser, index) =>
+            pages[index][key].call(pages[index], ...args),
           ),
         )
       // Todo add global browser, context
       this.global.page = new Proxy(
         {},
         {
-          get: (obj, key) => (...args: any) => callAsync(key, ...args),
+          get: (obj, key: keyof Page) => (...args: any) =>
+            callAsync(key, ...args),
         },
       )
     } else {
