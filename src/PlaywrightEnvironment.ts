@@ -10,7 +10,7 @@ import {
   readConfig,
 } from './utils'
 import { Config, CHROMIUM } from './constants'
-import { Browser, BrowserType, Page } from 'playwright'
+import { Browser, BrowserContext, BrowserType, Page } from 'playwright'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -112,20 +112,26 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const pages = await Promise.all(
         browsers.map((browser, index) => contexts[index].newPage()),
       )
-      const callAsync = async (key: keyof Page, ...args: any) =>
+      // TODO Improve types
+      const callAsync = async (instances: any, key: any, ...args: any) =>
         await Promise.all(
           browsers.map((browser, index) =>
-            pages[index][key].call(pages[index], ...args),
+            instances[index][key].call(pages[index], ...args),
           ),
         )
-      // Todo add global browser, context
-      this.global.page = new Proxy(
-        {},
-        {
-          get: (obj, key: keyof Page) => (...args: any) =>
-            callAsync(key, ...args),
-        },
-      )
+
+      const proxyWrapper = <T>(instances: T) =>
+        new Proxy(
+          {},
+          {
+            get: (obj, key) => (...args: any) =>
+              callAsync(instances, key, ...args),
+          },
+        )
+
+      this.global.browser = proxyWrapper<Browser[]>(playwrightBrowsers)
+      this.global.context = proxyWrapper<BrowserContext[]>(contexts)
+      this.global.page = proxyWrapper<Page[]>(pages)
     } else {
       // Browsers are not defined
       const browserType = getBrowserType(config)
@@ -148,8 +154,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
       )
       this.global.context = await this.global.browser.newContext(contextOptions)
       this.global.page = await this.global.context.newPage()
-      this.global.page.on('pageerror', handleError)
     }
+
+    this.global.page.on('pageerror', handleError)
 
     if (server) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
