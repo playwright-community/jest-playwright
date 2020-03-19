@@ -118,7 +118,13 @@ class PlaywrightEnvironment extends NodeEnvironment {
           browsers.map((browser, index) =>
             instances[index][key].call(pages[index], ...args),
           ),
-        )
+        ).then(data => {
+          const result: { [key: string]: Page } = {}
+          data.forEach((item, index) => {
+            result[browsers[index]] = item
+          })
+          return result
+        })
 
       const proxyWrapper = <T>(instances: T) =>
         new Proxy(
