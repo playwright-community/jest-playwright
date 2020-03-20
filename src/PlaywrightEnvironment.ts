@@ -7,6 +7,7 @@ import {
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
+  getPlaywrightDevices,
   readConfig,
 } from './utils'
 import { Config, CHROMIUM } from './constants'
@@ -119,10 +120,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
     }
 
-    const availableDevices = Object.keys(playwrightInstance.devices)
+    const availableDevices = getPlaywrightDevices()
     if (device) {
-      checkDeviceEnv(device, availableDevices)
-      const { viewport, userAgent } = playwrightInstance.devices[device]
+      checkDeviceEnv(device, Object.keys(availableDevices))
+      const { viewport, userAgent } = availableDevices[device]
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)

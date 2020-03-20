@@ -67,7 +67,7 @@
     "jest": "^25.1.0",
     "jest-environment-node": "^25.1.0",
     "lint-staged": "^10.0.7",
-    "playwright": ">=0.11.1",
+    "playwright": "^0.11.1-next.1584655833455",
     "playwright-chromium": ">=0.11.0",
     "playwright-core": ">=0.11.0",
     "playwright-firefox": ">=0.11.0",

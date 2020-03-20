@@ -14,6 +14,7 @@ import {
   WEBKIT,
 } from './constants'
 import { BrowserType as PlayWrightBrowserType } from 'playwright'
+import { Devices } from 'playwright-core/lib/types'
 
 const exists = promisify(fs.exists)
 
@@ -104,6 +105,10 @@ export const getPlaywrightInstance = async (
     return browser
   }
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
+}
+
+export const getPlaywrightDevices = (): Devices => {
+  return require('playwright').devices
 }
 
 export const readConfig = async (
