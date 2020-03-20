@@ -116,7 +116,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const callAsync = async (instances: any, key: any, ...args: any) =>
         await Promise.all(
           browsers.map((browser, index) =>
-            instances[index][key].call(pages[index], ...args),
+            instances[index][key].call(instances[index], ...args),
           ),
         ).then(data => {
           const result: { [key: string]: Page } = {}
