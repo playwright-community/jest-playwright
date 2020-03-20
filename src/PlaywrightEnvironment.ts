@@ -126,18 +126,24 @@ class PlaywrightEnvironment extends NodeEnvironment {
           return result
         })
 
-      const proxyWrapper = <T>(instances: T) =>
+      const proxyWrapper = <T>(instances: T[]) =>
         new Proxy(
           {},
           {
-            get: (obj, key) => (...args: any) =>
-              callAsync(instances, key, ...args),
+            get: (obj, key) => {
+              const index = browsers.findIndex(item => item === key)
+              if (index > -1) {
+                return instances[index]
+              } else {
+                return (...args: any) => callAsync(instances, key, ...args)
+              }
+            },
           },
         )
 
-      this.global.browser = proxyWrapper<Browser[]>(playwrightBrowsers)
-      this.global.context = proxyWrapper<BrowserContext[]>(contexts)
-      this.global.page = proxyWrapper<Page[]>(pages)
+      this.global.browser = proxyWrapper<Browser>(playwrightBrowsers)
+      this.global.context = proxyWrapper<BrowserContext>(contexts)
+      this.global.page = proxyWrapper<Page>(pages)
     } else {
       // Browsers are not defined
       const browserType = getBrowserType(config)
