@@ -144,6 +144,27 @@ class PlaywrightEnvironment extends NodeEnvironment {
       this.global.browser = proxyWrapper<Browser>(playwrightBrowsers)
       this.global.context = proxyWrapper<BrowserContext>(contexts)
       this.global.page = proxyWrapper<Page>(pages)
+      // TODO Types
+      this.global.expectAllBrowsers = (input: any) =>
+        new Proxy(
+          {},
+          {
+            get: (obj, key) => {
+              const expect = this.global.expect
+              return (...args: any) => {
+                browsers.forEach(browser => {
+                  try {
+                    return expect(input[browser])[key](...args)
+                  } catch (e) {
+                    // TODO Think about error message
+                    console.log('Failed test for', browser)
+                    return expect(input[browser])[key](...args)
+                  }
+                })
+              }
+            },
+          },
+        )
     } else {
       // Browsers are not defined
       const browserType = getBrowserType(config)
