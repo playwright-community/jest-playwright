@@ -1,6 +1,9 @@
 /* eslint-disable no-console */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
+import { Browser, BrowserContext, BrowserType, Page } from 'playwright'
+import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
+
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -10,7 +13,6 @@ import {
   readConfig,
 } from './utils'
 import { Config, CHROMIUM } from './constants'
-import { Browser, BrowserContext, BrowserType, Page } from 'playwright'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -85,7 +87,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup(): Promise<void> {
     resetBrowserCloseWatchdog()
     const config = await readConfig(this._config.rootDir)
-    const { context, server, selectors, browsers } = config
+    const { context, server, selectors, browsers, devices } = config
     // Two possible cases
     // browsers are defined
     if (browsers && browsers.length) {
@@ -103,13 +105,44 @@ class PlaywrightEnvironment extends NodeEnvironment {
         ),
       )
       // Contexts
+      // {
+      //   firefox: {
+      //     'iPhone 6': BrowserContext,
+      //     'Pixel 2': BrowserContext
+      //   }
+      // }
       const contexts = await Promise.all(
-        browsers.map((browser, index) =>
-          playwrightBrowsers[index].newContext(context),
-        ),
-      )
+        browsers.map(async (browser, index) => {
+          // return playwrightBrowsers[index].newContext(context)
+          if (devices && devices.length) {
+            return await Promise.all(
+              devices.map(device =>
+                playwrightBrowsers[index].newContext(DeviceDescriptors[device]),
+              ),
+            ).then(data => {
+              const result = {}
+              data.forEach((item, index) => {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+                // @ts-ignore
+                result[devices[index]] = item
+              })
+              return result
+            })
+          }
+        }),
+      ).then(data => {
+        const result = {}
+        data.forEach((item, index) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          result[browsers[index]] = item
+        })
+        return result
+      })
       // Pages
       const pages = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
         browsers.map((browser, index) => contexts[index].newPage()),
       )
       // TODO Improve types
@@ -151,7 +184,11 @@ class PlaywrightEnvironment extends NodeEnvironment {
         )
 
       this.global.browser = proxyWrapper<Browser>(playwrightBrowsers)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
       this.global.context = proxyWrapper<BrowserContext>(contexts)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
       this.global.page = proxyWrapper<Page>(pages)
       // TODO Types
       this.global.expectAllBrowsers = (input: any) =>
