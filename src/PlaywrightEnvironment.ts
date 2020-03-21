@@ -113,13 +113,21 @@ class PlaywrightEnvironment extends NodeEnvironment {
         browsers.map((browser, index) => contexts[index].newPage()),
       )
       // TODO Improve types
-      const callAsync = async (instances: any, key: any, ...args: any) =>
+      const callAsync = async <T>(instances: T[], key: keyof T, ...args: any) =>
         await Promise.all(
-          browsers.map((browser, index) =>
-            instances[index][key].call(instances[index], ...args),
-          ),
+          browsers.map((browser, index) => {
+            const browserInstance: T = instances[index]
+            if (typeof browserInstance[key] === 'function') {
+              return ((browserInstance[key] as unknown) as Function).call(
+                browserInstance,
+                ...args,
+              )
+            } else {
+              return browserInstance[key]
+            }
+          }),
         ).then(data => {
-          const result: { [key: string]: Page } = {}
+          const result: { [key: string]: T } = {}
           data.forEach((item, index) => {
             result[browsers[index]] = item
           })
@@ -135,7 +143,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
               if (index > -1) {
                 return instances[index]
               } else {
-                return (...args: any) => callAsync(instances, key, ...args)
+                return (...args: any) =>
+                  callAsync<T>(instances, key as keyof T, ...args)
               }
             },
           },
