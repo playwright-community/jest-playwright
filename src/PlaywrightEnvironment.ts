@@ -106,7 +106,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       // Utils
       type InitializerProps = {
         browser: BrowserType
-        device: string
+        device?: string
       }
 
       type RootProxy = {
@@ -132,6 +132,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
           return await Promise.all(
             devices.map(device => initializer({ browser, device })),
           ).then(data => getResult(data, devices))
+        } else {
+          return initializer({ browser })
         }
       }
 
@@ -146,22 +148,46 @@ class PlaywrightEnvironment extends NodeEnvironment {
       ).then(data => getResult(data, browsers))
 
       // Contexts
-      const contextInitializer = ({ browser, device }: InitializerProps) =>
+      const contextInitializer = ({ browser, device }: InitializerProps) => {
+        let contextOptions = {}
+        if (device) {
+          const { viewport, userAgent } = DeviceDescriptors[device]
+          contextOptions = { viewport, userAgent }
+        }
         // @ts-ignore
-        playwrightBrowsers[browser].newContext(DeviceDescriptors[device])
+        return playwrightBrowsers[browser].newContext(contextOptions)
+      }
 
       const contexts = await Promise.all(
         browsers.map(browser => initialize(browser, contextInitializer)),
       ).then(data => getResult(data, browsers))
 
       // Pages
-      const pageInitializer = ({ browser, device }: InitializerProps) =>
+      const pageInitializer = ({ browser, device }: InitializerProps) => {
         // @ts-ignore
-        contexts[browser][device].newPage()
+        const instance = contexts[browser]
+        return device ? instance[device].newPage() : instance.newPage()
+      }
 
       const pages = await Promise.all(
         browsers.map(browser => initialize(browser, pageInitializer)),
       ).then(data => getResult(data, browsers))
+
+      const checker = ({ instance, key, args }: any) => {
+        // @ts-ignore
+        if (typeof instance[key] === 'function') {
+          // @ts-ignore
+          return ((instance[key] as unknown) as Function).call(
+            // @ts-ignore
+            instance,
+            ...args,
+          )
+        } else {
+          // @ts-ignore
+          return instance[key]
+        }
+      }
+
       // TODO Improve types
       const callAsync = async <T>(
         instances: RootProxy,
@@ -175,21 +201,12 @@ class PlaywrightEnvironment extends NodeEnvironment {
               return await Promise.all(
                 devices.map(device => {
                   // @ts-ignore
-                  if (typeof browserInstance[device][key] === 'function') {
-                    // @ts-ignore
-                    return ((browserInstance[device][
-                      key
-                    ] as unknown) as Function).call(
-                      // @ts-ignore
-                      browserInstance[device],
-                      ...args,
-                    )
-                  } else {
-                    // @ts-ignore
-                    return browserInstance[device][key]
-                  }
+                  const instance = browserInstance[device]
+                  return checker({ instance, key, args })
                 }),
               ).then(data => getResult(data, devices))
+            } else {
+              return checker({ instance: browserInstance, key, args })
             }
           }),
         ).then(data => getResult(data, browsers))
@@ -210,6 +227,16 @@ class PlaywrightEnvironment extends NodeEnvironment {
           },
         )
 
+      const testRunner = ({ expectFunction, errorMessage }: any) => {
+        try {
+          return expectFunction
+        } catch (e) {
+          // TODO Think about error message
+          console.log(errorMessage)
+          return expectFunction
+        }
+      }
+
       this.global.browser = proxyWrapper<Browser>(playwrightBrowsers)
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -223,15 +250,21 @@ class PlaywrightEnvironment extends NodeEnvironment {
           {},
           {
             get: (obj, key) => {
-              const expect = this.global.expect
+              const { expect } = this.global
               return (...args: any) => {
                 browsers.forEach(browser => {
-                  try {
-                    return expect(input[browser])[key](...args)
-                  } catch (e) {
-                    // TODO Think about error message
-                    console.log('Failed test for', browser)
-                    return expect(input[browser])[key](...args)
+                  if (devices && devices.length) {
+                    devices.forEach(device => {
+                      const expectFunction = expect(input[browser][device])[
+                        key
+                      ](...args)
+                      const errorMessage = `Failed test for ${browser}, ${device}`
+                      testRunner({ expectFunction, errorMessage })
+                    })
+                  } else {
+                    const expectFunction = expect(input[browser])[key](...args)
+                    const errorMessage = `Failed test for ${browser}`
+                    testRunner({ expectFunction, errorMessage })
                   }
                 })
               }
@@ -248,10 +281,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
         selectors,
       )
       let contextOptions = context
-      const availableDevices = Object.keys(playwrightInstance.devices)
+      const availableDevices = Object.keys(DeviceDescriptors)
       if (device) {
         checkDeviceEnv(device, availableDevices)
-        const { viewport, userAgent } = playwrightInstance.devices[device]
+        const { viewport, userAgent } = DeviceDescriptors[device]
         contextOptions = { viewport, userAgent, ...contextOptions }
       }
       this.global.browser = await getBrowserPerProcess(
