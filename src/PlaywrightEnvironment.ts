@@ -1,7 +1,14 @@
 /* eslint-disable no-console */
+// TODO Replace
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
-import { Browser, BrowserContext, BrowserType, Page } from 'playwright'
+import {
+  Browser,
+  BrowserContext,
+  BrowserType as PlaywrightBrowserType,
+  Page,
+} from 'playwright'
 import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 
 import {
@@ -12,7 +19,7 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
-import { Config, CHROMIUM } from './constants'
+import { Config, CHROMIUM, BrowserType } from './constants'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -59,7 +66,7 @@ const startBrowserCloseWatchdog = (): void => {
 }
 
 const getBrowserPerProcess = async (
-  playwrightInstance: BrowserType,
+  playwrightInstance: PlaywrightBrowserType,
   config: Config,
 ): Promise<Browser> => {
   if (!browserPerProcess) {
@@ -95,6 +102,39 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const playwrightInstances = await Promise.all(
         browsers.map(browser => getPlaywrightInstance(browser, selectors)),
       )
+
+      // Utils
+      type InitializerProps = {
+        browser: BrowserType
+        device: string
+      }
+
+      type RootProxy = {
+        [key: string]: any
+      }
+
+      type Initializer = (args: InitializerProps) => void
+
+      const getResult = (data: any, instances: any) => {
+        const result = {}
+        data.forEach((item: any, index: string) => {
+          // @ts-ignore
+          result[instances[index]] = item
+        })
+        return result
+      }
+
+      const initialize = async (
+        browser: BrowserType,
+        initializer: Initializer,
+      ) => {
+        if (devices && devices.length) {
+          return await Promise.all(
+            devices.map(device => initializer({ browser, device })),
+          ).then(data => getResult(data, devices))
+        }
+      }
+
       // Browsers
       const playwrightBrowsers = await Promise.all(
         browsers.map((browser, index) =>
@@ -103,78 +143,65 @@ class PlaywrightEnvironment extends NodeEnvironment {
             browser,
           }),
         ),
-      )
+      ).then(data => getResult(data, browsers))
+
       // Contexts
-      // {
-      //   firefox: {
-      //     'iPhone 6': BrowserContext,
-      //     'Pixel 2': BrowserContext
-      //   }
-      // }
-      const contexts = await Promise.all(
-        browsers.map(async (browser, index) => {
-          // return playwrightBrowsers[index].newContext(context)
-          if (devices && devices.length) {
-            return await Promise.all(
-              devices.map(device =>
-                playwrightBrowsers[index].newContext(DeviceDescriptors[device]),
-              ),
-            ).then(data => {
-              const result = {}
-              data.forEach((item, index) => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-                // @ts-ignore
-                result[devices[index]] = item
-              })
-              return result
-            })
-          }
-        }),
-      ).then(data => {
-        const result = {}
-        data.forEach((item, index) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          result[browsers[index]] = item
-        })
-        return result
-      })
-      // Pages
-      const pages = await Promise.all(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      const contextInitializer = ({ browser, device }: InitializerProps) =>
         // @ts-ignore
-        browsers.map((browser, index) => contexts[index].newPage()),
-      )
+        playwrightBrowsers[browser].newContext(DeviceDescriptors[device])
+
+      const contexts = await Promise.all(
+        browsers.map(browser => initialize(browser, contextInitializer)),
+      ).then(data => getResult(data, browsers))
+
+      // Pages
+      const pageInitializer = ({ browser, device }: InitializerProps) =>
+        // @ts-ignore
+        contexts[browser][device].newPage()
+
+      const pages = await Promise.all(
+        browsers.map(browser => initialize(browser, pageInitializer)),
+      ).then(data => getResult(data, browsers))
       // TODO Improve types
-      const callAsync = async <T>(instances: T[], key: keyof T, ...args: any) =>
+      const callAsync = async <T>(
+        instances: RootProxy,
+        key: keyof T,
+        ...args: any
+      ) =>
         await Promise.all(
-          browsers.map((browser, index) => {
-            const browserInstance: T = instances[index]
-            if (typeof browserInstance[key] === 'function') {
-              return ((browserInstance[key] as unknown) as Function).call(
-                browserInstance,
-                ...args,
-              )
-            } else {
-              return browserInstance[key]
+          browsers.map(async browser => {
+            const browserInstance: T = instances[browser]
+            if (devices && devices.length) {
+              return await Promise.all(
+                devices.map(device => {
+                  // @ts-ignore
+                  if (typeof browserInstance[device][key] === 'function') {
+                    // @ts-ignore
+                    return ((browserInstance[device][
+                      key
+                    ] as unknown) as Function).call(
+                      // @ts-ignore
+                      browserInstance[device],
+                      ...args,
+                    )
+                  } else {
+                    // @ts-ignore
+                    return browserInstance[device][key]
+                  }
+                }),
+              ).then(data => getResult(data, devices))
             }
           }),
-        ).then(data => {
-          const result: { [key: string]: T } = {}
-          data.forEach((item, index) => {
-            result[browsers[index]] = item
-          })
-          return result
-        })
+        ).then(data => getResult(data, browsers))
 
-      const proxyWrapper = <T>(instances: T[]) =>
+      const proxyWrapper = <T>(instances: RootProxy) =>
         new Proxy(
           {},
           {
             get: (obj, key) => {
-              const index = browsers.findIndex(item => item === key)
-              if (index > -1) {
-                return instances[index]
+              const browser = browsers.find(item => item === key)
+              if (browser) {
+                return instances[browser]
               } else {
                 return (...args: any) =>
                   callAsync<T>(instances, key as keyof T, ...args)
