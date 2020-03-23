@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-// TODO Replace
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import {
@@ -113,21 +111,23 @@ class PlaywrightEnvironment extends NodeEnvironment {
         [key: string]: any
       }
 
-      type Initializer = (args: InitializerProps) => void
+      type Initializer = (args: InitializerProps) => Promise<any>
 
-      const getResult = (data: any, instances: any) => {
-        const result = {}
-        data.forEach((item: any, index: string) => {
-          // @ts-ignore
+      const getResult = (
+        data: any,
+        instances: BrowserType[] | Array<keyof typeof DeviceDescriptors>,
+      ) => {
+        const result: any = {}
+        data.forEach((item: any, index: number) => {
           result[instances[index]] = item
         })
         return result
       }
 
-      const initialize = async (
+      const initialize = async <T>(
         browser: BrowserType,
         initializer: Initializer,
-      ) => {
+      ): Promise<T> => {
         if (devices && devices.length) {
           return await Promise.all(
             devices.map(device => initializer({ browser, device })),
@@ -148,13 +148,15 @@ class PlaywrightEnvironment extends NodeEnvironment {
       ).then(data => getResult(data, browsers))
 
       // Contexts
-      const contextInitializer = ({ browser, device }: InitializerProps) => {
+      const contextInitializer = ({
+        browser,
+        device,
+      }: InitializerProps): Promise<BrowserContext> => {
         let contextOptions = {}
         if (device) {
           const { viewport, userAgent } = DeviceDescriptors[device]
           contextOptions = { viewport, userAgent }
         }
-        // @ts-ignore
         return playwrightBrowsers[browser].newContext(contextOptions)
       }
 
@@ -163,27 +165,25 @@ class PlaywrightEnvironment extends NodeEnvironment {
       ).then(data => getResult(data, browsers))
 
       // Pages
-      const pageInitializer = ({ browser, device }: InitializerProps) => {
-        // @ts-ignore
+      const pageInitializer = ({
+        browser,
+        device,
+      }: InitializerProps): Promise<Page> => {
         const instance = contexts[browser]
         return device ? instance[device].newPage() : instance.newPage()
       }
 
       const pages = await Promise.all(
-        browsers.map(browser => initialize(browser, pageInitializer)),
+        browsers.map(browser => initialize<Page>(browser, pageInitializer)),
       ).then(data => getResult(data, browsers))
 
       const checker = ({ instance, key, args }: any) => {
-        // @ts-ignore
         if (typeof instance[key] === 'function') {
-          // @ts-ignore
           return ((instance[key] as unknown) as Function).call(
-            // @ts-ignore
             instance,
             ...args,
           )
         } else {
-          // @ts-ignore
           return instance[key]
         }
       }
@@ -196,11 +196,12 @@ class PlaywrightEnvironment extends NodeEnvironment {
       ) =>
         await Promise.all(
           browsers.map(async browser => {
-            const browserInstance: T = instances[browser]
+            const browserInstance: {
+              [key: string]: T
+            } = instances[browser]
             if (devices && devices.length) {
               return await Promise.all(
                 devices.map(device => {
-                  // @ts-ignore
                   const instance = browserInstance[device]
                   return checker({ instance, key, args })
                 }),
@@ -238,11 +239,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
 
       this.global.browser = proxyWrapper<Browser>(playwrightBrowsers)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       this.global.context = proxyWrapper<BrowserContext>(contexts)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       this.global.page = proxyWrapper<Page>(pages)
       // TODO Types
       this.global.expectAllBrowsers = (input: any) =>
