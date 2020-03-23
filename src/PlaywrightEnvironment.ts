@@ -264,7 +264,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
           {
             get: (obj, key) => {
               const { expect } = this.global
-              return (...args: (string | Function)[]) => {
+              return (...args: Args) => {
                 browsers.forEach(browser => {
                   if (devices && devices.length) {
                     devices.forEach(device => {
