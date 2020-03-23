@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
+import Expect = jest.Expect
 import {
   Browser,
   BrowserContext,
@@ -112,13 +113,14 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
 
       type Initializer = (args: InitializerProps) => Promise<any>
+      type Args = (string | Function)[]
 
-      const getResult = (
-        data: any,
+      const getResult = <T>(
+        data: T[],
         instances: BrowserType[] | Array<keyof typeof DeviceDescriptors>,
       ) => {
         const result: any = {}
-        data.forEach((item: any, index: number) => {
+        data.forEach((item: T, index: number) => {
           result[instances[index]] = item
         })
         return result
@@ -131,7 +133,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         if (devices && devices.length) {
           return await Promise.all(
             devices.map(device => initializer({ browser, device })),
-          ).then(data => getResult(data, devices))
+          ).then(data => getResult<T>(data, devices))
         } else {
           return initializer({ browser })
         }
@@ -177,7 +179,15 @@ class PlaywrightEnvironment extends NodeEnvironment {
         browsers.map(browser => initialize<Page>(browser, pageInitializer)),
       ).then(data => getResult(data, browsers))
 
-      const checker = ({ instance, key, args }: any) => {
+      const checker = ({
+        instance,
+        key,
+        args,
+      }: {
+        instance: any
+        key: any
+        args: Args
+      }) => {
         if (typeof instance[key] === 'function') {
           return ((instance[key] as unknown) as Function).call(
             instance,
@@ -192,7 +202,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const callAsync = async <T>(
         instances: RootProxy,
         key: keyof T,
-        ...args: any
+        ...args: Args
       ) =>
         await Promise.all(
           browsers.map(async browser => {
@@ -221,14 +231,20 @@ class PlaywrightEnvironment extends NodeEnvironment {
               if (browser) {
                 return instances[browser]
               } else {
-                return (...args: any) =>
+                return (...args: Args) =>
                   callAsync<T>(instances, key as keyof T, ...args)
               }
             },
           },
         )
 
-      const testRunner = ({ expectFunction, errorMessage }: any) => {
+      const testRunner = ({
+        expectFunction,
+        errorMessage,
+      }: {
+        expectFunction: Expect
+        errorMessage: string
+      }) => {
         try {
           return expectFunction
         } catch (e) {
@@ -248,7 +264,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
           {
             get: (obj, key) => {
               const { expect } = this.global
-              return (...args: any) => {
+              return (...args: (string | Function)[]) => {
                 browsers.forEach(browser => {
                   if (devices && devices.length) {
                     devices.forEach(device => {
@@ -365,9 +381,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
     if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()
     }
-    if (this.global.page) {
-      this.global.page.removeListener('pageerror', handleError)
-      await this.global.page.close()
+    const { page } = this.global
+    if (page) {
+      page.removeListener('pageerror', handleError)
+      await page.close()
     }
     startBrowserCloseWatchdog()
   }
