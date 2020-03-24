@@ -11,6 +11,7 @@ import {
 } from './utils'
 import { Config, CHROMIUM } from './constants'
 import { Browser, BrowserType } from 'playwright'
+import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -119,10 +120,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
     }
 
-    const availableDevices = Object.keys(playwrightInstance.devices)
+    const availableDevices = Object.keys(DeviceDescriptors)
     if (device) {
       checkDeviceEnv(device, availableDevices)
-      const { viewport, userAgent } = playwrightInstance.devices[device]
+      const { viewport, userAgent } = DeviceDescriptors[device]
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
