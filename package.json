@@ -29,7 +29,7 @@
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "eslint . --ext .js,.ts",
     "prepublishOnly": "npm run build",
-    "test": "snyk test && jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts",
+    "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "husky": {
