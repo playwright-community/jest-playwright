@@ -41,3 +41,16 @@ export const DEFAULT_CONFIG: Config = {
   browser: CHROMIUM,
   exitOnPageError: true,
 }
+
+// Utils
+export type InitializerProps = {
+  browser: BrowserType
+  device?: string
+}
+
+export type RootProxy = {
+  [key: string]: any
+}
+
+export type Initializer = (args: InitializerProps) => Promise<any>
+export type Args = (string | Function)[]

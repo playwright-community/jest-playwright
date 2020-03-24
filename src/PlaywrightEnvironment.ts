@@ -18,7 +18,15 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
-import { Config, CHROMIUM, BrowserType } from './constants'
+import {
+  Config,
+  CHROMIUM,
+  BrowserType,
+  Initializer,
+  InitializerProps,
+  Args,
+  RootProxy,
+} from './constants'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -102,19 +110,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         browsers.map(browser => getPlaywrightInstance(browser, selectors)),
       )
 
-      // Utils
-      type InitializerProps = {
-        browser: BrowserType
-        device?: string
-      }
-
-      type RootProxy = {
-        [key: string]: any
-      }
-
-      type Initializer = (args: InitializerProps) => Promise<any>
-      type Args = (string | Function)[]
-
+      // Helpers
       const getResult = <T>(
         data: T[],
         instances: BrowserType[] | Array<keyof typeof DeviceDescriptors>,
@@ -179,13 +175,13 @@ class PlaywrightEnvironment extends NodeEnvironment {
         browsers.map(browser => initialize<Page>(browser, pageInitializer)),
       ).then(data => getResult(data, browsers))
 
-      const checker = ({
+      const checker = <T>({
         instance,
         key,
         args,
       }: {
         instance: any
-        key: any
+        key: keyof T
         args: Args
       }) => {
         if (typeof instance[key] === 'function') {
@@ -213,11 +209,11 @@ class PlaywrightEnvironment extends NodeEnvironment {
               return await Promise.all(
                 devices.map(device => {
                   const instance = browserInstance[device]
-                  return checker({ instance, key, args })
+                  return checker<T>({ instance, key, args })
                 }),
               ).then(data => getResult(data, devices))
             } else {
-              return checker({ instance: browserInstance, key, args })
+              return checker<T>({ instance: browserInstance, key, args })
             }
           }),
         ).then(data => getResult(data, browsers))
@@ -258,6 +254,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       this.global.context = proxyWrapper<BrowserContext>(contexts)
       this.global.page = proxyWrapper<Page>(pages)
       // TODO Types
+      // TODO Add expectWebkit, expectFirefox?
       this.global.expectAllBrowsers = (input: any) =>
         new Proxy(
           {},
