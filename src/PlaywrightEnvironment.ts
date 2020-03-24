@@ -68,7 +68,7 @@ const getBrowserPerProcess = async (
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
       launchBrowserApp.args = launchBrowserApp.args.filter(
-        item => item !== '--no-sandbox',
+        (item) => item !== '--no-sandbox',
       )
     }
     browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
@@ -140,7 +140,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         // eslint-disable-next-line no-console
         console.log('\n\n🕵️‍  Code is paused, press enter to resume')
         // Run an infinite promise
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           const { stdin } = process
           const listening = stdin.listenerCount('data') > 0
           const onKeyPress = (key: string): void => {
