@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
