@@ -1,6 +1,5 @@
 # Jest Playwright
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/mmarkelov/jest-playwright.svg)](https://greenkeeper.io/)
 [![Coverage Status](https://coveralls.io/repos/github/mmarkelov/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/mmarkelov/jest-playwright?branch=master)
 
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
@@ -58,7 +57,7 @@ describe('Google', () => {
   })
 
   it('should display "google" text on page', async () => {
-    const browser = await page.$eval('.string-major', el => el.innerHTML)
+    const browser = await page.$eval('.string-major', (el) => el.innerHTML)
     expect(browser).toContain('Chrome')
   })
 })
@@ -80,7 +79,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 - `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
   Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
-  
+
   `jest-playwright.config.js`:
 
 ```javascript
@@ -189,7 +188,7 @@ and your Jest error reporting will only show that an entire test (`it()` functio
 To fix this behavior simply call
 
 ```javascript
-jest.setTimeout(35 * 1000);
+jest.setTimeout(35 * 1000)
 ```
 
 in your tests at the top. (30 seconds is the default Playwright timeout for waiting for an specific element.)

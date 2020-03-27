@@ -32,7 +32,7 @@ const exec = ({
   device?: string | null
   params: string[]
 }): Promise<number | null> =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const options = getSpawnOptions(browser, device)
     const displayName = getDisplayName(browser, device)
     if (sequence === PARALLEL) {
@@ -43,7 +43,7 @@ const exec = ({
         ],
         options,
       )
-      process.on('close', status => {
+      process.on('close', (status) => {
         resolve(status)
       })
     } else {
@@ -60,11 +60,15 @@ const exec = ({
 
 const runner = async (sequence: string, params: string[]): Promise<void> => {
   // TODO Work only if we pass config through package.json
-  const rootDir = process.env.npm_package_jest_rootDir
-    ? `${process.cwd()}/${process.env.npm_package_jest_rootDir}/`
-    : process.cwd()
+  const rootDir = `${process.cwd()}/${
+    process.env.npm_package_jest_rootDir || ''
+  }/`
   const config = await readConfig(rootDir)
-  const { browsers = [], devices = [] } = config
+  const { devices = [], browser } = config
+  let browsers = config.browsers
+  if (!browsers) {
+    browsers = browser ? [browser] : []
+  }
   let exitCodes: (number | null)[] = []
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
@@ -77,7 +81,7 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
       browserType = browser
     }
     exitCodes = await Promise.all(
-      devices.map(device =>
+      devices.map((device) =>
         exec({ sequence, browser: browserType, device, params }),
       ),
     )
@@ -85,16 +89,18 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
   if (browsers.length) {
     if (devices.length) {
       const multipleCodes = await Promise.all(
-        browsers.map(browser =>
+        browsers.map((browser) =>
           Promise.all(
-            devices.map(device => exec({ sequence, browser, device, params })),
+            devices.map((device) =>
+              exec({ sequence, browser, device, params }),
+            ),
           ),
         ),
       )
       exitCodes = multipleCodes.reduce((acc, val) => acc.concat(val), [])
     } else {
       exitCodes = await Promise.all(
-        browsers.map(browser => exec({ sequence, browser, params })),
+        browsers.map((browser) => exec({ sequence, browser, params })),
       )
     }
   }

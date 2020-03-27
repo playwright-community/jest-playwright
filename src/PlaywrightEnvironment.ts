@@ -27,6 +27,7 @@ import {
   Args,
   RootProxy,
 } from './constants'
+import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -83,7 +84,7 @@ const getBrowserPerProcess = async (
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
       launchBrowserApp.args = launchBrowserApp.args.filter(
-        item => item !== '--no-sandbox',
+        (item) => item !== '--no-sandbox',
       )
     }
     browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
@@ -107,7 +108,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     if (browsers && browsers.length) {
       // Playwright instances for each browser
       const playwrightInstances = await Promise.all(
-        browsers.map(browser => getPlaywrightInstance(browser, selectors)),
+        browsers.map((browser) => getPlaywrightInstance(browser, selectors)),
       )
 
       // Helpers
@@ -128,8 +129,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
       ): Promise<T> => {
         if (devices && devices.length) {
           return await Promise.all(
-            devices.map(device => initializer({ browser, device })),
-          ).then(data => getResult<T>(data, devices))
+            devices.map((device) => initializer({ browser, device })),
+          ).then((data) => getResult<T>(data, devices))
         } else {
           return initializer({ browser })
         }
@@ -143,7 +144,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
             browser,
           }),
         ),
-      ).then(data => getResult(data, browsers))
+      ).then((data) => getResult(data, browsers))
 
       // Contexts
       const contextInitializer = ({
@@ -159,8 +160,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
 
       const contexts = await Promise.all(
-        browsers.map(browser => initialize(browser, contextInitializer)),
-      ).then(data => getResult(data, browsers))
+        browsers.map((browser) => initialize(browser, contextInitializer)),
+      ).then((data) => getResult(data, browsers))
 
       // Pages
       const pageInitializer = ({
@@ -172,8 +173,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
 
       const pages = await Promise.all(
-        browsers.map(browser => initialize<Page>(browser, pageInitializer)),
-      ).then(data => getResult(data, browsers))
+        browsers.map((browser) => initialize<Page>(browser, pageInitializer)),
+      ).then((data) => getResult(data, browsers))
 
       const checker = <T>({
         instance,
@@ -201,29 +202,29 @@ class PlaywrightEnvironment extends NodeEnvironment {
         ...args: Args
       ) =>
         await Promise.all(
-          browsers.map(async browser => {
+          browsers.map(async (browser) => {
             const browserInstance: {
               [key: string]: T
             } = instances[browser]
             if (devices && devices.length) {
               return await Promise.all(
-                devices.map(device => {
+                devices.map((device) => {
                   const instance = browserInstance[device]
                   return checker<T>({ instance, key, args })
                 }),
-              ).then(data => getResult(data, devices))
+              ).then((data) => getResult(data, devices))
             } else {
               return checker<T>({ instance: browserInstance, key, args })
             }
           }),
-        ).then(data => getResult(data, browsers))
+        ).then((data) => getResult(data, browsers))
 
       const proxyWrapper = <T>(instances: RootProxy) =>
         new Proxy(
           {},
           {
             get: (obj, key) => {
-              const browser = browsers.find(item => item === key)
+              const browser = browsers.find((item) => item === key)
               if (browser) {
                 return instances[browser]
               } else {
@@ -262,9 +263,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
             get: (obj, key) => {
               const { expect } = this.global
               return (...args: Args) => {
-                browsers.forEach(browser => {
+                browsers.forEach((browser) => {
                   if (devices && devices.length) {
-                    devices.forEach(device => {
+                    devices.forEach((device) => {
                       const expectFunction = expect(input[browser][device])[
                         key
                       ](...args)
@@ -341,7 +342,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         // eslint-disable-next-line no-console
         console.log('\n\n🕵️‍  Code is paused, press enter to resume')
         // Run an infinite promise
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           const { stdin } = process
           const listening = stdin.listenerCount('data') > 0
           const onKeyPress = (key: string): void => {
