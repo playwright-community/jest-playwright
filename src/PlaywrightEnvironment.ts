@@ -27,7 +27,6 @@ import {
   Args,
   RootProxy,
 } from './constants'
-import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
