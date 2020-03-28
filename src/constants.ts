@@ -8,8 +8,7 @@ import {
 } from 'playwright-core'
 import { JestDevServerOptions } from 'jest-dev-server'
 
-export const CORE = 'core'
-export const PLAYWRIGHT = 'playwright'
+export const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
 export const CHROMIUM = 'chromium'
 export const FIREFOX = 'firefox'
@@ -26,10 +25,7 @@ export type SelectorType = {
   name: string
 }
 
-export type PlaywrightRequireType =
-  | BrowserType
-  | typeof PLAYWRIGHT
-  | typeof CORE
+export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface Config {
   launchBrowserApp?: BrowserTypeLaunchOptions

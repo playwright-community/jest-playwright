@@ -5,10 +5,9 @@ import {
   BrowserType,
   CHROMIUM,
   Config,
-  CORE,
   DEFAULT_CONFIG,
   FIREFOX,
-  PLAYWRIGHT,
+  IMPORT_KIND_PLAYWRIGHT,
   PlaywrightRequireType,
   SelectorType,
   WEBKIT,
@@ -21,8 +20,7 @@ const checkDependencies = (
   dependencies: Record<string, string>,
 ): PlaywrightRequireType | null => {
   if (!dependencies) return null
-  if (dependencies.playwright) return PLAYWRIGHT
-  if (dependencies[`playwright-${CORE}`]) return CORE
+  if (dependencies.playwright) return IMPORT_KIND_PLAYWRIGHT
   if (dependencies[`playwright-${CHROMIUM}`]) return CHROMIUM
   if (dependencies[`playwright-${FIREFOX}`]) return FIREFOX
   if (dependencies[`playwright-${WEBKIT}`]) return WEBKIT
@@ -70,7 +68,7 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
   const packageConfig = await require(absConfigPath)
   // for handling the local tests
   if (packageConfig.name === 'jest-playwright-preset') {
-    return CORE
+    return IMPORT_KIND_PLAYWRIGHT
   }
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
@@ -86,7 +84,7 @@ export const getPlaywrightInstance = async (
   selectors?: SelectorType[],
 ): Promise<GenericBrowser> => {
   const playwrightPackage = await readPackage()
-  if (playwrightPackage === PLAYWRIGHT) {
+  if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const playwright = require('playwright')
     if (selectors) {
@@ -97,11 +95,6 @@ export const getPlaywrightInstance = async (
       )
     }
     return playwright[browserType]
-  }
-  if (playwrightPackage === CORE) {
-    const browser = require(`playwright-${CORE}`)[browserType]
-    await browser.downloadBrowserIfNeeded()
-    return browser
   }
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }

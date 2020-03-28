@@ -6,7 +6,7 @@ import {
   readPackage,
 } from '../utils'
 import { checkCommand, getDisplayName, getExitCode } from './utils'
-import { BrowserType, CORE, PLAYWRIGHT } from '../constants'
+import { BrowserType, IMPORT_KIND_PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
   browser: BrowserType,
@@ -74,7 +74,7 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
   if (!browsers.length && devices.length) {
     let browserType: BrowserType
     const browser = await readPackage()
-    if (browser === PLAYWRIGHT || browser === CORE) {
+    if (browser === IMPORT_KIND_PLAYWRIGHT) {
       browserType = getBrowserType(config)
       checkBrowserEnv(browserType)
     } else {
