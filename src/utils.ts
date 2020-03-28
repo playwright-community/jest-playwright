@@ -12,8 +12,8 @@ import {
   PlaywrightRequireType,
   SelectorType,
   WEBKIT,
+  GenericBrowser,
 } from './constants'
-import { BrowserType as PlayWrightBrowserType } from 'playwright'
 
 const exists = promisify(fs.exists)
 
@@ -84,7 +84,7 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
 export const getPlaywrightInstance = async (
   browserType: BrowserType,
   selectors?: SelectorType[],
-): Promise<PlayWrightBrowserType> => {
+): Promise<GenericBrowser> => {
   const playwrightPackage = await readPackage()
   if (playwrightPackage === PLAYWRIGHT) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -9,9 +9,8 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
-import { Config, CHROMIUM } from './constants'
-import { Browser, BrowserType } from 'playwright'
-import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
+import { Config, CHROMIUM, GenericBrowser } from './constants'
+import playwright, { Browser } from 'playwright'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -58,7 +57,7 @@ const startBrowserCloseWatchdog = (): void => {
 }
 
 const getBrowserPerProcess = async (
-  playwrightInstance: BrowserType,
+  playwrightInstance: GenericBrowser,
   config: Config,
 ): Promise<Browser> => {
   if (!browserPerProcess) {
@@ -120,10 +119,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
     }
 
-    const availableDevices = Object.keys(DeviceDescriptors)
+    const availableDevices = Object.keys(playwright.devices)
     if (device) {
       checkDeviceEnv(device, availableDevices)
-      const { viewport, userAgent } = DeviceDescriptors[device]
+      const { viewport, userAgent } = playwright.devices[device]
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)

@@ -6,7 +6,7 @@ import {
   readPackage,
 } from '../utils'
 import { checkCommand, getDisplayName, getExitCode } from './utils'
-import { BrowserType, CORE, PARALLEL, PLAYWRIGHT } from '../constants'
+import { BrowserType, CORE, PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
   browser: BrowserType,
@@ -35,7 +35,7 @@ const exec = ({
   new Promise((resolve) => {
     const options = getSpawnOptions(browser, device)
     const displayName = getDisplayName(browser, device)
-    if (sequence === PARALLEL) {
+    if (sequence === '--parallel') {
       const process = spawn(
         'node',
         [
