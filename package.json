@@ -63,7 +63,7 @@
     "husky": "4.2.3",
     "jest": "25.2.3",
     "jest-dev-server": "^4.4.0",
-    "jest-environment-node": "25.1.0",
+    "jest-environment-node": "25.2.3",
     "lint-staged": "10.0.9",
     "playwright": ">=0.12.1",
     "playwright-chromium": ">=0.12.1",
