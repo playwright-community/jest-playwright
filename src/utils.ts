@@ -89,8 +89,8 @@ export const getPlaywrightInstance = async (
     const playwright = require('playwright')
     if (selectors) {
       await Promise.all(
-        selectors.map(({ script, name }) =>
-          playwright.selectors.register(script, { name }),
+        selectors.map(({ name, script }) =>
+          playwright.selectors.register(name, script),
         ),
       )
     }
