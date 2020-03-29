@@ -2,7 +2,7 @@
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import Expect = jest.Expect
-import {
+import playwright, {
   Browser,
   BrowserContext,
   BrowserType as PlaywrightBrowserType,
@@ -73,7 +73,7 @@ const startBrowserCloseWatchdog = (): void => {
 }
 
 const getBrowserPerProcess = async (
-  playwrightInstance: PlaywrightBrowserType,
+  playwrightInstance: GenericBrowser,
   config: Config,
 ): Promise<Browser> => {
   if (!browserPerProcess) {

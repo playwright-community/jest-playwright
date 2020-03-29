@@ -15,6 +15,11 @@ Also you can use `jest-playwright-preset` with specific playwright packages:
 npm install -D jest jest-playwright-preset playwright-firefox
 ```
 
+## Requirements
+
+- Node.js >= 10.15.0
+- Playwright >=0.12.1
+
 ## Usage
 
 Update your Jest configuration, either:
@@ -84,14 +89,14 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 
 ```javascript
 const {
-	selectorEngine,
+  selectorEngine,
 } = require('query-selector-shadow-dom/plugins/playwright');
 
 module.exports = {
-	selectors: [
-		{name: 'shadow', script: selectorEngine}
-	],
-	...
+  selectors: [
+    {name: 'shadow', script: selectorEngine}
+  ],
+  ...
 }
 
 ```
@@ -179,7 +184,7 @@ If there is no defined browsers in config it will run tests for chromium browser
 
 If you face into error messages like `UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.` or
 
-```
+```txt
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
 

@@ -206,23 +206,6 @@ describe('readPackage', () => {
     const playwright = await readPackage()
     expect(playwright).toEqual('firefox')
   })
-  it('should return playwright-core when it is defined', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'package.json'),
-      () => ({
-        devDependencies: {
-          'playwright-core': '*',
-        },
-      }),
-      { virtual: true },
-    )
-
-    const playwright = await readPackage()
-    expect(playwright).toEqual('core')
-  })
 })
 
 describe('getPlaywrightInstance', () => {
@@ -265,23 +248,5 @@ describe('getPlaywrightInstance', () => {
 
     const instance = await getPlaywrightInstance('chromium')
     expect(instance).toEqual('chromium')
-  })
-
-  it('should return specified instance from playwright-core package and download if it is needed', async () => {
-    spy.mockResolvedValue('core')
-
-    const downloadBrowserIfNeeded = jest.fn().mockResolvedValue('downloaded')
-
-    const webkit = {
-      downloadBrowserIfNeeded,
-    }
-
-    jest.doMock('playwright-core', () => ({
-      webkit,
-    }))
-
-    const instance = await getPlaywrightInstance('webkit')
-    expect(downloadBrowserIfNeeded).toHaveBeenCalled()
-    expect(instance).toEqual(webkit)
   })
 })
