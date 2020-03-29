@@ -27,7 +27,7 @@
     "start": "npm run build -- --watch",
     "build": "tsc",
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
-    "lint": "eslint . --ext .js,.ts",
+    "lint": "tsc --noEmit && eslint . --ext .js,.ts",
     "prepublishOnly": "npm run build",
     "test": "jest src/bin/utils.test.ts tests/stub.test.ts && jest src/utils.test.ts",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
@@ -44,14 +44,14 @@
     "*.{js,ts}": "eslint --fix"
   },
   "peerDependencies": {
-    "jest-environment-node": "^25.1.0"
+    "jest-environment-node": "^25.2.3"
   },
   "optionalDependencies": {},
   "devDependencies": {
     "@types/debug": "4.1.5",
     "@types/jest": "25.1.4",
     "@types/jest-dev-server": "4.2.0",
-    "@types/node": "13.9.3",
+    "@types/node": "13.9.5",
     "@typescript-eslint/eslint-plugin": "2.25.0",
     "@typescript-eslint/parser": "2.25.0",
     "coveralls": "3.0.11",
@@ -61,17 +61,17 @@
     "eslint-plugin-import": "2.20.1",
     "eslint-plugin-prettier": "3.1.2",
     "husky": "4.2.3",
-    "jest": "25.1.0",
+    "jest": "25.2.3",
     "jest-dev-server": "^4.4.0",
-    "jest-environment-node": "25.1.0",
+    "jest-environment-node": "25.2.3",
     "lint-staged": "10.0.9",
-    "playwright": ">=0.11.1",
-    "playwright-chromium": ">=0.11.0",
-    "playwright-core": ">=0.11.0",
-    "playwright-firefox": ">=0.11.0",
-    "playwright-webkit": ">=0.11.0",
+    "playwright": ">=0.12.1",
+    "playwright-chromium": ">=0.12.1",
+    "playwright-core": ">=0.12.1",
+    "playwright-firefox": ">=0.12.1",
+    "playwright-webkit": ">=0.12.1",
     "prettier": "2.0.2",
-    "snyk": "^1.303.1",
+    "snyk": "^1.305.0",
     "ts-jest": "25.2.1",
     "typescript": "3.8.3"
   }

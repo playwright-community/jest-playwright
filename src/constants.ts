@@ -1,9 +1,14 @@
-import { LaunchOptions } from 'playwright-core/lib/server/browserType'
-import { BrowserContextOptions } from 'playwright-core/lib/browserContext'
+import {
+  BrowserTypeLaunchOptions,
+  BrowserNewContextOptions,
+  WebKitBrowser,
+  ChromiumBrowser,
+  FirefoxBrowser,
+  BrowserType as PlaywrighBrowserType,
+} from 'playwright-core'
 import { JestDevServerOptions } from 'jest-dev-server'
 
-export const CORE = 'core'
-export const PLAYWRIGHT = 'playwright'
+export const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
 export const CHROMIUM = 'chromium'
 export const FIREFOX = 'firefox'
@@ -11,21 +16,20 @@ export const WEBKIT = 'webkit'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
+export type GenericBrowser = PlaywrighBrowserType<
+  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
+>
+
 export type SelectorType = {
   script: string | Function | { path?: string; content?: string }
   name: string
 }
 
-export type PlaywrightRequireType =
-  | BrowserType
-  | typeof PLAYWRIGHT
-  | typeof CORE
-
-export const PARALLEL = '--parallel'
+export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface Config {
-  launchBrowserApp?: LaunchOptions
-  context?: BrowserContextOptions
+  launchBrowserApp?: BrowserTypeLaunchOptions
+  context?: BrowserNewContextOptions
   exitOnPageError: boolean
   browser?: BrowserType
   browsers?: BrowserType[]

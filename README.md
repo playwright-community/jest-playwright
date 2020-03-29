@@ -1,6 +1,5 @@
 # Jest Playwright
 
-
 [![Coverage Status](https://coveralls.io/repos/github/mmarkelov/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/mmarkelov/jest-playwright?branch=master)
 
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
@@ -15,6 +14,11 @@ Also you can use `jest-playwright-preset` with specific playwright packages:
 ```bash
 npm install -D jest jest-playwright-preset playwright-firefox
 ```
+
+## Requirements
+
+- Node.js >= 10.15.0
+- Playwright >=0.12.1
 
 ## Usage
 
@@ -58,7 +62,7 @@ describe('Google', () => {
   })
 
   it('should display "google" text on page', async () => {
-    const browser = await page.$eval('.string-major', el => el.innerHTML)
+    const browser = await page.$eval('.string-major', (el) => el.innerHTML)
     expect(browser).toContain('Chrome')
   })
 })
@@ -80,19 +84,19 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 - `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
   Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
-  
+
   `jest-playwright.config.js`:
 
 ```javascript
 const {
-	selectorEngine,
+  selectorEngine,
 } = require('query-selector-shadow-dom/plugins/playwright');
 
 module.exports = {
-	selectors: [
-		{name: 'shadow', script: selectorEngine}
-	],
-	...
+  selectors: [
+    {name: 'shadow', script: selectorEngine}
+  ],
+  ...
 }
 
 ```
@@ -180,7 +184,7 @@ If there is no defined browsers in config it will run tests for chromium browser
 
 If you face into error messages like `UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.` or
 
-```
+```txt
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
 
@@ -189,7 +193,7 @@ and your Jest error reporting will only show that an entire test (`it()` functio
 To fix this behavior simply call
 
 ```javascript
-jest.setTimeout(35 * 1000);
+jest.setTimeout(35 * 1000)
 ```
 
 in your tests at the top. (30 seconds is the default Playwright timeout for waiting for an specific element.)
