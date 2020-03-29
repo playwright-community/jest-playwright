@@ -2,13 +2,7 @@
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import Expect = jest.Expect
-import playwright, {
-  Browser,
-  BrowserContext,
-  BrowserType as PlaywrightBrowserType,
-  Page,
-} from 'playwright'
-import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
+import playwright, { Browser, BrowserContext, Page } from 'playwright'
 
 import {
   checkBrowserEnv,
@@ -26,6 +20,7 @@ import {
   InitializerProps,
   Args,
   RootProxy,
+  GenericBrowser,
 } from './constants'
 
 const handleError = (error: Error): void => {
@@ -83,12 +78,12 @@ const getBrowserPerProcess = async (
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
       launchBrowserApp.args = launchBrowserApp.args.filter(
-        (item) => item !== '--no-sandbox',
+        (item: string) => item !== '--no-sandbox',
       )
     }
     browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
-  return browserPerProcess
+  return browserPerProcess as Browser
 }
 
 class PlaywrightEnvironment extends NodeEnvironment {
@@ -113,7 +108,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       // Helpers
       const getResult = <T>(
         data: T[],
-        instances: BrowserType[] | Array<keyof typeof DeviceDescriptors>,
+        instances: BrowserType[] | Array<keyof typeof playwright.devices>,
       ) => {
         const result: any = {}
         data.forEach((item: T, index: number) => {
@@ -152,7 +147,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }: InitializerProps): Promise<BrowserContext> => {
         let contextOptions = {}
         if (device) {
-          const { viewport, userAgent } = DeviceDescriptors[device]
+          const { viewport, userAgent } = playwright.devices[device]
           contextOptions = { viewport, userAgent }
         }
         return playwrightBrowsers[browser].newContext(contextOptions)
@@ -291,10 +286,10 @@ class PlaywrightEnvironment extends NodeEnvironment {
         selectors,
       )
       let contextOptions = context
-      const availableDevices = Object.keys(DeviceDescriptors)
+      const availableDevices = Object.keys(playwright.devices)
       if (device) {
         checkDeviceEnv(device, availableDevices)
-        const { viewport, userAgent } = DeviceDescriptors[device]
+        const { viewport, userAgent } = playwright.devices[device]
         contextOptions = { viewport, userAgent, ...contextOptions }
       }
       this.global.browser = await getBrowserPerProcess(
