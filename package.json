@@ -29,7 +29,9 @@
     "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
     "lint": "tsc --noEmit && eslint . --ext .js,.ts",
     "prepublishOnly": "npm run build",
-    "test": "jest src",
+    "test": "npm run test:src && npm run test:e2e",
+    "test:src": "jest",
+    "test:e2e": "jest -c jest.config.e2e.js",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "husky": {
