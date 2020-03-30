@@ -63,14 +63,19 @@ const getBrowserPerProcess = async (
   if (!browserPerProcess) {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { launchBrowserApp } = config
+    const { launchBrowserApp, connectBrowserApp } = config
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
       launchBrowserApp.args = launchBrowserApp.args.filter(
         (item) => item !== '--no-sandbox',
       )
     }
-    browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
+
+    if (connectBrowserApp) {
+      browserPerProcess = await playwrightInstance.connect(connectBrowserApp)
+    } else {
+      browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
+    }
   }
   return browserPerProcess
 }

@@ -5,6 +5,7 @@ import {
   ChromiumBrowser,
   FirefoxBrowser,
   BrowserType as PlaywrighBrowserType,
+  BrowserTypeConnectOptions,
 } from 'playwright-core'
 import { JestDevServerOptions } from 'jest-dev-server'
 
@@ -37,6 +38,7 @@ export interface Config {
   devices?: string[]
   server?: JestDevServerOptions
   selectors?: SelectorType[]
+  connectBrowserApp?: BrowserTypeConnectOptions
 }
 
 export const DEFAULT_CONFIG: Config = {
