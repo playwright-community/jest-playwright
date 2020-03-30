@@ -133,6 +133,10 @@ module.exports = {
 
 Other options are documented in [jest-dev-server](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server).
 
+## ESLint globals / `'page' is not defined`
+
+There is [eslint-plugin-jest-playwright](https://github.com/mxschmitt/eslint-plugin-jest-playwright) available which includes the globals for using jest-playwright. 
+
 ## Unstable and experimental API
 
 From version **0.0.7** you can run you tests for multiple browsers.
