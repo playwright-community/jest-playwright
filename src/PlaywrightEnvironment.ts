@@ -10,7 +10,7 @@ import {
   readConfig,
 } from './utils'
 import { Config, CHROMIUM, GenericBrowser } from './constants'
-import playwright, { Browser } from 'playwright'
+import playwright, { Browser } from 'playwright-core'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
