@@ -1,5 +1,6 @@
 {
   "globalSetup": "jest-playwright-preset/setup.js",
   "globalTeardown": "jest-playwright-preset/teardown.js",
-  "testEnvironment": "jest-playwright-preset"
+  "testEnvironment": "jest-playwright-preset",
+  "setupFilesAfterEnv": ["jest-playwright-preset/setupAfterEnv.js"]
 }

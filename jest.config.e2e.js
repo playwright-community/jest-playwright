@@ -3,4 +3,5 @@ module.exports = {
   testEnvironment: './lib/PlaywrightEnvironment.js',
   testPathIgnorePatterns: ['/node_modules/', 'lib'],
   testMatch: ['**/e2e/**/*.test.ts'],
+  setupFilesAfterEnv: ['./setupAfterEnv.js'],
 }

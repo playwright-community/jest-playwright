@@ -12,10 +12,6 @@ import {
 import { Config, CHROMIUM, GenericBrowser } from './constants'
 import playwright, { Browser } from 'playwright-core'
 
-const handleError = (error: Error): void => {
-  process.emit('uncaughtException', error)
-}
-
 const KEYS = {
   CONTROL_C: '\u0003',
   CONTROL_D: '\u0004',
@@ -131,10 +127,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
-    this.global.context = await this.global.browser.newContext(contextOptions)
-    this.global.page = await this.global.context.newPage()
-    this.global.page.on('pageerror', handleError)
     this.global.jestPlaywright = {
+      __contextOptions: contextOptions,
       debug: async (): Promise<void> => {
         // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
         await this.global.page.evaluate(() => {
@@ -180,10 +174,6 @@ class PlaywrightEnvironment extends NodeEnvironment {
     await super.teardown()
     if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()
-    }
-    if (this.global.page) {
-      this.global.page.removeListener('pageerror', handleError)
-      await this.global.page.close()
     }
     startBrowserCloseWatchdog()
   }

@@ -3,5 +3,6 @@
 !types/
 !index.js
 !setup.js
+!setupAfterEnv.js
 !teardown.js
 !jest-preset.json
