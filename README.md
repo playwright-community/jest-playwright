@@ -225,6 +225,8 @@ or via `types`:
 }
 ```
 
+It's important to not change the `testEnvironment` to `node`. Otherwise it won't work.
+
 ## Known issues
 
 ### Error reporting with Jest
