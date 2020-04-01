@@ -29,7 +29,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install libgbm-dev
     - name: Run Snyk to check for vulnerabilities
-      if: ${{ env.GITHUB_REPOSITORY == 'mmarkelov/jest-playwright' }}
+      if: ${{ github.repository == 'mmarkelov/jest-playwright' }}
       uses: snyk/actions/node@master
     - name: Lint Source Code
       run: npm run lint
