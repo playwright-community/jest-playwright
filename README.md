@@ -133,9 +133,13 @@ module.exports = {
 
 Other options are documented in [jest-dev-server](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server).
 
+## expect-playwright
+
+There is a utility package [expect-playwright](https://github.com/mxschmitt/expect-playwright) which simplifies the expect statements in combination with Playwright to make e.g. shorter text comparisons.
+
 ## ESLint globals / `'page' is not defined`
 
-There is [eslint-plugin-jest-playwright](https://github.com/mxschmitt/eslint-plugin-jest-playwright) available which includes the globals for using jest-playwright. 
+There is [eslint-plugin-jest-playwright](https://github.com/mxschmitt/eslint-plugin-jest-playwright) available which includes the globals for using jest-playwright.
 
 ## Unstable and experimental API
 
@@ -191,37 +195,37 @@ Example Jest configuration in combination with [ts-jest](https://github.com/kuls
 module.exports = {
   preset: 'jest-playwright-preset',
   transform: {
-    "^.+\\.ts$": "ts-jest"
+    '^.+\\.ts$': 'ts-jest',
   },
-};
+}
 ```
 
 Types are also available, which you can either use via directly in your test:
 
 ```typescript
 /// <reference types="jest-playwright-preset" />
+/// <reference types="expect-playwright" />
 ```
 
 or at your central `tsconfig.json` either via `files`:
 
-```
+```json
 {
   "files": [
     "./global.d.ts",
-    "node_modules/jest-playwright-preset/types/global.d.ts"
-  ],
+    "node_modules/jest-playwright-preset/types/global.d.ts",
+    "node_modules/expect-playwright/global.d.ts"
+  ]
 }
 ```
 
 or via `types`:
 
-```
+```json
 {
   "compilerOptions": {
-    "types": [
-      "jest-playwright-preset"
-    ]
-  },
+    "types": ["jest-playwright-preset", "expect-playwright"]
+  }
 }
 ```
 
