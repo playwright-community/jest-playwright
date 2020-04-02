@@ -183,6 +183,50 @@ If there is no defined browsers in config it will run tests for chromium browser
 "test:parallel": "jest-playwright --parallel"
 ```
 
+## Usage with Typescript
+
+Example Jest configuration in combination with [ts-jest](https://github.com/kulshekhar/ts-jest):
+
+```javascript
+module.exports = {
+  preset: 'jest-playwright-preset',
+  transform: {
+    "^.+\\.ts$": "ts-jest"
+  },
+};
+```
+
+Types are also available, which you can either use via directly in your test:
+
+```typescript
+/// <reference types="jest-playwright-preset" />
+```
+
+or at your central `tsconfig.json` either via `files`:
+
+```
+{
+  "files": [
+    "./global.d.ts",
+    "node_modules/jest-playwright-preset/types/global.d.ts"
+  ],
+}
+```
+
+or via `types`:
+
+```
+{
+  "compilerOptions": {
+    "types": [
+      "jest-playwright-preset"
+    ]
+  },
+}
+```
+
+It's important to not change the `testEnvironment` to `node`. Otherwise it won't work.
+
 ## Known issues
 
 ### Error reporting with Jest
