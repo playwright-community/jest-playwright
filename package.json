@@ -49,7 +49,7 @@
     "jest-environment-node": "^25.2.3"
   },
   "dependencies": {
-    "expect-playwright": "^0.1.1",
+    "expect-playwright": "^0.2.1",
     "jest-dev-server": "^4.4.0"
   },
   "devDependencies": {
