@@ -229,7 +229,7 @@ describe('getPlaywrightInstance', () => {
 
     jest.doMock('playwright', () => ({
       firefox: 'firefox',
-      selectors: { register },
+      selectors: { _engines: new Map(), register },
     }))
 
     const selectors = [{ name: 'test', script: 'test' }]
