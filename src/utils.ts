@@ -90,7 +90,7 @@ export const getPlaywrightInstance = async (
     if (selectors) {
       await Promise.all(
         selectors.map(({ name, script }) => {
-          if (playwright.selectors._engines.get(name)) {
+          if (!playwright.selectors._engines.get(name)) {
             return playwright.selectors.register(name, script)
           }
         }),
