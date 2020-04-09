@@ -229,13 +229,13 @@ describe('getPlaywrightInstance', () => {
 
     jest.doMock('playwright', () => ({
       firefox: 'firefox',
-      selectors: { register },
+      selectors: { _engines: new Map(), register },
     }))
 
     const selectors = [{ name: 'test', script: 'test' }]
 
     const instance = await getPlaywrightInstance('firefox', selectors)
-    expect(register).toHaveBeenLastCalledWith('test', { name: 'test' })
+    expect(register).toHaveBeenLastCalledWith('test', 'test')
     expect(instance).toEqual('firefox')
   })
 

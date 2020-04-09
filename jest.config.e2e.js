@@ -1,6 +1,6 @@
 module.exports = {
   preset: 'ts-jest',
+  testEnvironment: './lib/PlaywrightEnvironment.js',
   testPathIgnorePatterns: ['/node_modules/', 'lib'],
-  testMatch: ['**/src/**/*.test.ts'],
-  collectCoverage: true,
+  testMatch: ['**/e2e/**/*.test.ts'],
 }
