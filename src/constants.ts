@@ -39,6 +39,7 @@ export interface Config {
   server?: JestDevServerOptions
   selectors?: SelectorType[]
   connectBrowserApp?: BrowserTypeConnectOptions
+  USE_NEW_API?: boolean
 }
 
 export const DEFAULT_CONFIG: Config = {

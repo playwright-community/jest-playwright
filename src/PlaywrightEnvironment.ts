@@ -104,7 +104,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const { context, server, selectors, browsers, devices } = config
     // Two possible cases
     // browsers are defined
-    if (browsers && browsers.length) {
+    if (config.USE_NEW_API && browsers && browsers.length) {
       // Playwright instances for each browser
       const playwrightInstances = await Promise.all(
         browsers.map((browser) => getPlaywrightInstance(browser, selectors)),
