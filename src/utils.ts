@@ -89,9 +89,11 @@ export const getPlaywrightInstance = async (
     const playwright = require('playwright')
     if (selectors) {
       await Promise.all(
-        selectors.map(({ name, script }) =>
-          playwright.selectors.register(name, script),
-        ),
+        selectors.map(({ name, script }) => {
+          if (!playwright.selectors._engines.get(name)) {
+            return playwright.selectors.register(name, script)
+          }
+        }),
       )
     }
     return playwright[browserType]
