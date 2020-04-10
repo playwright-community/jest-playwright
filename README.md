@@ -187,6 +187,49 @@ If there is no defined browsers in config it will run tests for chromium browser
 "test:parallel": "jest-playwright --parallel"
 ```
 
+## Usage with [jest-circus](https://github.com/facebook/jest/tree/master/packages/jest-circus)
+
+You can use **jest-playwright** with **jest-circus** runner for taking screenshots during test failures for example:
+
+**jest.config.json**
+
+```json
+"testRunner": "jest-circus/runner",
+"testEnvironment": "./CustomEnvironment.js"
+```
+
+**CustomEnvironment.js**
+
+```js
+const PlaywrightEnvironment = require('jest-playwright-preset/lib/PlaywrightEnvironment')
+  .default
+
+class CustomEnvironment extends PlaywrightEnvironment {
+  async setup() {
+    await super.setup()
+    // Your setup
+  }
+
+  async teardown() {
+    // Your teardown
+    await super.teardown()
+  }
+
+  async handleTestEvent(event) {
+    if (event.name === 'test_done' && event.test.errors.length > 0) {
+      const parentName = event.test.parent.name.replace(/\W/g, '-')
+      const specName = event.test.name.replace(/\W/g, '-')
+
+      await this.global.page.screenshot({
+        path: `screenshots/${parentName}_${specName}.png`,
+      })
+    }
+  }
+}
+
+module.exports = CustomEnvironment
+```
+
 ## Usage with Typescript
 
 Example Jest configuration in combination with [ts-jest](https://github.com/kulshekhar/ts-jest):
