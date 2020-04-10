@@ -2,7 +2,7 @@
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import Expect = jest.Expect
-import playwright, { Browser, BrowserContext, Page } from 'playwright'
+import playwright, { Browser, BrowserContext, Page } from 'playwright-core'
 
 import {
   checkBrowserEnv,
