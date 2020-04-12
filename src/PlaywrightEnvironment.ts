@@ -11,6 +11,7 @@ import {
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
+  readPackage,
 } from './utils'
 import {
   Config,
@@ -21,6 +22,7 @@ import {
   Args,
   RootProxy,
   GenericBrowser,
+  IMPORT_KIND_PLAYWRIGHT,
 } from './constants'
 
 const handleError = (error: Error): void => {
@@ -102,12 +104,26 @@ class PlaywrightEnvironment extends NodeEnvironment {
     resetBrowserCloseWatchdog()
     const config = await readConfig(this._config.rootDir)
     const { context, server, selectors, browsers, devices } = config
+    const playwrightPackage = await readPackage()
+    if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const playwright = require('playwright')
+      if (selectors) {
+        await Promise.all(
+          selectors.map(({ name, script }) => {
+            return playwright.selectors.register(name, script)
+          }),
+        )
+      }
+    }
     // Two possible cases
     // browsers are defined
     if (config.USE_NEW_API && browsers && browsers.length) {
       // Playwright instances for each browser
       const playwrightInstances = await Promise.all(
-        browsers.map((browser) => getPlaywrightInstance(browser, selectors)),
+        browsers.map((browser) =>
+          getPlaywrightInstance(playwrightPackage, browser),
+        ),
       )
 
       // Helpers
@@ -287,8 +303,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
       checkBrowserEnv(browserType)
       const device = getDeviceType(config)
       const playwrightInstance = await getPlaywrightInstance(
+        playwrightPackage,
         browserType,
-        selectors,
       )
       let contextOptions = context
       const availableDevices = Object.keys(playwright.devices)

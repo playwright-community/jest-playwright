@@ -218,24 +218,7 @@ describe('getPlaywrightInstance', () => {
       firefox: 'firefox',
     }))
 
-    const instance = await getPlaywrightInstance('firefox')
-    expect(instance).toEqual('firefox')
-  })
-
-  it('should register passed selectors for playwright package', async () => {
-    spy.mockResolvedValue('playwright')
-
-    const register = jest.fn().mockResolvedValue('registered')
-
-    jest.doMock('playwright', () => ({
-      firefox: 'firefox',
-      selectors: { _engines: new Map(), register },
-    }))
-
-    const selectors = [{ name: 'test', script: 'test' }]
-
-    const instance = await getPlaywrightInstance('firefox', selectors)
-    expect(register).toHaveBeenLastCalledWith('test', 'test')
+    const instance = await getPlaywrightInstance('playwright', 'firefox')
     expect(instance).toEqual('firefox')
   })
 
@@ -246,7 +229,7 @@ describe('getPlaywrightInstance', () => {
       chromium: 'chromium',
     }))
 
-    const instance = await getPlaywrightInstance('chromium')
+    const instance = await getPlaywrightInstance('chromium', 'chromium')
     expect(instance).toEqual('chromium')
   })
 })
