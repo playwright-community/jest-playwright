@@ -253,16 +253,18 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const testRunner = ({
         expectFunction,
         errorMessage,
+        args,
       }: {
-        expectFunction: Expect
+        expectFunction: Function
         errorMessage: string
+        args: any
       }) => {
         try {
-          return expectFunction
+          return expectFunction(...args)
         } catch (e) {
           // TODO Think about error message
           console.log(errorMessage)
-          return expectFunction
+          return expectFunction(...args)
         }
       }
 
@@ -281,16 +283,14 @@ class PlaywrightEnvironment extends NodeEnvironment {
                 browsers.forEach((browser) => {
                   if (devices && devices.length) {
                     devices.forEach((device) => {
-                      const expectFunction = expect(input[browser][device])[
-                        key
-                      ](...args)
+                      const expectFunction = expect(input[browser][device])[key]
                       const errorMessage = `Failed test for ${browser}, ${device}`
-                      testRunner({ expectFunction, errorMessage })
+                      testRunner({ expectFunction, errorMessage, args })
                     })
                   } else {
-                    const expectFunction = expect(input[browser])[key](...args)
+                    const expectFunction = expect(input[browser])[key]
                     const errorMessage = `Failed test for ${browser}`
-                    testRunner({ expectFunction, errorMessage })
+                    testRunner({ expectFunction, errorMessage, args })
                   }
                 })
               }
