@@ -92,7 +92,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig(this._config.rootDir)
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
-    const { context, server, selectors } = config
+    const { context, exitOnPageError, server, selectors } = config
     const device = getDeviceType(config)
     const playwrightInstance = await getPlaywrightInstance(
       browserType,
@@ -106,7 +106,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
       teardownServer = devServer.teardown
       try {
-        await setup(config.server)
+        await setup(server)
       } catch (error) {
         if (error.code === ERROR_TIMEOUT) {
           logMessage({
@@ -133,7 +133,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
     this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
-    this.global.page.on('pageerror', handleError)
+    if (exitOnPageError) {
+      this.global.page.on('pageerror', handleError)
+    }
     this.global.jestPlaywright = {
       debug: async (): Promise<void> => {
         // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
