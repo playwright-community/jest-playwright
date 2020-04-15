@@ -20,4 +20,5 @@ declare global {
   const browser: Browser
   const context: BrowserContext
   const jestPlaywright: JestPlaywright
+  const expectAllBrowsers: jest.Expect
 }
