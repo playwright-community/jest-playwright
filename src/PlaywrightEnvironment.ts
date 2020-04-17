@@ -103,7 +103,14 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup(): Promise<void> {
     resetBrowserCloseWatchdog()
     const config = await readConfig(this._config.rootDir)
-    const { context, server, selectors, browsers, devices } = config
+    const {
+      context,
+      server,
+      selectors,
+      browsers,
+      devices,
+      exitOnPageError,
+    } = config
     const playwrightPackage = await readPackage()
     if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -321,7 +328,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
       this.global.page = await this.global.context.newPage()
     }
 
-    this.global.page.on('pageerror', handleError)
+    if (exitOnPageError) {
+      this.global.page.on('pageerror', handleError)
+    }
 
     if (server) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -329,7 +338,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
       teardownServer = devServer.teardown
       try {
-        await setup(config.server)
+        await setup(server)
       } catch (error) {
         if (error.code === ERROR_TIMEOUT) {
           logMessage({

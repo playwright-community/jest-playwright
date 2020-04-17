@@ -80,7 +80,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
 - `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
-- `exitOnPageError` <[boolean]> Exits page on any global error message thrown. Defaults to `true`.
+- `exitOnPageError` <[boolean]> Exits process on any page error. Defaults to `true`.
 - `server` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options)
 - `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
