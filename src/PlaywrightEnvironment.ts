@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
-import Expect = jest.Expect
 import playwright, { Browser, BrowserContext, Page } from 'playwright-core'
 
 import {
@@ -208,10 +207,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
         args: Args
       }) => {
         if (typeof instance[key] === 'function') {
-          return ((instance[key] as unknown) as Function).call(
-            instance,
-            ...args,
-          )
+          return (instance[key] as Function).call(instance, ...args)
         } else {
           return instance[key]
         }
@@ -264,7 +260,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }: {
         expectFunction: Function
         errorMessage: string
-        args: any
+        args: any[]
       }) => {
         try {
           return expectFunction(...args)
