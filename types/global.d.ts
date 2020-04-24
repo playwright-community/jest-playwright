@@ -16,6 +16,7 @@ interface JestPlaywright {
 }
 
 declare global {
+  const browserName: string
   const deviceName: string
   const page: Page
   const browser: Browser
