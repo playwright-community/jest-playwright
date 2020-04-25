@@ -11,7 +11,7 @@ import {
 import { Config as JestConfig } from '@jest/types'
 import { BrowserType } from './constants'
 
-const browsers = ['chromium', 'webkit', 'firefox']
+const browsers: BrowserType[] = ['chromium', 'webkit', 'firefox']
 
 const getBrowserTest = (test: Test, browser: BrowserType): Test => {
   return {
