@@ -80,23 +80,11 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
 }
 
 export const getPlaywrightInstance = async (
+  playwrightPackage: PlaywrightRequireType,
   browserType: BrowserType,
-  selectors?: SelectorType[],
 ): Promise<GenericBrowser> => {
-  const playwrightPackage = await readPackage()
   if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const playwright = require('playwright')
-    if (selectors) {
-      await Promise.all(
-        selectors.map(({ name, script }) => {
-          if (!playwright.selectors._engines.get(name)) {
-            return playwright.selectors.register(name, script)
-          }
-        }),
-      )
-    }
-    return playwright[browserType]
+    return require('playwright')[browserType]
   }
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }

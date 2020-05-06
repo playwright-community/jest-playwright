@@ -8,8 +8,14 @@ import {
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
+  readPackage,
 } from './utils'
-import { Config, CHROMIUM, GenericBrowser } from './constants'
+import {
+  Config,
+  CHROMIUM,
+  GenericBrowser,
+  IMPORT_KIND_PLAYWRIGHT,
+} from './constants'
 import playwright, { Browser } from 'playwright-core'
 
 const handleError = (error: Error): void => {
@@ -93,10 +99,22 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const browserType = getBrowserType(config)
     checkBrowserEnv(browserType)
     const { context, exitOnPageError, server, selectors } = config
+    const playwrightPackage = await readPackage()
+    if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const playwright = require('playwright')
+      if (selectors) {
+        await Promise.all(
+          selectors.map(({ name, script }) => {
+            return playwright.selectors.register(name, script)
+          }),
+        )
+      }
+    }
     const device = getDeviceType(config)
     const playwrightInstance = await getPlaywrightInstance(
+      playwrightPackage,
       browserType,
-      selectors,
     )
     let contextOptions = context
 
