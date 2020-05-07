@@ -1,11 +1,12 @@
 import { spawn, spawnSync, SpawnSyncOptions } from 'child_process'
 import {
+  getDisplayName,
   checkBrowserEnv,
   getBrowserType,
   readConfig,
   readPackage,
 } from '../utils'
-import { checkCommand, getDisplayName, getExitCode } from './utils'
+import { checkCommand, getExitCode } from './utils'
 import { BrowserType, IMPORT_KIND_PLAYWRIGHT } from '../constants'
 
 const getSpawnOptions = (
@@ -73,12 +74,12 @@ const runner = async (sequence: string, params: string[]): Promise<void> => {
   checkCommand(browsers, devices)
   if (!browsers.length && devices.length) {
     let browserType: BrowserType
-    const browser = await readPackage()
-    if (browser === IMPORT_KIND_PLAYWRIGHT) {
-      browserType = getBrowserType(config)
+    const playwrightPackage = await readPackage()
+    if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+      browserType = getBrowserType(browser)
       checkBrowserEnv(browserType)
     } else {
-      browserType = browser
+      browserType = browser as BrowserType
     }
     exitCodes = await Promise.all(
       devices.map((device) =>
