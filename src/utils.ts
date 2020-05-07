@@ -53,12 +53,12 @@ export const getDeviceType = (config: Config): string | undefined => {
   return config.device
 }
 
-export const getBrowserType = (config: Config): BrowserType => {
+export const getBrowserType = (browser?: BrowserType): BrowserType => {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {
     return processBrowser as BrowserType
   }
-  return config.browser || CHROMIUM
+  return browser || CHROMIUM
 }
 
 export const readPackage = async (): Promise<PlaywrightRequireType> => {

@@ -5,6 +5,7 @@ import { Config as JestConfig } from '@jest/types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
+  getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
@@ -74,7 +75,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup(): Promise<void> {
     const config = await readConfig(this._config.rootDir)
     //@ts-ignore
-    const browserType: BrowserType = this._config.browserName
+    const browserType = getBrowserType(this._config.browserName)
     checkBrowserEnv(browserType)
     const { context, exitOnPageError, server, selectors } = config
     const playwrightPackage = await readPackage()

@@ -44,6 +44,6 @@ export interface Config {
 export const DEFAULT_CONFIG: Config = {
   launchBrowserApp: {},
   context: {},
-  browser: CHROMIUM,
+  browsers: [CHROMIUM],
   exitOnPageError: true,
 }

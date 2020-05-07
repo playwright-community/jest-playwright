@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, BrowserType } from './constants'
 
 const {
   readConfig,
@@ -98,13 +98,12 @@ describe('readConfig', () => {
 
 describe('getBrowserType', () => {
   it('should return "chromium" as default', async () => {
-    const config = await readConfig()
-    const browserType = getBrowserType(config)
+    const browserType = getBrowserType()
     expect(browserType).toBe(CHROMIUM)
   })
   it('should return BROWSER if defined', async () => {
     process.env.BROWSER = 'webkit'
-    const browserType = getBrowserType({ exitOnPageError: false })
+    const browserType = getBrowserType('firefox')
     expect(browserType).toBe(process.env.BROWSER)
     delete process.env.BROWSER
   })
@@ -126,18 +125,7 @@ describe('getDeviceType', () => {
 
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => ({
-        browser: 'unknown',
-      }),
-      { virtual: true },
-    )
-    const config = await readConfig()
-    const browserType = getBrowserType(config)
+    const browserType = getBrowserType('unknown' as BrowserType)
     expect(() => checkBrowserEnv(browserType)).toThrow()
   })
 })
