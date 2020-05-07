@@ -9,7 +9,6 @@ import {
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
   PlaywrightRequireType,
-  SelectorType,
   WEBKIT,
   GenericBrowser,
 } from './constants'
