@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import {
@@ -30,11 +31,6 @@ const KEYS = {
 
 let teardownServer: (() => Promise<void>) | null = null
 let browserPerProcess: Browser | null = null
-let browserShutdownTimeout: NodeJS.Timeout | null = null
-
-const resetBrowserCloseWatchdog = (): void => {
-  if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
-}
 
 const logMessage = ({
   message,
@@ -49,39 +45,23 @@ const logMessage = ({
   process.exit(1)
 }
 
-// Since there are no per-worker hooks, we have to setup a timer to
-// close the browser.
-//
-// @see https://github.com/facebook/jest/issues/8708 (and upvote plz!)
-const startBrowserCloseWatchdog = (): void => {
-  resetBrowserCloseWatchdog()
-  browserShutdownTimeout = setTimeout(async () => {
-    const browser = browserPerProcess
-    browserPerProcess = null
-    if (browser) await browser.close()
-  }, 50)
-}
-
 const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
   config: Config,
 ): Promise<Browser> => {
-  if (!browserPerProcess) {
-    const browserType = getBrowserType(config)
-    checkBrowserEnv(browserType)
-    const { launchBrowserApp, connectBrowserApp } = config
-    // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
-    if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
-      launchBrowserApp.args = launchBrowserApp.args.filter(
-        (item) => item !== '--no-sandbox',
-      )
-    }
+  const browserType = getBrowserType(config)
+  const { launchBrowserApp, connectBrowserApp } = config
+  // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
+  if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
+    launchBrowserApp.args = launchBrowserApp.args.filter(
+      (item) => item !== '--no-sandbox',
+    )
+  }
 
-    if (connectBrowserApp) {
-      browserPerProcess = await playwrightInstance.connect(connectBrowserApp)
-    } else {
-      browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
-    }
+  if (connectBrowserApp) {
+    browserPerProcess = await playwrightInstance.connect(connectBrowserApp)
+  } else {
+    browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
   }
   return browserPerProcess
 }
@@ -94,9 +74,9 @@ class PlaywrightEnvironment extends NodeEnvironment {
   }
 
   async setup(): Promise<void> {
-    resetBrowserCloseWatchdog()
     const config = await readConfig(this._config.rootDir)
-    const browserType = getBrowserType(config)
+    //@ts-ignore
+    const browserType = this._config.browserName
     checkBrowserEnv(browserType)
     const { context, exitOnPageError, server, selectors } = config
     const playwrightPackage = await readPackage()
@@ -199,15 +179,26 @@ class PlaywrightEnvironment extends NodeEnvironment {
   }
 
   async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
+    const { page, context, browser } = this.global
+    if (page) {
+      page.removeListener('pageerror', handleError)
+    }
+    if (context) {
+      await context.close()
+    }
+    if (page) {
+      await page.close()
+    }
+
+    if (browser) {
+      await browser.close()
+    }
+
     await super.teardown()
+
     if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
       await teardownServer()
     }
-    if (this.global.page) {
-      this.global.page.removeListener('pageerror', handleError)
-      await this.global.page.close()
-    }
-    startBrowserCloseWatchdog()
   }
 }
 
