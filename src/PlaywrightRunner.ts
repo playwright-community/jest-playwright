@@ -10,24 +10,33 @@ import JestRunner, {
 } from 'jest-runner'
 import { Config as JestConfig } from '@jest/types'
 import { BrowserType } from './constants'
-import { readConfig } from './utils'
+import { getDisplayName, readConfig } from './utils'
 
 const getBrowserTest = (
   test: Test,
   browser: BrowserType,
   device: string,
-): Test => ({
-  ...test,
-  context: {
-    ...test.context,
-    config: {
-      ...test.context.config,
-      browserName: browser,
-      device,
-      displayName: { name: browser, color: 'yellow' },
+): Test => {
+  const { displayName } = test.context.config
+  const playwrightDisplayName = getDisplayName(browser, device)
+  return {
+    ...test,
+    context: {
+      ...test.context,
+      config: {
+        ...test.context.config,
+        browserName: browser,
+        device,
+        displayName: {
+          name: displayName
+            ? `${playwrightDisplayName} ${displayName}`
+            : playwrightDisplayName,
+          color: 'yellow',
+        },
+      },
     },
-  },
-})
+  }
+}
 
 const getTests = (
   browsers: BrowserType[],

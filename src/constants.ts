@@ -45,5 +45,6 @@ export const DEFAULT_CONFIG: Config = {
   launchBrowserApp: {},
   context: {},
   browsers: [CHROMIUM],
+  devices: [],
   exitOnPageError: true,
 }
