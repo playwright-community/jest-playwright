@@ -45,11 +45,18 @@ const getTests = (
 ): Test[] => {
   let browserTests: Test[] = []
   browsers.forEach((browser) => {
-    devices.forEach((device) => {
-      tests.map((test) => {
-        browserTests = [...browserTests, getBrowserTest(test, browser, device)]
-      })
-    })
+    devices.length
+      ? devices.forEach((device) => {
+          tests.forEach((test) => {
+            browserTests = [
+              ...browserTests,
+              getBrowserTest(test, browser, device),
+            ]
+          })
+        })
+      : tests.forEach((test) => {
+          browserTests = [...browserTests, getBrowserTest(test, browser)]
+        })
   })
   return browserTests
 }
