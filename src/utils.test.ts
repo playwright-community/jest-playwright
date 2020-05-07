@@ -218,7 +218,7 @@ describe('getPlaywrightInstance', () => {
       firefox: 'firefox',
     }))
 
-    const instance = await getPlaywrightInstance('firefox', 'firefox')
+    const instance = await getPlaywrightInstance('playwright', 'firefox')
     expect(instance).toEqual('firefox')
   })
 
