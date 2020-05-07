@@ -79,7 +79,7 @@ describe('readConfig', () => {
       context: {
         foo: true,
       },
-      browser: 'chromium',
+      browsers: ['chromium'],
       exitOnPageError: true,
     }
     expect(config).toMatchObject(expectedConfig)
