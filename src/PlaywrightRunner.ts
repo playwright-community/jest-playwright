@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 import JestRunner, {
   Test,
   TestRunnerContext,
@@ -12,23 +12,34 @@ import { Config as JestConfig } from '@jest/types'
 import { BrowserType } from './constants'
 import { readConfig } from './utils'
 
-const getBrowserTest = (test: Test, browser: BrowserType): Test => ({
+const getBrowserTest = (
+  test: Test,
+  browser: BrowserType,
+  device: string,
+): Test => ({
   ...test,
   context: {
     ...test.context,
     config: {
       ...test.context.config,
       browserName: browser,
+      device,
       displayName: { name: browser, color: 'yellow' },
     },
   },
 })
 
-const getTests = (browsers: BrowserType[], tests: Test[]): Test[] => {
+const getTests = (
+  browsers: BrowserType[],
+  devices: string[],
+  tests: Test[],
+): Test[] => {
   let browserTests: Test[] = []
   browsers.forEach((browser) => {
-    tests.map((test) => {
-      browserTests = [...browserTests, getBrowserTest(test, browser)]
+    devices.forEach((device) => {
+      tests.map((test) => {
+        browserTests = [...browserTests, getBrowserTest(test, browser, device)]
+      })
     })
   })
   return browserTests
@@ -50,8 +61,8 @@ class PlaywrightRunner extends JestRunner {
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ) {
-    const { browsers } = await readConfig(this._globalConfig.rootDir)
-    const browserTests = getTests(browsers, tests)
+    const { browsers, devices } = await readConfig(this._globalConfig.rootDir)
+    const browserTests = getTests(browsers, devices, tests)
 
     return await (options.serial
       ? this._createInBandTestRun(

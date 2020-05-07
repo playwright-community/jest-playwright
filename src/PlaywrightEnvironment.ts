@@ -90,7 +90,8 @@ class PlaywrightEnvironment extends NodeEnvironment {
         )
       }
     }
-    const device = getDeviceType(config)
+    //@ts-ignore
+    const device = getDeviceType(this._config.device)
     const playwrightInstance = await getPlaywrightInstance(
       playwrightPackage,
       browserType,
