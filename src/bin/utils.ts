@@ -15,13 +15,6 @@ export const checkCommand = (
   // devices.forEach(checkDeviceEnv)
 }
 
-export const getDisplayName = (
-  browser: BrowserType,
-  device: string | null,
-): string => {
-  return `browser: ${browser}${device ? ` device: ${device}` : ''}`
-}
-
 export const getExitCode = (exitCodes: (number | null)[]): void => {
   if (exitCodes.every((code) => code === 0)) {
     process.exit(0)

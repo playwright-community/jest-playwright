@@ -1,4 +1,4 @@
-import { checkCommand, getDisplayName, getExitCode } from './utils'
+import { checkCommand, getExitCode } from './utils'
 import { BrowserType } from '../constants'
 
 describe('checkCommand', () => {
@@ -10,18 +10,6 @@ describe('checkCommand', () => {
 
   it('should throw an error when passed wrong browser', () => {
     expect(() => checkCommand(['unknown' as BrowserType], [])).toThrow()
-  })
-})
-
-describe('getDisplayName', () => {
-  it('should return right display name for passed browser', () => {
-    expect(getDisplayName('chromium', null)).toBe('browser: chromium')
-  })
-
-  it('should return right display name for passed browser and device', () => {
-    expect(getDisplayName('chromium', 'iPhone 6')).toBe(
-      'browser: chromium device: iPhone 6',
-    )
   })
 })
 

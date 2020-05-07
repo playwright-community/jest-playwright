@@ -45,12 +45,19 @@ export const checkDeviceEnv = (
   }
 }
 
-export const getDeviceType = (config: Config): string | undefined => {
+export const getDisplayName = (
+  browser: BrowserType,
+  device: string | null,
+): string => {
+  return `browser: ${browser}${device ? ` device: ${device}` : ''}`
+}
+
+export const getDeviceType = (device?: string): string | undefined => {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
   }
-  return config.device
+  return device
 }
 
 export const getBrowserType = (browser?: BrowserType): BrowserType => {

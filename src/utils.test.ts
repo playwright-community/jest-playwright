@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
 import { DEFAULT_CONFIG, CHROMIUM, BrowserType } from './constants'
+import { getDisplayName } from './utils'
 
 const {
   readConfig,
@@ -96,6 +97,18 @@ describe('readConfig', () => {
   })
 })
 
+describe('getDisplayName', () => {
+  it('should return right display name for passed browser', () => {
+    expect(getDisplayName('chromium', null)).toBe('browser: chromium')
+  })
+
+  it('should return right display name for passed browser and device', () => {
+    expect(getDisplayName('chromium', 'iPhone 6')).toBe(
+      'browser: chromium device: iPhone 6',
+    )
+  })
+})
+
 describe('getBrowserType', () => {
   it('should return "chromium" as default', async () => {
     const browserType = getBrowserType()
@@ -111,13 +124,12 @@ describe('getBrowserType', () => {
 
 describe('getDeviceType', () => {
   it('should return "undefined" when there is no device', async () => {
-    const config = await readConfig()
-    const device = getDeviceType(config)
+    const device = getDeviceType()
     expect(device).toBe(undefined)
   })
   it('should return BROWSER if defined', async () => {
     process.env.DEVICE = 'iPhone 11'
-    const device = getDeviceType({ exitOnPageError: false })
+    const device = getDeviceType()
     expect(device).toBe(process.env.DEVICE)
     delete process.env.DEVICE
   })
