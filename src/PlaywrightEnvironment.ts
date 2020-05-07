@@ -5,7 +5,6 @@ import { Config as JestConfig } from '@jest/types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
-  getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
@@ -16,6 +15,7 @@ import {
   CHROMIUM,
   GenericBrowser,
   IMPORT_KIND_PLAYWRIGHT,
+  BrowserType,
 } from './constants'
 import playwright, { Browser } from 'playwright-core'
 
@@ -30,7 +30,6 @@ const KEYS = {
 }
 
 let teardownServer: (() => Promise<void>) | null = null
-let browserPerProcess: Browser | null = null
 
 const logMessage = ({
   message,
@@ -47,9 +46,9 @@ const logMessage = ({
 
 const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
+  browserType: BrowserType,
   config: Config,
 ): Promise<Browser> => {
-  const browserType = getBrowserType(config)
   const { launchBrowserApp, connectBrowserApp } = config
   // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
   if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
@@ -59,11 +58,10 @@ const getBrowserPerProcess = async (
   }
 
   if (connectBrowserApp) {
-    browserPerProcess = await playwrightInstance.connect(connectBrowserApp)
+    return await playwrightInstance.connect(connectBrowserApp)
   } else {
-    browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
+    return await playwrightInstance.launch(launchBrowserApp)
   }
-  return browserPerProcess
 }
 
 class PlaywrightEnvironment extends NodeEnvironment {
@@ -76,7 +74,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
   async setup(): Promise<void> {
     const config = await readConfig(this._config.rootDir)
     //@ts-ignore
-    const browserType = this._config.browserName
+    const browserType: BrowserType = this._config.browserName
     checkBrowserEnv(browserType)
     const { context, exitOnPageError, server, selectors } = config
     const playwrightPackage = await readPackage()
@@ -128,9 +126,13 @@ class PlaywrightEnvironment extends NodeEnvironment {
       const { viewport, userAgent } = playwright.devices[device]
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
-    this.global.browserName = config.browser
+    this.global.browserName = browserType
     this.global.deviceName = config.device
-    this.global.browser = await getBrowserPerProcess(playwrightInstance, config)
+    this.global.browser = await getBrowserPerProcess(
+      playwrightInstance,
+      browserType,
+      config,
+    )
     this.global.context = await this.global.browser.newContext(contextOptions)
     this.global.page = await this.global.context.newPage()
     if (exitOnPageError) {
