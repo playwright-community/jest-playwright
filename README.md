@@ -158,10 +158,10 @@ module.exports = {
 
 It will run your tests for:
 
-- Chromium browser and iPhone 6 device;
-- Chromium browser and Pixel 2 device;
-- Webkit browser and iPhone 6 device;
-- Webkit browser and Pixel 2 device;
+- **Chromium** browser and **iPhone 6** device;
+- **Chromium** browser and **Pixel 2** device;
+- **Webkit** browser and **iPhone 6** device;
+- **Webkit** browser and **Pixel 2** device;
 
 If there is no defined browsers in config it will run tests for chromium browser.
 
