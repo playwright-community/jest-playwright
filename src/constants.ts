@@ -4,7 +4,7 @@ import {
   WebKitBrowser,
   ChromiumBrowser,
   FirefoxBrowser,
-  BrowserType as PlaywrighBrowserType,
+  BrowserType as PlaywrightBrowserType,
   BrowserTypeConnectOptions,
 } from 'playwright-core'
 import { JestDevServerOptions } from 'jest-dev-server'
@@ -17,7 +17,7 @@ export const WEBKIT = 'webkit'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
-export type GenericBrowser = PlaywrighBrowserType<
+export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
 
@@ -32,9 +32,7 @@ export interface Config {
   launchBrowserApp?: BrowserTypeLaunchOptions
   context?: BrowserNewContextOptions
   exitOnPageError: boolean
-  browser?: BrowserType
   browsers?: BrowserType[]
-  device?: string
   devices?: string[]
   server?: JestDevServerOptions
   selectors?: SelectorType[]
@@ -44,6 +42,7 @@ export interface Config {
 export const DEFAULT_CONFIG: Config = {
   launchBrowserApp: {},
   context: {},
-  browser: CHROMIUM,
+  browsers: [CHROMIUM],
+  devices: [],
   exitOnPageError: true,
 }
