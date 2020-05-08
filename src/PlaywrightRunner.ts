@@ -8,9 +8,15 @@ import JestRunner, {
   OnTestFailure,
   TestRunnerOptions,
 } from 'jest-runner'
+import playwright from 'playwright-core'
 import { Config as JestConfig } from '@jest/types'
 import { BrowserType } from './constants'
-import { getDisplayName, readConfig } from './utils'
+import {
+  checkBrowserEnv,
+  checkDeviceEnv,
+  getDisplayName,
+  readConfig,
+} from './utils'
 
 const getBrowserTest = (
   test: Test,
@@ -45,8 +51,11 @@ const getTests = (
 ): Test[] => {
   let browserTests: Test[] = []
   browsers.forEach((browser) => {
+    checkBrowserEnv(browser)
     devices.length
       ? devices.forEach((device) => {
+          const availableDevices = Object.keys(playwright.devices)
+          checkDeviceEnv(device, availableDevices)
           tests.forEach((test) => {
             browserTests = [
               ...browserTests,

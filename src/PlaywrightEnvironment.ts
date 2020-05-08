@@ -3,8 +3,6 @@
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
 import {
-  checkBrowserEnv,
-  checkDeviceEnv,
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
@@ -76,7 +74,6 @@ class PlaywrightEnvironment extends NodeEnvironment {
     const config = await readConfig(this._config.rootDir)
     //@ts-ignore
     const browserType = getBrowserType(this._config.browserName)
-    checkBrowserEnv(browserType)
     const { context, exitOnPageError, server, selectors } = config
     const playwrightPackage = await readPackage()
     if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
@@ -122,14 +119,12 @@ class PlaywrightEnvironment extends NodeEnvironment {
       }
     }
 
-    const availableDevices = Object.keys(playwright.devices)
     if (device) {
-      checkDeviceEnv(device, availableDevices)
       const { viewport, userAgent } = playwright.devices[device]
       contextOptions = { viewport, userAgent, ...contextOptions }
     }
     this.global.browserName = browserType
-    this.global.deviceName = config.device
+    this.global.deviceName = device
     this.global.browser = await getBrowserPerProcess(
       playwrightInstance,
       browserType,
