@@ -35,7 +35,7 @@ const getBrowserTest = (
         device,
         displayName: {
           name: displayName
-            ? `${playwrightDisplayName} ${displayName}`
+            ? `${playwrightDisplayName} ${displayName.name}`
             : playwrightDisplayName,
           color: 'yellow',
         },
