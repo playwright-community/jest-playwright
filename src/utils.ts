@@ -15,7 +15,7 @@ import {
 
 const exists = promisify(fs.exists)
 
-const checkDependencies = (
+export const checkDependencies = (
   dependencies: Record<string, string>,
 ): PlaywrightRequireType | null => {
   if (!dependencies) return null

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM, BrowserType } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, BrowserType, WEBKIT } from './constants'
 import { getDisplayName } from './utils'
 
 const {
@@ -10,6 +10,7 @@ const {
   getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
+  checkDependencies,
   readPackage,
   getPlaywrightInstance,
 } = Utils
@@ -147,6 +148,18 @@ describe('checkDeviceEnv', () => {
     const device = 'unknown'
     const devices = ['iPhone 11', 'Pixel 2', 'Nexus 4']
     expect(() => checkDeviceEnv(device, devices)).toThrow()
+  })
+})
+
+describe('checkDependencies', () => {
+  it('should return chromium browser', () => {
+    const dep = checkDependencies({ 'playwright-chromium': '*' })
+    expect(dep).toBe(CHROMIUM)
+  })
+
+  it('should return chromium browser', () => {
+    const dep = checkDependencies({ 'playwright-webkit': '*' })
+    expect(dep).toBe(WEBKIT)
   })
 })
 
