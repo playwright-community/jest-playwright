@@ -49,25 +49,16 @@ const getTests = (
   devices: string[],
   tests: Test[],
 ): Test[] => {
-  let browserTests: Test[] = []
-  browsers.forEach((browser) => {
+  return browsers.flatMap((browser) => {
     checkBrowserEnv(browser)
-    devices.length
-      ? devices.forEach((device) => {
+    return devices.length
+      ? devices.flatMap((device) => {
           const availableDevices = Object.keys(playwright.devices)
           checkDeviceEnv(device, availableDevices)
-          tests.forEach((test) => {
-            browserTests = [
-              ...browserTests,
-              getBrowserTest(test, browser, device),
-            ]
-          })
+          return tests.map((test) => getBrowserTest(test, browser, device))
         })
-      : tests.forEach((test) => {
-          browserTests = [...browserTests, getBrowserTest(test, browser)]
-        })
+      : tests.map((test) => getBrowserTest(test, browser))
   })
-  return browserTests
 }
 
 class PlaywrightRunner extends JestRunner {
