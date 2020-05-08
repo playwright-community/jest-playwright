@@ -10,16 +10,16 @@
     "jest-playwright",
     "jest-playwright-preset"
   ],
-  "author": "mmarkelov",
+  "author": "playwright-community",
   "bugs": {
-    "url": "https://github.com/mmarkelov/jest-playwright/issues"
+    "url": "https://github.com/playwright-community/jest-playwright/issues"
   },
   "types": "./types/global.d.ts",
   "repository": {
-    "url": "https://github.com/mmarkelov/jest-playwright.git",
+    "url": "https://github.com/playwright-community/jest-playwright.git",
     "type": "git"
   },
-  "homepage": "https://github.com/mmarkelov/jest-playwright#readme",
+  "homepage": "https://github.com/playwright-community/jest-playwright#readme",
   "scripts": {
     "start": "npm run build -- --watch",
     "build": "tsc",
