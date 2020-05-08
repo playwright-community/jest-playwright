@@ -76,7 +76,7 @@ class PlaywrightRunner extends JestRunner {
     onResult: OnTestSuccess,
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
-  ) {
+  ): Promise<void> {
     const { browsers, devices } = await readConfig(this._globalConfig.rootDir)
     const browserTests = getTests(browsers, devices, tests)
 
