@@ -66,7 +66,10 @@ class PlaywrightRunner extends JestRunner {
     globalConfig: JestConfig.GlobalConfig,
     context: TestRunnerContext,
   ) {
-    super(globalConfig, context)
+    const config = { ...globalConfig }
+    // Set default timeout to 15s
+    config.testTimeout = config.testTimeout || 15000
+    super(config, context)
   }
 
   async runTests(
