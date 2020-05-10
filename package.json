@@ -73,7 +73,7 @@
     "playwright-firefox": ">=0.12.1",
     "playwright-webkit": ">=0.12.1",
     "prettier": "2.0.5",
-    "snyk": "^1.305.1",
+    "snyk": "^1.319.2",
     "ts-jest": "25.5.0",
     "typescript": "3.8.3"
   }
