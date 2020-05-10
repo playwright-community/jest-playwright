@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 import NodeEnvironment from 'jest-environment-node'
 import { Config as JestConfig } from '@jest/types'
+import { Event, State } from 'jest-circus'
 import {
   getBrowserType,
   getDeviceType,
@@ -174,6 +175,18 @@ class PlaywrightEnvironment extends NodeEnvironment {
           stdin.on('data', onKeyPress)
         })
       },
+    }
+  }
+
+  async handleTestEvent(event: Event, state: State): Promise<void> {
+    // Hack to set testTimeout for jestPlaywright debugging
+    if (
+      event.name === 'add_test' &&
+      event.fn &&
+      event.fn.toString().includes('jestPlaywright.debug()')
+    ) {
+      // Set timeout to 4 days
+      state.testTimeout = 4 * 24 * 60 * 60 * 1000
     }
   }
 
