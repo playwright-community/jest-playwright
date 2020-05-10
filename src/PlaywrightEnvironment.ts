@@ -178,7 +178,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
     }
   }
 
-  async handleTestEvent(event: Event, state: State) {
+  async handleTestEvent(event: Event, state: State): Promise<void> {
     // Hack to set testTimeout for jestPlaywright debugging
     if (
       event.name === 'add_test' &&
@@ -186,7 +186,7 @@ class PlaywrightEnvironment extends NodeEnvironment {
       event.fn.toString().includes('jestPlaywright.debug()')
     ) {
       // Set timeout to 4 days
-      state.testTimeout = 345600000
+      state.testTimeout = 4 * 24 * 60 * 60 * 1000
     }
   }
 
