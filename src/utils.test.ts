@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM, BrowserType, WEBKIT } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, WEBKIT } from './constants'
+import type { BrowserType } from './types'
 import { getDisplayName } from './utils'
 
 const {
