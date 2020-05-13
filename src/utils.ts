@@ -1,22 +1,23 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import {
+import type {
   BrowserType,
-  CHROMIUM,
   Config,
+  PlaywrightRequireType,
+  GenericBrowser,
+} from './types'
+import {
+  CHROMIUM,
   DEFAULT_CONFIG,
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
-  PlaywrightRequireType,
-  SelectorType,
   WEBKIT,
-  GenericBrowser,
 } from './constants'
 
 const exists = promisify(fs.exists)
 
-const checkDependencies = (
+export const checkDependencies = (
   dependencies: Record<string, string>,
 ): PlaywrightRequireType | null => {
   if (!dependencies) return null
@@ -46,20 +47,27 @@ export const checkDeviceEnv = (
   }
 }
 
-export const getDeviceType = (config: Config): string | undefined => {
+export const getDisplayName = (
+  browser: BrowserType,
+  device: string | null,
+): string => {
+  return `browser: ${browser}${device ? ` device: ${device}` : ''}`
+}
+
+export const getDeviceType = (device?: string): string | undefined => {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
   }
-  return config.device
+  return device
 }
 
-export const getBrowserType = (config: Config): BrowserType => {
+export const getBrowserType = (browser?: BrowserType): BrowserType => {
   const processBrowser = process.env.BROWSER
   if (processBrowser) {
     return processBrowser as BrowserType
   }
-  return config.browser || CHROMIUM
+  return browser || CHROMIUM
 }
 
 export const readPackage = async (): Promise<PlaywrightRequireType> => {
@@ -80,23 +88,11 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
 }
 
 export const getPlaywrightInstance = async (
+  playwrightPackage: PlaywrightRequireType,
   browserType: BrowserType,
-  selectors?: SelectorType[],
 ): Promise<GenericBrowser> => {
-  const playwrightPackage = await readPackage()
   if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const playwright = require('playwright')
-    if (selectors) {
-      await Promise.all(
-        selectors.map(({ name, script }) => {
-          if (!playwright.selectors._engines.get(name)) {
-            return playwright.selectors.register(name, script)
-          }
-        }),
-      )
-    }
-    return playwright[browserType]
+    return require('playwright')[browserType]
   }
   return require(`playwright-${playwrightPackage}`)[playwrightPackage]
 }

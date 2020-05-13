@@ -56,7 +56,7 @@ Use Playwright in your tests:
 ```
 
 ```js
-describe('Google', () => {
+describe('What is my browser', () => {
   beforeAll(async () => {
     await page.goto('https://whatismybrowser.com/')
   })
@@ -75,11 +75,11 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 - `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
 - `connectBrowserApp` <[object]> [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
 - `context` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
-- `browser` <[string]>. Define a [browser](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
+- `browsers` <[string[]]>. Define a [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `device` <[string]>. Define a [device](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
+- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
 - `exitOnPageError` <[boolean]> Exits process on any page error. Defaults to `true`.
 - `server` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options)
 - `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
@@ -143,49 +143,27 @@ There is [eslint-plugin-jest-playwright](https://github.com/mxschmitt/eslint-plu
 
 ## Unstable and experimental API
 
-From version **0.0.7** you can run you tests for multiple browsers.
+You can run tests for multiple browsers and devices:
 
 - You must have installed **playwright** package
-- You must define browser to test with your `jest-playwright.config.js`:
+- You must define browsers to test with your `jest-playwright.config.js`:
 
 ```javascript
 module.exports = {
     browsers: ["chromium", "webkit"],
-    ...
-}
-```
-
-From version **0.0.13** you can run you tests for multiple devices.
-
-```javascript
-module.exports = {
     devices: ["iPhone 6", "Pixel 2"],
     ...
 }
 ```
 
-It will run your tests depending on you playwright package.
+It will run your tests for:
 
-- If you are using specific playwright package, it will run test for this specific browser
-- With installed **playwright** package you can define browsers with config:
-
-```javascript
-module.exports = {
-   browsers: ["chromium", "firefox"],
-   devices: ["iPhone 6", "Pixel 2"],
-   ...
-}
-```
+- **Chromium** browser and **iPhone 6** device;
+- **Chromium** browser and **Pixel 2** device;
+- **Webkit** browser and **iPhone 6** device;
+- **Webkit** browser and **Pixel 2** device;
 
 If there is no defined browsers in config it will run tests for chromium browser.
-
-[More details](https://github.com/mmarkelov/jest-playwright/pull/54#issuecomment-592514337)
-
-- You must run your tests with **jest-playwright**
-
-```json
-"test:parallel": "jest-playwright --parallel"
-```
 
 ## Usage with [jest-circus](https://github.com/facebook/jest/tree/master/packages/jest-circus)
 

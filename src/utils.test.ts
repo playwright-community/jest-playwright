@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, BrowserType, WEBKIT } from './constants'
+import { getDisplayName } from './utils'
 
 const {
   readConfig,
@@ -9,6 +10,7 @@ const {
   getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
+  checkDependencies,
   readPackage,
   getPlaywrightInstance,
 } = Utils
@@ -78,7 +80,7 @@ describe('readConfig', () => {
       context: {
         foo: true,
       },
-      browser: 'chromium',
+      browsers: ['chromium'],
       exitOnPageError: true,
     }
     expect(config).toMatchObject(expectedConfig)
@@ -96,15 +98,26 @@ describe('readConfig', () => {
   })
 })
 
+describe('getDisplayName', () => {
+  it('should return right display name for passed browser', () => {
+    expect(getDisplayName('chromium', null)).toBe('browser: chromium')
+  })
+
+  it('should return right display name for passed browser and device', () => {
+    expect(getDisplayName('chromium', 'iPhone 6')).toBe(
+      'browser: chromium device: iPhone 6',
+    )
+  })
+})
+
 describe('getBrowserType', () => {
   it('should return "chromium" as default', async () => {
-    const config = await readConfig()
-    const browserType = getBrowserType(config)
+    const browserType = getBrowserType()
     expect(browserType).toBe(CHROMIUM)
   })
   it('should return BROWSER if defined', async () => {
     process.env.BROWSER = 'webkit'
-    const browserType = getBrowserType({ exitOnPageError: false })
+    const browserType = getBrowserType('firefox')
     expect(browserType).toBe(process.env.BROWSER)
     delete process.env.BROWSER
   })
@@ -112,13 +125,12 @@ describe('getBrowserType', () => {
 
 describe('getDeviceType', () => {
   it('should return "undefined" when there is no device', async () => {
-    const config = await readConfig()
-    const device = getDeviceType(config)
+    const device = getDeviceType()
     expect(device).toBe(undefined)
   })
   it('should return BROWSER if defined', async () => {
     process.env.DEVICE = 'iPhone 11'
-    const device = getDeviceType({ exitOnPageError: false })
+    const device = getDeviceType()
     expect(device).toBe(process.env.DEVICE)
     delete process.env.DEVICE
   })
@@ -126,18 +138,7 @@ describe('getDeviceType', () => {
 
 describe('checkBrowserEnv', () => {
   it('should throw Error with unknown type', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => ({
-        browser: 'unknown',
-      }),
-      { virtual: true },
-    )
-    const config = await readConfig()
-    const browserType = getBrowserType(config)
+    const browserType = getBrowserType('unknown' as BrowserType)
     expect(() => checkBrowserEnv(browserType)).toThrow()
   })
 })
@@ -147,6 +148,18 @@ describe('checkDeviceEnv', () => {
     const device = 'unknown'
     const devices = ['iPhone 11', 'Pixel 2', 'Nexus 4']
     expect(() => checkDeviceEnv(device, devices)).toThrow()
+  })
+})
+
+describe('checkDependencies', () => {
+  it('should return chromium browser', () => {
+    const dep = checkDependencies({ 'playwright-chromium': '*' })
+    expect(dep).toBe(CHROMIUM)
+  })
+
+  it('should return chromium browser', () => {
+    const dep = checkDependencies({ 'playwright-webkit': '*' })
+    expect(dep).toBe(WEBKIT)
   })
 })
 
@@ -218,24 +231,7 @@ describe('getPlaywrightInstance', () => {
       firefox: 'firefox',
     }))
 
-    const instance = await getPlaywrightInstance('firefox')
-    expect(instance).toEqual('firefox')
-  })
-
-  it('should register passed selectors for playwright package', async () => {
-    spy.mockResolvedValue('playwright')
-
-    const register = jest.fn().mockResolvedValue('registered')
-
-    jest.doMock('playwright', () => ({
-      firefox: 'firefox',
-      selectors: { _engines: new Map(), register },
-    }))
-
-    const selectors = [{ name: 'test', script: 'test' }]
-
-    const instance = await getPlaywrightInstance('firefox', selectors)
-    expect(register).toHaveBeenLastCalledWith('test', 'test')
+    const instance = await getPlaywrightInstance('playwright', 'firefox')
     expect(instance).toEqual('firefox')
   })
 
@@ -246,7 +242,7 @@ describe('getPlaywrightInstance', () => {
       chromium: 'chromium',
     }))
 
-    const instance = await getPlaywrightInstance('chromium')
+    const instance = await getPlaywrightInstance('chromium', 'chromium')
     expect(instance).toEqual('chromium')
   })
 })

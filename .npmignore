@@ -5,3 +5,4 @@
 !setup.js
 !teardown.js
 !jest-preset.json
+!runner.js

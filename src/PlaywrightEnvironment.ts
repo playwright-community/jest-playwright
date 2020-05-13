@@ -1,15 +1,18 @@
 /* eslint-disable no-console */
-import { Config as JestConfig } from '@jest/types'
+/* eslint-disable @typescript-eslint/ban-ts-ignore */
+import type { Config as JestConfig } from '@jest/types'
+import type { Event, State } from 'jest-circus'
+import type { Browser } from 'playwright-core'
+import playwright from 'playwright-core'
+import type { Config, GenericBrowser, BrowserType } from './types'
+import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
-  checkBrowserEnv,
-  checkDeviceEnv,
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
+  readPackage,
 } from './utils'
-import { Config, CHROMIUM, GenericBrowser } from './constants'
-import playwright, { Browser } from 'playwright-core'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -22,12 +25,6 @@ const KEYS = {
 }
 
 let teardownServer: (() => Promise<void>) | null = null
-let browserPerProcess: Browser | null = null
-let browserShutdownTimeout: NodeJS.Timeout | null = null
-
-const resetBrowserCloseWatchdog = (): void => {
-  if (browserShutdownTimeout) clearTimeout(browserShutdownTimeout)
-}
 
 const logMessage = ({
   message,
@@ -42,41 +39,24 @@ const logMessage = ({
   process.exit(1)
 }
 
-// Since there are no per-worker hooks, we have to setup a timer to
-// close the browser.
-//
-// @see https://github.com/facebook/jest/issues/8708 (and upvote plz!)
-const startBrowserCloseWatchdog = (): void => {
-  resetBrowserCloseWatchdog()
-  browserShutdownTimeout = setTimeout(async () => {
-    const browser = browserPerProcess
-    browserPerProcess = null
-    if (browser) await browser.close()
-  }, 50)
-}
-
 const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
+  browserType: BrowserType,
   config: Config,
 ): Promise<Browser> => {
-  if (!browserPerProcess) {
-    const browserType = getBrowserType(config)
-    checkBrowserEnv(browserType)
-    const { launchBrowserApp, connectBrowserApp } = config
-    // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
-    if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
-      launchBrowserApp.args = launchBrowserApp.args.filter(
-        (item) => item !== '--no-sandbox',
-      )
-    }
-
-    if (connectBrowserApp) {
-      browserPerProcess = await playwrightInstance.connect(connectBrowserApp)
-    } else {
-      browserPerProcess = await playwrightInstance.launch(launchBrowserApp)
-    }
+  const { launchBrowserApp, connectBrowserApp } = config
+  // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
+  if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
+    launchBrowserApp.args = launchBrowserApp.args.filter(
+      (item) => item !== '--no-sandbox',
+    )
   }
-  return browserPerProcess
+
+  if (connectBrowserApp) {
+    return await playwrightInstance.connect(connectBrowserApp)
+  } else {
+    return await playwrightInstance.launch(launchBrowserApp)
+  }
 }
 
 export const getPlaywrightEnv = (basicEnv = 'node') => {
@@ -87,21 +67,34 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
 
   return class PlaywrightEnvironment extends RootEnv {
     private _config: JestConfig.ProjectConfig
+
     constructor(config: JestConfig.ProjectConfig) {
       super(config)
       this._config = config
     }
 
     async setup(): Promise<void> {
-      resetBrowserCloseWatchdog()
       const config = await readConfig(this._config.rootDir)
-      const browserType = getBrowserType(config)
-      checkBrowserEnv(browserType)
+      //@ts-ignore
+      const browserType = getBrowserType(this._config.browserName)
       const { context, exitOnPageError, server, selectors } = config
-      const device = getDeviceType(config)
+      const playwrightPackage = await readPackage()
+      if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const playwright = require('playwright')
+        if (selectors) {
+          await Promise.all(
+            selectors.map(({ name, script }) => {
+              return playwright.selectors.register(name, script)
+            }),
+          )
+        }
+      }
+      //@ts-ignore
+      const device = getDeviceType(this._config.device)
       const playwrightInstance = await getPlaywrightInstance(
+        playwrightPackage,
         browserType,
-        selectors,
       )
       let contextOptions = context
 
@@ -129,16 +122,15 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         }
       }
 
-      const availableDevices = Object.keys(playwright.devices)
       if (device) {
-        checkDeviceEnv(device, availableDevices)
         const { viewport, userAgent } = playwright.devices[device]
         contextOptions = { viewport, userAgent, ...contextOptions }
       }
-      this.global.browserName = config.browser
-      this.global.deviceName = config.device
+      this.global.browserName = browserType
+      this.global.deviceName = device
       this.global.browser = await getBrowserPerProcess(
         playwrightInstance,
+        browserType,
         config,
       )
       this.global.context = await this.global.browser.newContext(contextOptions)
@@ -188,16 +180,39 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       }
     }
 
+    async handleTestEvent(event: Event, state: State): Promise<void> {
+      // Hack to set testTimeout for jestPlaywright debugging
+      if (
+        event.name === 'add_test' &&
+        event.fn &&
+        event.fn.toString().includes('jestPlaywright.debug()')
+      ) {
+        // Set timeout to 4 days
+        state.testTimeout = 4 * 24 * 60 * 60 * 1000
+      }
+    }
+
     async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
+      const { page, context, browser } = this.global
+      if (page) {
+        page.removeListener('pageerror', handleError)
+      }
+      if (context) {
+        await context.close()
+      }
+      if (page) {
+        await page.close()
+      }
+
+      if (browser) {
+        await browser.close()
+      }
+
       await super.teardown()
+
       if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
         await teardownServer()
       }
-      if (this.global && this.global.page) {
-        this.global.page.removeListener('pageerror', handleError)
-        await this.global.page.close()
-      }
-      startBrowserCloseWatchdog()
     }
   }
 }
