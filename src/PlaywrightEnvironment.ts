@@ -1,8 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
-import NodeEnvironment from 'jest-environment-node'
-import { Config as JestConfig } from '@jest/types'
-import { Event, State } from 'jest-circus'
+import type { Config as JestConfig } from '@jest/types'
+import type { Event, State } from 'jest-circus'
+import type { Browser } from 'playwright-core'
+import playwright from 'playwright-core'
+import type { Config, GenericBrowser, BrowserType } from './types'
+import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
   getBrowserType,
   getDeviceType,
@@ -10,14 +13,6 @@ import {
   readConfig,
   readPackage,
 } from './utils'
-import {
-  Config,
-  CHROMIUM,
-  GenericBrowser,
-  IMPORT_KIND_PLAYWRIGHT,
-  BrowserType,
-} from './constants'
-import playwright, { Browser } from 'playwright-core'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -64,154 +59,156 @@ const getBrowserPerProcess = async (
   }
 }
 
-class PlaywrightEnvironment extends NodeEnvironment {
-  private _config: JestConfig.ProjectConfig
-  constructor(config: JestConfig.ProjectConfig) {
-    super(config)
-    this._config = config
-  }
+export const getPlaywrightEnv = (basicEnv = 'node') => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const RootEnv = require(basicEnv === 'node'
+    ? 'jest-environment-node'
+    : 'jest-environment-jsdom')
 
-  async setup(): Promise<void> {
-    const config = await readConfig(this._config.rootDir)
-    //@ts-ignore
-    const browserType = getBrowserType(this._config.browserName)
-    const { context, exitOnPageError, server, selectors } = config
-    const playwrightPackage = await readPackage()
-    if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const playwright = require('playwright')
-      if (selectors) {
-        await Promise.all(
-          selectors.map(({ name, script }) => {
-            return playwright.selectors.register(name, script)
-          }),
-        )
-      }
+  return class PlaywrightEnvironment extends RootEnv {
+    private _config: JestConfig.ProjectConfig
+
+    constructor(config: JestConfig.ProjectConfig) {
+      super(config)
+      this._config = config
     }
-    //@ts-ignore
-    const device = getDeviceType(this._config.device)
-    const playwrightInstance = await getPlaywrightInstance(
-      playwrightPackage,
-      browserType,
-    )
-    let contextOptions = context
 
-    if (server) {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const devServer = require('jest-dev-server')
-      const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
-      teardownServer = devServer.teardown
-      try {
-        await setup(server)
-      } catch (error) {
-        if (error.code === ERROR_TIMEOUT) {
-          logMessage({
-            message: error.message,
-            action: 'can set "server.launchTimeout"',
-          })
+    async setup(): Promise<void> {
+      const config = await readConfig(this._config.rootDir)
+      //@ts-ignore
+      const browserType = getBrowserType(this._config.browserName)
+      const { context, exitOnPageError, server, selectors } = config
+      const playwrightPackage = await readPackage()
+      if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const playwright = require('playwright')
+        if (selectors) {
+          await Promise.all(
+            selectors.map(({ name, script }) => {
+              return playwright.selectors.register(name, script)
+            }),
+          )
         }
-        if (error.code === ERROR_NO_COMMAND) {
-          logMessage({
-            message: error.message,
-            action: 'must set "server.command"',
-          })
-        }
-        throw error
       }
-    }
+      //@ts-ignore
+      const device = getDeviceType(this._config.device)
+      const playwrightInstance = await getPlaywrightInstance(
+        playwrightPackage,
+        browserType,
+      )
+      let contextOptions = context
 
-    if (device) {
-      const { viewport, userAgent } = playwright.devices[device]
-      contextOptions = { viewport, userAgent, ...contextOptions }
-    }
-    this.global.browserName = browserType
-    this.global.deviceName = device
-    this.global.browser = await getBrowserPerProcess(
-      playwrightInstance,
-      browserType,
-      config,
-    )
-    this.global.context = await this.global.browser.newContext(contextOptions)
-    this.global.page = await this.global.context.newPage()
-    if (exitOnPageError) {
-      this.global.page.on('pageerror', handleError)
-    }
-    this.global.jestPlaywright = {
-      debug: async (): Promise<void> => {
-        // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
-        await this.global.page.evaluate(() => {
-          // eslint-disable-next-line no-debugger
-          debugger
-        })
-        // eslint-disable-next-line no-console
-        console.log('\n\n🕵️‍  Code is paused, press enter to resume')
-        // Run an infinite promise
-        return new Promise((resolve) => {
-          const { stdin } = process
-          const listening = stdin.listenerCount('data') > 0
-          const onKeyPress = (key: string): void => {
-            if (
-              key === KEYS.CONTROL_C ||
-              key === KEYS.CONTROL_D ||
-              key === KEYS.ENTER
-            ) {
-              stdin.removeListener('data', onKeyPress)
-              if (!listening) {
-                if (stdin.isTTY) {
-                  stdin.setRawMode(false)
+      if (server) {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const devServer = require('jest-dev-server')
+        const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
+        teardownServer = devServer.teardown
+        try {
+          await setup(server)
+        } catch (error) {
+          if (error.code === ERROR_TIMEOUT) {
+            logMessage({
+              message: error.message,
+              action: 'can set "server.launchTimeout"',
+            })
+          }
+          if (error.code === ERROR_NO_COMMAND) {
+            logMessage({
+              message: error.message,
+              action: 'must set "server.command"',
+            })
+          }
+          throw error
+        }
+      }
+
+      if (device) {
+        const { viewport, userAgent } = playwright.devices[device]
+        contextOptions = { viewport, userAgent, ...contextOptions }
+      }
+      this.global.browserName = browserType
+      this.global.deviceName = device
+      this.global.browser = await getBrowserPerProcess(
+        playwrightInstance,
+        browserType,
+        config,
+      )
+      this.global.context = await this.global.browser.newContext(contextOptions)
+      this.global.page = await this.global.context.newPage()
+      if (exitOnPageError) {
+        this.global.page.on('pageerror', handleError)
+      }
+      this.global.jestPlaywright = {
+        debug: async (): Promise<void> => {
+          // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
+          await this.global.page.evaluate(() => {
+            // eslint-disable-next-line no-debugger
+            debugger
+          })
+          // eslint-disable-next-line no-console
+          console.log('\n\n🕵️‍  Code is paused, press enter to resume')
+          // Run an infinite promise
+          return new Promise((resolve) => {
+            const { stdin } = process
+            const listening = stdin.listenerCount('data') > 0
+            const onKeyPress = (key: string): void => {
+              if (
+                key === KEYS.CONTROL_C ||
+                key === KEYS.CONTROL_D ||
+                key === KEYS.ENTER
+              ) {
+                stdin.removeListener('data', onKeyPress)
+                if (!listening) {
+                  if (stdin.isTTY) {
+                    stdin.setRawMode(false)
+                  }
+                  stdin.pause()
                 }
-                stdin.pause()
+                resolve()
               }
-              resolve()
             }
-          }
-          if (!listening) {
-            if (stdin.isTTY) {
-              stdin.setRawMode(true)
+            if (!listening) {
+              if (stdin.isTTY) {
+                stdin.setRawMode(true)
+              }
+              stdin.resume()
+              stdin.setEncoding('utf8')
             }
-            stdin.resume()
-            stdin.setEncoding('utf8')
-          }
-          stdin.on('data', onKeyPress)
-        })
-      },
-    }
-  }
-
-  async handleTestEvent(event: Event, state: State): Promise<void> {
-    // Hack to set testTimeout for jestPlaywright debugging
-    if (
-      event.name === 'add_test' &&
-      event.fn &&
-      event.fn.toString().includes('jestPlaywright.debug()')
-    ) {
-      // Set timeout to 4 days
-      state.testTimeout = 4 * 24 * 60 * 60 * 1000
-    }
-  }
-
-  async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
-    const { page, context, browser } = this.global
-    if (page) {
-      page.removeListener('pageerror', handleError)
-    }
-    if (context) {
-      await context.close()
-    }
-    if (page) {
-      await page.close()
+            stdin.on('data', onKeyPress)
+          })
+        },
+      }
     }
 
-    if (browser) {
-      await browser.close()
+    async handleTestEvent(event: Event, state: State): Promise<void> {
+      // Hack to set testTimeout for jestPlaywright debugging
+      if (
+        event.name === 'add_test' &&
+        event.fn &&
+        event.fn.toString().includes('jestPlaywright.debug()')
+      ) {
+        // Set timeout to 4 days
+        state.testTimeout = 4 * 24 * 60 * 60 * 1000
+      }
     }
 
-    await super.teardown()
+    async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
+      const { page, browser } = this.global
+      if (page) {
+        page.removeListener('pageerror', handleError)
+      }
 
-    if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
-      await teardownServer()
+      if (browser) {
+        await browser.close()
+      }
+
+      await super.teardown()
+
+      if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
+        await teardownServer()
+      }
     }
   }
 }
 
-export default PlaywrightEnvironment
+export default getPlaywrightEnv()

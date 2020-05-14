@@ -1,16 +1,18 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import {
+import type {
   BrowserType,
-  CHROMIUM,
   Config,
+  PlaywrightRequireType,
+  GenericBrowser,
+} from './types'
+import {
+  CHROMIUM,
   DEFAULT_CONFIG,
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
-  PlaywrightRequireType,
   WEBKIT,
-  GenericBrowser,
 } from './constants'
 
 const exists = promisify(fs.exists)

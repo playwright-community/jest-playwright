@@ -1,5 +1,7 @@
 // @ts-nocheck
-import JestRunner, {
+import JestRunner from 'jest-runner'
+import playwright from 'playwright-core'
+import type {
   Test,
   TestRunnerContext,
   TestWatcher,
@@ -8,9 +10,8 @@ import JestRunner, {
   OnTestFailure,
   TestRunnerOptions,
 } from 'jest-runner'
-import playwright from 'playwright-core'
-import { Config as JestConfig } from '@jest/types'
-import { BrowserType } from './constants'
+import type { Config as JestConfig } from '@jest/types'
+import type { BrowserType } from './types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
