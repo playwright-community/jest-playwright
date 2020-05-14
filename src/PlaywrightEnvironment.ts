@@ -193,15 +193,9 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     }
 
     async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
-      const { page, context, browser } = this.global
+      const { page, browser } = this.global
       if (page) {
         page.removeListener('pageerror', handleError)
-      }
-      if (context) {
-        await context.close()
-      }
-      if (page) {
-        await page.close()
       }
 
       if (browser) {
