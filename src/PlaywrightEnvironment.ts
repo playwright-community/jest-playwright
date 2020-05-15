@@ -62,7 +62,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       const config = await readConfig(this._config.rootDir)
       //@ts-ignore
       const browserType = getBrowserType(this._config.browserName)
-      const { context, exitOnPageError, server, selectors } = config
+      const { context, exitOnPageError, selectors } = config
       const playwrightPackage = await readPackage()
       if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
