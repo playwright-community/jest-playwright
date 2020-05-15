@@ -24,21 +24,6 @@ const KEYS = {
   ENTER: '\r',
 }
 
-let teardownServer: (() => Promise<void>) | null = null
-
-const logMessage = ({
-  message,
-  action,
-}: {
-  message: string
-  action: string
-}): void => {
-  console.log('')
-  console.error(message)
-  console.error(`\n☝️ You ${action} in jest-playwright.config.js`)
-  process.exit(1)
-}
-
 const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
   browserType: BrowserType,
@@ -97,30 +82,6 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         browserType,
       )
       let contextOptions = context
-
-      if (server) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const devServer = require('jest-dev-server')
-        const { setup, ERROR_TIMEOUT, ERROR_NO_COMMAND } = devServer
-        teardownServer = devServer.teardown
-        try {
-          await setup(server)
-        } catch (error) {
-          if (error.code === ERROR_TIMEOUT) {
-            logMessage({
-              message: error.message,
-              action: 'can set "server.launchTimeout"',
-            })
-          }
-          if (error.code === ERROR_NO_COMMAND) {
-            logMessage({
-              message: error.message,
-              action: 'must set "server.command"',
-            })
-          }
-          throw error
-        }
-      }
 
       if (device) {
         const { viewport, userAgent } = playwright.devices[device]
@@ -192,7 +153,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       }
     }
 
-    async teardown(jestConfig: JestConfig.InitialOptions = {}): Promise<void> {
+    async teardown(): Promise<void> {
       const { page, browser } = this.global
       if (page) {
         page.removeListener('pageerror', handleError)
@@ -203,10 +164,6 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       }
 
       await super.teardown()
-
-      if (!jestConfig.watch && !jestConfig.watchAll && teardownServer) {
-        await teardownServer()
-      }
     }
   }
 }
