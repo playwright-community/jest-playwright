@@ -70,19 +70,19 @@ describe('What is my browser', () => {
 
 ## Configuration
 
-You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
+You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using the `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
 
 - `launchBrowserApp` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
 - `connectBrowserApp` <[object]> [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
 - `context` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
-- `browsers` <[string[]]>. Define a [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests into.
+- `browsers` <[string[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests in.
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests into. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts)
+- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]> Exits process on any page error. Defaults to `true`.
-- `server` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options)
-- `selectors` <[array]>. Define [selector](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
+- `server` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
+- `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
   Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
 
@@ -104,7 +104,7 @@ module.exports = {
 
 **Note**:
 
-- You can also specify browser with `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
+- You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
 - You can specify device with `DEVICE` environment variable.
 
 ## Put in debug mode
@@ -135,17 +135,17 @@ Other options are documented in [jest-dev-server](https://github.com/smooth-code
 
 ## expect-playwright
 
-There is a utility package [expect-playwright](https://github.com/mxschmitt/expect-playwright) which simplifies the expect statements in combination with Playwright to make e.g. shorter text comparisons.
+There is a utility package [expect-playwright](https://github.com/playwright-community/expect-playwright) which simplifies the expect statements in combination with Playwright to make e.g. shorter text comparisons.
 
 ## ESLint globals / `'page' is not defined`
 
-There is [eslint-plugin-jest-playwright](https://github.com/mxschmitt/eslint-plugin-jest-playwright) available which includes the globals for using jest-playwright.
+There is an ESLint plugin available [eslint-plugin-jest-playwright](https://github.com/playwright-community/eslint-plugin-jest-playwright) available which includes the globals for using jest-playwright.
 
 ## Unstable and experimental API
 
 You can run tests for multiple browsers and devices:
 
-- You must have installed **playwright** package
+- You must have installed the **playwright** package
 - You must define browsers to test with your `jest-playwright.config.js`:
 
 ```javascript
@@ -167,7 +167,7 @@ If there is no defined browsers in config it will run tests for chromium browser
 
 ## Usage with [jest-circus](https://github.com/facebook/jest/tree/master/packages/jest-circus)
 
-You can use **jest-playwright** with **jest-circus** runner for taking screenshots during test failures for example:
+You can use **jest-playwright** with the **jest-circus** runner for taking screenshots during test failures for example:
 
 **jest.config.json**
 
@@ -278,7 +278,7 @@ If for your individual tests a new entire browser instance spins up each time an
 
 ## Inspiration
 
-Thanks to [Smooth Code](https://github.com/smooth-code) for great [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
+Thanks to [Smooth Code](https://github.com/smooth-code) for the great [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer).
 
 ## License
 
