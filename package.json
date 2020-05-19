@@ -46,7 +46,7 @@
     "jest-environment-node": ">=25.x"
   },
   "dependencies": {
-    "expect-playwright": "^0.2.1",
+    "expect-playwright": "^0.2.2",
     "jest-circus": "^26.0.1",
     "jest-dev-server": "^4.4.0"
   },
