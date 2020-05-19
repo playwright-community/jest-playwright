@@ -18,11 +18,12 @@ import {
   getDisplayName,
   readConfig,
 } from './utils'
+import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 
 const getBrowserTest = (
   test: Test,
   browser: BrowserType,
-  device: string,
+  device: string | null,
 ): Test => {
   const { displayName } = test.context.config
   const playwrightDisplayName = getDisplayName(browser, device)
@@ -45,21 +46,23 @@ const getBrowserTest = (
   }
 }
 
-const getTests = (
-  browsers: BrowserType[],
-  devices: string[],
-  tests: Test[],
-): Test[] => {
-  return browsers.flatMap((browser) => {
-    checkBrowserEnv(browser)
-    return devices.length
-      ? devices.flatMap((device) => {
-          const availableDevices = Object.keys(playwright.devices)
-          checkDeviceEnv(device, availableDevices)
-          return tests.map((test) => getBrowserTest(test, browser, device))
-        })
-      : tests.map((test) => getBrowserTest(test, browser))
-  })
+const getTests = (tests: Test[]): Promise<Test[]> => {
+  return Promise.all(
+    tests.map(async (test) => {
+      const { rootDir } = test.context.config
+      const { browsers, devices } = await readConfig(rootDir)
+      return browsers.flatMap((browser) => {
+        checkBrowserEnv(browser)
+        return devices.length
+          ? devices.flatMap((device) => {
+              const availableDevices = Object.keys(playwright.devices)
+              checkDeviceEnv(device, availableDevices)
+              return getBrowserTest(test, browser, device)
+            })
+          : getBrowserTest(test, browser, null)
+      })
+    }),
+  ).then((data) => data.flat())
 }
 
 class PlaywrightRunner extends JestRunner {
@@ -69,7 +72,7 @@ class PlaywrightRunner extends JestRunner {
   ) {
     const config = { ...globalConfig }
     // Set default timeout to 15s
-    config.testTimeout = config.testTimeout || 15000
+    config.testTimeout = config.testTimeout || DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
     super(config, context)
   }
 
@@ -81,8 +84,7 @@ class PlaywrightRunner extends JestRunner {
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ): Promise<void> {
-    const { browsers, devices } = await readConfig(this._globalConfig.rootDir)
-    const browserTests = getTests(browsers, devices, tests)
+    const browserTests = await getTests(tests)
 
     return await (options.serial
       ? this._createInBandTestRun(
