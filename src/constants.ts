@@ -13,3 +13,5 @@ export const DEFAULT_CONFIG: Config = {
   devices: [],
   exitOnPageError: true,
 }
+
+export const DEFAULT_TEST_PLAYWRIGHT_TIMEOUT = 15000
