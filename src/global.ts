@@ -23,7 +23,9 @@ const logMessage = ({
   process.exit(1)
 }
 
-export async function setup(jestConfig: JestConfig.GlobalConfig) {
+export async function setup(
+  jestConfig: JestConfig.GlobalConfig,
+): Promise<void> {
   const config = await readConfig(jestConfig.rootDir)
 
   // If we are in watch mode, - only setupServer() once.
@@ -53,7 +55,9 @@ export async function setup(jestConfig: JestConfig.GlobalConfig) {
   }
 }
 
-export async function teardown(jestConfig: JestConfig.GlobalConfig) {
+export async function teardown(
+  jestConfig: JestConfig.GlobalConfig,
+): Promise<void> {
   if (!jestConfig.watch && !jestConfig.watchAll) {
     await teardownServer()
   }
