@@ -133,6 +133,10 @@ module.exports = {
 
 Other options are documented in [jest-dev-server](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server).
 
+## Using with different jest environments
+
+The default **jest-playwright** environment is **node**, but you can use a browser-like environment through [jest-playwright-jsdom](https://github.com/playwright-community/jest-playwright-jsdom)
+
 ## expect-playwright
 
 There is a utility package [expect-playwright](https://github.com/playwright-community/expect-playwright) which simplifies the expect statements in combination with Playwright to make e.g. shorter text comparisons.
