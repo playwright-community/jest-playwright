@@ -3,7 +3,8 @@
 import type { Config as JestConfig } from '@jest/types'
 import type { Event, State } from 'jest-circus'
 import type { Browser } from 'playwright-core'
-import playwright from 'playwright-core'
+// @ts-ignore
+import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 import type { Config, GenericBrowser, BrowserType } from './types'
 import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
@@ -84,7 +85,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       let contextOptions = context
 
       if (device) {
-        const { viewport, userAgent } = playwright.devices[device]
+        const { viewport, userAgent } = DeviceDescriptors[device]
         contextOptions = { viewport, userAgent, ...contextOptions }
       }
       this.global.browserName = browserType

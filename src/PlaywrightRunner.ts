@@ -1,6 +1,6 @@
 // @ts-nocheck
 import JestRunner from 'jest-runner'
-import playwright from 'playwright-core'
+import { DeviceDescriptors } from 'playwright-core/lib/deviceDescriptors'
 import type {
   Test,
   TestRunnerContext,
@@ -55,7 +55,7 @@ const getTests = (tests: Test[]): Promise<Test[]> => {
         checkBrowserEnv(browser)
         return devices.length
           ? devices.flatMap((device) => {
-              const availableDevices = Object.keys(playwright.devices)
+              const availableDevices = Object.keys(DeviceDescriptors)
               checkDeviceEnv(device, availableDevices)
               return getBrowserTest(test, browser, device)
             })
