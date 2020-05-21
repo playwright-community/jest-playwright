@@ -5,7 +5,7 @@ import type {
   BrowserType,
   Config,
   PlaywrightRequireType,
-  GenericBrowser,
+  Playwright,
 } from './types'
 import {
   CHROMIUM,
@@ -87,14 +87,22 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
   return playwright
 }
 
-export const getPlaywrightInstance = async (
+export const getPlaywrightInstance = (
   playwrightPackage: PlaywrightRequireType,
-  browserType: BrowserType,
-): Promise<GenericBrowser> => {
-  if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
-    return require('playwright')[browserType]
+  browserName: BrowserType,
+): Playwright => {
+  const buildPlaywrightStructure = (importName: string): Playwright => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pw = require(importName)
+    return {
+      instance: pw[browserName],
+      devices: pw['devices'],
+    }
   }
-  return require(`playwright-${playwrightPackage}`)[playwrightPackage]
+  if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+    return buildPlaywrightStructure('playwright')
+  }
+  return buildPlaywrightStructure(`playwright-${playwrightPackage}`)
 }
 
 export const readConfig = async (
