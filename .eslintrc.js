@@ -15,6 +15,7 @@ module.exports = {
     'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
     '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {

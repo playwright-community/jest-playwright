@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import type { Config as JestConfig } from '@jest/types'
 import type { Event, State } from 'jest-circus'
 import type { Browser } from 'playwright-core'
