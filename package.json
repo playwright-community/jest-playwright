@@ -42,13 +42,11 @@
     ],
     "*.{js,ts}": "eslint --fix"
   },
-  "peerDependencies": {
-    "jest-environment-node": ">=25.x"
-  },
   "dependencies": {
     "expect-playwright": "^0.2.2",
     "jest-circus": "^26.0.1",
-    "jest-dev-server": "^4.4.0"
+    "jest-dev-server": "^4.4.0",
+    "jest-environment-node": "^26.0.1"
   },
   "devDependencies": {
     "@types/debug": "4.1.5",
@@ -65,7 +63,6 @@
     "eslint-plugin-prettier": "3.1.3",
     "husky": "4.2.5",
     "jest": "26.0.1",
-    "jest-environment-node": "26.0.1",
     "lint-staged": "10.2.4",
     "playwright": ">=0.12.1",
     "playwright-chromium": ">=0.12.1",
