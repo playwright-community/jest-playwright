@@ -39,7 +39,7 @@ const getBrowserTest = (
         displayName: {
           name: displayName
             ? `${playwrightDisplayName} ${
-                (displayName as { name: string }).name
+                typeof displayName === 'string' ? displayName : displayName.name
               }`
             : playwrightDisplayName,
           color: 'yellow',
