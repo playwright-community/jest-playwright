@@ -1,6 +1,4 @@
-// @ts-nocheck
 import JestRunner from 'jest-runner'
-import playwright from 'playwright-core'
 import type {
   Test,
   TestRunnerContext,
@@ -17,6 +15,8 @@ import {
   checkDeviceEnv,
   getDisplayName,
   readConfig,
+  getPlaywrightInstance,
+  readPackage,
 } from './utils'
 import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 
@@ -33,11 +33,14 @@ const getBrowserTest = (
       ...test.context,
       config: {
         ...test.context.config,
+        // @ts-ignore
         browserName: browser,
         device,
         displayName: {
           name: displayName
-            ? `${playwrightDisplayName} ${displayName.name}`
+            ? `${playwrightDisplayName} ${
+                typeof displayName === 'string' ? displayName : displayName.name
+              }`
             : playwrightDisplayName,
           color: 'yellow',
         },
@@ -46,17 +49,22 @@ const getBrowserTest = (
   }
 }
 
-const getTests = (tests: Test[]): Promise<Test[]> => {
-  return Promise.all(
+const getTests = async (tests: Test[]): Promise<Test[]> => {
+  const playwrightPackage = await readPackage()
+  return await Promise.all(
     tests.map(async (test) => {
       const { rootDir } = test.context.config
       const { browsers, devices } = await readConfig(rootDir)
       return browsers.flatMap((browser) => {
         checkBrowserEnv(browser)
-        return devices.length
+        const { devices: availableDevices } = getPlaywrightInstance(
+          playwrightPackage,
+          browser,
+        )
+        return devices
           ? devices.flatMap((device) => {
-              const availableDevices = Object.keys(playwright.devices)
-              checkDeviceEnv(device, availableDevices)
+              const availableDeviceNames = Object.keys(availableDevices)
+              checkDeviceEnv(device, availableDeviceNames)
               return getBrowserTest(test, browser, device)
             })
           : getBrowserTest(test, browser, null)
@@ -87,14 +95,14 @@ class PlaywrightRunner extends JestRunner {
     const browserTests = await getTests(tests)
 
     return await (options.serial
-      ? this._createInBandTestRun(
+      ? this['_createInBandTestRun'](
           browserTests,
           watcher,
           onStart,
           onResult,
           onFailure,
         )
-      : this._createParallelTestRun(
+      : this['_createParallelTestRun'](
           browserTests,
           watcher,
           onStart,
