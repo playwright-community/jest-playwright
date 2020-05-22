@@ -14,6 +14,7 @@ module.exports = {
     'import/no-dynamic-require': 'off',
     'import/no-unresolved': 'off',
     'prettier/prettier': 'error',
+    '@typescript-eslint/ban-ts-ignore': 'off',
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
