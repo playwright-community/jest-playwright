@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -56,7 +56,7 @@
     "@typescript-eslint/eslint-plugin": "3.0.0",
     "@typescript-eslint/parser": "3.0.0",
     "coveralls": "3.1.0",
-    "eslint": "7.0.0",
+    "eslint": "7.1.0",
     "eslint-config-airbnb-base": "14.1.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-import": "2.20.2",
@@ -70,7 +70,7 @@
     "playwright-firefox": ">=0.12.1",
     "playwright-webkit": ">=0.12.1",
     "prettier": "2.0.5",
-    "snyk": "^1.323.2",
+    "snyk": "^1.324.0",
     "ts-jest": "26.0.0",
     "typescript": "3.9.3"
   }
