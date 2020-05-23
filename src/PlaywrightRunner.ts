@@ -61,7 +61,7 @@ const getTests = async (tests: Test[]): Promise<Test[]> => {
           playwrightPackage,
           browser,
         )
-        return devices
+        return devices && devices.length
           ? devices.flatMap((device) => {
               const availableDeviceNames = Object.keys(availableDevices)
               checkDeviceEnv(device, availableDeviceNames)
