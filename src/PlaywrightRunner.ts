@@ -51,26 +51,30 @@ const getBrowserTest = (
 
 const getTests = async (tests: Test[]): Promise<Test[]> => {
   const playwrightPackage = await readPackage()
-  return await Promise.all(
+  const pwTests: Test[] = []
+  await Promise.all(
     tests.map(async (test) => {
       const { rootDir } = test.context.config
       const { browsers, devices } = await readConfig(rootDir)
-      return browsers.flatMap((browser) => {
+      browsers.forEach((browser) => {
         checkBrowserEnv(browser)
         const { devices: availableDevices } = getPlaywrightInstance(
           playwrightPackage,
           browser,
         )
-        return devices && devices.length
-          ? devices.flatMap((device) => {
-              const availableDeviceNames = Object.keys(availableDevices)
-              checkDeviceEnv(device, availableDeviceNames)
-              return getBrowserTest(test, browser, device)
-            })
-          : getBrowserTest(test, browser, null)
+        if (devices && devices.length) {
+          devices.forEach((device) => {
+            const availableDeviceNames = Object.keys(availableDevices)
+            checkDeviceEnv(device, availableDeviceNames)
+            pwTests.push(getBrowserTest(test, browser, device))
+          })
+        } else {
+          pwTests.push(getBrowserTest(test, browser, null))
+        }
       })
     }),
-  ).then((data) => data.flat())
+  )
+  return pwTests
 }
 
 class PlaywrightRunner extends JestRunner {
