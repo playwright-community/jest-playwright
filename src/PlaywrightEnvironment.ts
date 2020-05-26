@@ -59,6 +59,8 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     async setup(): Promise<void> {
       const config = await readConfig(this._config.rootDir)
       //@ts-ignore
+      config.connectBrowserApp = { wsEndpoint: this._config.wsEndpoint }
+      //@ts-ignore
       const browserType = getBrowserType(this._config.browserName)
       const { context, exitOnPageError, selectors } = config
       const playwrightPackage = await readPackage()

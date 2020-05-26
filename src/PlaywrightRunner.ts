@@ -9,7 +9,7 @@ import type {
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
-import type { BrowserType } from './types'
+import type { BrowserType, GenericBrowser } from './types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -19,10 +19,12 @@ import {
   readPackage,
 } from './utils'
 import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
+import { BrowserServer } from 'playwright-core'
 
 const getBrowserTest = (
   test: Test,
   browser: BrowserType,
+  wsEndpoint: string,
   device: string | null,
 ): Test => {
   const { displayName } = test.context.config
@@ -35,6 +37,8 @@ const getBrowserTest = (
         ...test.context.config,
         // @ts-ignore
         browserName: browser,
+        // @ts-ignore
+        wsEndpoint,
         device,
         displayName: {
           name: displayName
@@ -52,28 +56,33 @@ const getBrowserTest = (
 const getTests = async (tests: Test[]): Promise<Test[]> => {
   const playwrightPackage = await readPackage()
   const pwTests: Test[] = []
-  await Promise.all(
-    tests.map(async (test) => {
-      const { rootDir } = test.context.config
-      const { browsers, devices } = await readConfig(rootDir)
-      browsers.forEach((browser) => {
-        checkBrowserEnv(browser)
-        const { devices: availableDevices } = getPlaywrightInstance(
-          playwrightPackage,
-          browser,
-        )
-        if (devices && devices.length) {
-          devices.forEach((device) => {
-            const availableDeviceNames = Object.keys(availableDevices)
-            checkDeviceEnv(device, availableDeviceNames)
-            pwTests.push(getBrowserTest(test, browser, device))
-          })
-        } else {
-          pwTests.push(getBrowserTest(test, browser, null))
-        }
-      })
-    }),
-  )
+  const browser2Server: Partial<Record<BrowserType, BrowserServer>> = {}
+  for (const test of tests) {
+    const { rootDir } = test.context.config
+    const { browsers, devices, launchBrowserApp } = await readConfig(rootDir)
+    for (const browser of browsers) {
+      checkBrowserEnv(browser)
+      const { devices: availableDevices, instance } = getPlaywrightInstance(
+        playwrightPackage,
+        browser,
+      )
+      if (!browser2Server[browser]) {
+        browser2Server[browser] = await instance.launchServer(launchBrowserApp)
+      }
+      const wsEndpoint = browser2Server[browser]!.wsEndpoint()
+
+      if (devices && devices.length) {
+        devices.forEach((device) => {
+          const availableDeviceNames = Object.keys(availableDevices)
+          checkDeviceEnv(device, availableDeviceNames)
+          pwTests.push(getBrowserTest(test, browser, wsEndpoint, device))
+        })
+      } else {
+        pwTests.push(getBrowserTest(test, browser, wsEndpoint, null))
+      }
+    }
+  }
+
   return pwTests
 }
 
