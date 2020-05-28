@@ -2,8 +2,9 @@
   "globalSetup": "jest-playwright-preset/setup.js",
   "globalTeardown": "jest-playwright-preset/teardown.js",
   "testEnvironment": "jest-playwright-preset",
-  "runner": "jest-playwright-preset/runner.js",
+  "testSequencer": "jest-playwright-preset/testSequencer.js",
   "testRunner": "jest-circus/runner",
+  "runner": "jest-playwright-preset/runner.js",
   "setupFilesAfterEnv": [
     "expect-playwright"
   ]
