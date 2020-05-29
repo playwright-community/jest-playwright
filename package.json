@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
-    "expect-playwright": "^0.2.2",
+    "expect-playwright": "^0.2.4",
     "jest-circus": "^26.0.1",
     "jest-dev-server": "^4.4.0",
     "jest-environment-node": "^26.0.1"
@@ -53,8 +53,8 @@
     "@types/jest": "25.2.3",
     "@types/jest-dev-server": "4.2.0",
     "@types/node": "14.0.5",
-    "@typescript-eslint/eslint-plugin": "3.0.0",
-    "@typescript-eslint/parser": "3.0.0",
+    "@typescript-eslint/eslint-plugin": "3.0.2",
+    "@typescript-eslint/parser": "3.0.2",
     "coveralls": "3.1.0",
     "eslint": "7.1.0",
     "eslint-config-airbnb-base": "14.1.0",
@@ -63,14 +63,14 @@
     "eslint-plugin-prettier": "3.1.3",
     "husky": "4.2.5",
     "jest": "26.0.1",
-    "lint-staged": "10.2.6",
+    "lint-staged": "10.2.7",
     "playwright": ">=0.12.1",
     "playwright-chromium": ">=0.12.1",
     "playwright-core": ">=0.12.1",
     "playwright-firefox": ">=0.12.1",
     "playwright-webkit": ">=0.12.1",
     "prettier": "2.0.5",
-    "snyk": "^1.324.0",
+    "snyk": "^1.332.0",
     "ts-jest": "26.0.0",
     "typescript": "3.9.3"
   }
