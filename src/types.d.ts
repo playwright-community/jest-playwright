@@ -8,7 +8,7 @@ import type {
   BrowserTypeConnectOptions,
   DeviceDescriptor,
 } from 'playwright-core'
-import type { JestDevServerOptions } from 'jest-dev-server'
+import type { JestDevServerOptions } from 'jest-process-manager'
 import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
