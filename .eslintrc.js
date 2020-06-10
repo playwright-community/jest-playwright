@@ -16,6 +16,7 @@ module.exports = {
     'prettier/prettier': 'error',
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
