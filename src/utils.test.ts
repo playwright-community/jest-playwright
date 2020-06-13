@@ -179,14 +179,9 @@ describe('readPackage', () => {
       }),
       { virtual: true },
     )
-    let error
-    try {
-      await readPackage()
-    } catch (e) {
-      error = e
-    }
-    expect(error).toEqual(
-      new Error('None of playwright packages was not found in dependencies'),
+
+    await expect(readPackage()).rejects.toThrowError(
+      'None of playwright packages was not found in dependencies',
     )
   })
   it('should return playwright when it is defined', async () => {
@@ -265,12 +260,11 @@ describe('getPlaywrightInstance', () => {
       chromium: 'chromium',
     }))
 
-    let error
-    try {
+    const getMissedPlaywrightInstance = () =>
       getPlaywrightInstance({ chromium: 'chromium' }, 'firefox')
-    } catch (e) {
-      error = e
-    }
-    expect(error).toEqual(new Error('Cannot find provided playwright package'))
+
+    expect(getMissedPlaywrightInstance).toThrowError(
+      'Cannot find provided playwright package',
+    )
   })
 })
