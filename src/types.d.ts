@@ -13,6 +13,12 @@ import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
+export type Packages = {
+  [CHROMIUM]?: typeof CHROMIUM
+  [FIREFOX]?: typeof FIREFOX
+  [WEBKIT]?: typeof WEBKIT
+}
+
 export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
