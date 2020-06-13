@@ -1,12 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import type {
-  BrowserType,
-  Config,
-  PlaywrightRequireType,
-  Playwright,
-} from './types'
+import type { BrowserType, Config, Playwright, Packages } from './types'
 import {
   CHROMIUM,
   DEFAULT_CONFIG,
@@ -19,13 +14,20 @@ const exists = promisify(fs.exists)
 
 export const checkDependencies = (
   dependencies: Record<string, string>,
-): PlaywrightRequireType | null => {
+): Packages | typeof IMPORT_KIND_PLAYWRIGHT | null => {
+  const packages: Packages = {}
   if (!dependencies) return null
   if (dependencies.playwright) return IMPORT_KIND_PLAYWRIGHT
-  if (dependencies[`playwright-${CHROMIUM}`]) return CHROMIUM
-  if (dependencies[`playwright-${FIREFOX}`]) return FIREFOX
-  if (dependencies[`playwright-${WEBKIT}`]) return WEBKIT
-  return null
+  if (dependencies[`playwright-${CHROMIUM}`]) {
+    packages[CHROMIUM] = CHROMIUM
+  }
+  if (dependencies[`playwright-${FIREFOX}`]) {
+    packages[FIREFOX] = FIREFOX
+  }
+  if (dependencies[`playwright-${WEBKIT}`]) {
+    packages[WEBKIT] = WEBKIT
+  }
+  return packages
 }
 
 export const checkBrowserEnv = (param: BrowserType): void => {
@@ -70,7 +72,9 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
   return browser || CHROMIUM
 }
 
-export const readPackage = async (): Promise<PlaywrightRequireType> => {
+export const readPackage = async (): Promise<
+  Packages | typeof IMPORT_KIND_PLAYWRIGHT
+> => {
   const packagePath = 'package.json'
   const absConfigPath = path.resolve(process.cwd(), packagePath)
   const packageConfig = await require(absConfigPath)
@@ -81,14 +85,14 @@ export const readPackage = async (): Promise<PlaywrightRequireType> => {
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
     checkDependencies(packageConfig.devDependencies)
-  if (!playwright) {
+  if (!playwright || !Object.keys(playwright).length) {
     throw new Error('None of playwright packages was not found in dependencies')
   }
   return playwright
 }
 
 export const getPlaywrightInstance = (
-  playwrightPackage: PlaywrightRequireType,
+  playwrightPackage: typeof IMPORT_KIND_PLAYWRIGHT | Packages,
   browserName: BrowserType,
 ): Playwright => {
   const buildPlaywrightStructure = (importName: string): Playwright => {
@@ -102,7 +106,12 @@ export const getPlaywrightInstance = (
   if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
     return buildPlaywrightStructure('playwright')
   }
-  return buildPlaywrightStructure(`playwright-${playwrightPackage}`)
+  if (!playwrightPackage[browserName]) {
+    throw new Error('Cannot find provided playwright package')
+  }
+  return buildPlaywrightStructure(
+    `playwright-${playwrightPackage[browserName]}`,
+  )
 }
 
 export const readConfig = async (
