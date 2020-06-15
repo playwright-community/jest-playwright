@@ -153,6 +153,16 @@ describe('checkDeviceEnv', () => {
 })
 
 describe('checkDependencies', () => {
+  it('should return null for empty dependencies', () => {
+    const dep = checkDependencies({})
+    expect(dep).toBe(null)
+  })
+
+  it('should return null for dependencies without playwright packages', () => {
+    const dep = checkDependencies({ test: '0.0.1' })
+    expect(dep).toBe(null)
+  })
+
   it('should return right package object for single package', () => {
     const dep = checkDependencies({ 'playwright-chromium': '*' })
     expect(dep).toStrictEqual({ [CHROMIUM]: CHROMIUM })
@@ -208,6 +218,24 @@ describe('readPackage', () => {
     jest.mock(
       path.join(__dirname, '..', 'package.json'),
       () => ({
+        devDependencies: {
+          'playwright-firefox': '*',
+        },
+      }),
+      { virtual: true },
+    )
+
+    const playwright = await readPackage()
+    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
+  })
+  it('should return playwright-firefox when it is defined and empty dependencies are persistent', async () => {
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
+      (_, cb: (exists: boolean) => void) => cb(true),
+    )
+    jest.mock(
+      path.join(__dirname, '..', 'package.json'),
+      () => ({
+        dependencies: {},
         devDependencies: {
           'playwright-firefox': '*',
         },

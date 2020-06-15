@@ -31,7 +31,7 @@ const getBrowserPerProcess = async (
   // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
   if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
     launchBrowserApp.args = launchBrowserApp.args.filter(
-      (item) => item !== '--no-sandbox',
+      (item: string) => item !== '--no-sandbox',
     )
   }
 
