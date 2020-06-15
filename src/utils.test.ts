@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM, WEBKIT } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, WEBKIT, FIREFOX } from './constants'
 import type { BrowserType } from './types'
 import { getDisplayName } from './utils'
 
@@ -153,14 +153,27 @@ describe('checkDeviceEnv', () => {
 })
 
 describe('checkDependencies', () => {
-  it('should return chromium browser', () => {
-    const dep = checkDependencies({ 'playwright-chromium': '*' })
-    expect(dep).toBe(CHROMIUM)
+  it('should return null for empty dependencies', () => {
+    const dep = checkDependencies({})
+    expect(dep).toBe(null)
   })
 
-  it('should return chromium browser', () => {
-    const dep = checkDependencies({ 'playwright-webkit': '*' })
-    expect(dep).toBe(WEBKIT)
+  it('should return null for dependencies without playwright packages', () => {
+    const dep = checkDependencies({ test: '0.0.1' })
+    expect(dep).toBe(null)
+  })
+
+  it('should return right package object for single package', () => {
+    const dep = checkDependencies({ 'playwright-chromium': '*' })
+    expect(dep).toStrictEqual({ [CHROMIUM]: CHROMIUM })
+  })
+
+  it('should return right package object for multiple packages', () => {
+    const dep = checkDependencies({
+      'playwright-webkit': '*',
+      'playwright-chromium': '*',
+    })
+    expect(dep).toStrictEqual({ [WEBKIT]: WEBKIT, [CHROMIUM]: CHROMIUM })
   })
 })
 
@@ -176,14 +189,9 @@ describe('readPackage', () => {
       }),
       { virtual: true },
     )
-    let error
-    try {
-      await readPackage()
-    } catch (e) {
-      error = e
-    }
-    expect(error).toEqual(
-      new Error('None of playwright packages was not found in dependencies'),
+
+    await expect(readPackage()).rejects.toThrowError(
+      'None of playwright packages was not found in dependencies',
     )
   })
   it('should return playwright when it is defined', async () => {
@@ -218,7 +226,25 @@ describe('readPackage', () => {
     )
 
     const playwright = await readPackage()
-    expect(playwright).toEqual('firefox')
+    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
+  })
+  it('should return playwright-firefox when it is defined and empty dependencies are persistent', async () => {
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
+      (_, cb: (exists: boolean) => void) => cb(true),
+    )
+    jest.mock(
+      path.join(__dirname, '..', 'package.json'),
+      () => ({
+        dependencies: {},
+        devDependencies: {
+          'playwright-firefox': '*',
+        },
+      }),
+      { virtual: true },
+    )
+
+    const playwright = await readPackage()
+    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
   })
 })
 
@@ -230,20 +256,43 @@ describe('getPlaywrightInstance', () => {
 
     jest.doMock('playwright', () => ({
       firefox: 'firefox',
+      chromium: 'chromium',
     }))
 
     const { instance } = getPlaywrightInstance('playwright', 'firefox')
     expect(instance).toEqual('firefox')
   })
 
-  it('should return specified instance from specified playwright package', async () => {
-    spy.mockResolvedValue('chromium')
+  it('should return specified instance from specified playwright package', () => {
+    spy.mockResolvedValue({
+      chromium: 'chromium',
+    })
 
     jest.doMock('playwright-chromium', () => ({
       chromium: 'chromium',
     }))
 
-    const { instance } = getPlaywrightInstance('chromium', 'chromium')
+    const { instance } = getPlaywrightInstance(
+      { chromium: 'chromium' },
+      'chromium',
+    )
     expect(instance).toEqual('chromium')
+  })
+
+  it('should throw error when playwright package is not provided', () => {
+    spy.mockResolvedValue({
+      chromium: 'chromium',
+    })
+
+    jest.doMock('playwright-chromium', () => ({
+      chromium: 'chromium',
+    }))
+
+    const getMissedPlaywrightInstance = () =>
+      getPlaywrightInstance({ chromium: 'chromium' }, 'firefox')
+
+    expect(getMissedPlaywrightInstance).toThrowError(
+      'Cannot find provided playwright package',
+    )
   })
 })
