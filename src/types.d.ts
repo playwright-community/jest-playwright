@@ -1,12 +1,11 @@
 import type {
-  BrowserTypeLaunchOptions,
-  BrowserNewContextOptions,
+  LaunchOptions,
+  BrowserContextOptions,
   WebKitBrowser,
   ChromiumBrowser,
   FirefoxBrowser,
   BrowserType as PlaywrightBrowserType,
-  BrowserTypeConnectOptions,
-  DeviceDescriptor,
+  devices,
 } from 'playwright-core'
 import type { JestProcessManagerOptions } from 'jest-process-manager'
 import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
@@ -30,22 +29,20 @@ export type SelectorType = {
   name: string
 }
 
-type Devices = { [name: string]: DeviceDescriptor }
-
 export interface Playwright {
   instance: GenericBrowser
-  devices: Devices
+  devices: typeof devices
 }
 
 export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface Config {
-  launchBrowserApp?: BrowserTypeLaunchOptions
-  context?: BrowserNewContextOptions
+  launchBrowserApp?: LaunchOptions
+  context?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: string[]
   server?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  connectBrowserApp?: BrowserTypeConnectOptions
+  connectBrowserApp?: Parameters<GenericBrowser['connect']>[0]
 }
