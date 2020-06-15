@@ -1,6 +1,8 @@
 # Jest Playwright
 
+![CI](https://github.com/playwright-community/jest-playwright/workflows/Node.js/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/mmarkelov/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/mmarkelov/jest-playwright?branch=master)
+![npm](https://img.shields.io/npm/v/jest-playwright-preset)
 
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
@@ -106,6 +108,16 @@ module.exports = {
 
 - You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
 - You can specify device with `DEVICE` environment variable.
+
+## Globals
+
+- `browserName` <[string]> - name of the current browser (chromium, firefox or webkit)
+- `deviceName` <[string]> - name of the current device
+- `browser` <[[Browser](https://playwright.dev/#version=master&path=docs%2Fapi.md&q=class-browser)]> - Playwright browser instance
+- `context` <[[Context](https://playwright.dev/#version=master&path=docs%2Fapi.md&q=class-browsercontext)]> - Playwright context instance
+- `page` <[[Page](https://playwright.dev/#version=master&path=docs%2Fapi.md&q=class-page)]> - Playwright page instance
+
+All of them are available globally in each Jest test. If you are using ESLint and JavaScript, its recommend to use it in combination with the [eslint-plugin-jest-playwright](https://github.com/playwright-community/eslint-plugin-jest-playwright).
 
 ## Put in debug mode
 
