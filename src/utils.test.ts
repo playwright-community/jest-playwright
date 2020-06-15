@@ -218,6 +218,24 @@ describe('readPackage', () => {
     const playwright = await readPackage()
     expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
   })
+  it('should return playwright-firefox when it is defined and empty dependencies are persistent', async () => {
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
+      (_, cb: (exists: boolean) => void) => cb(true),
+    )
+    jest.mock(
+      path.join(__dirname, '..', 'package.json'),
+      () => ({
+        dependencies: {},
+        devDependencies: {
+          'playwright-firefox': '*',
+        },
+      }),
+      { virtual: true },
+    )
+
+    const playwright = await readPackage()
+    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
+  })
 })
 
 describe('getPlaywrightInstance', () => {

@@ -27,6 +27,9 @@ export const checkDependencies = (
   if (dependencies[`playwright-${WEBKIT}`]) {
     packages[WEBKIT] = WEBKIT
   }
+  if (Object.keys(packages).length === 0) {
+    return null
+  }
   return packages
 }
 
