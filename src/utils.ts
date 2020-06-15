@@ -16,7 +16,7 @@ export const checkDependencies = (
   dependencies: Record<string, string>,
 ): Packages | typeof IMPORT_KIND_PLAYWRIGHT | null => {
   const packages: Packages = {}
-  if (!dependencies) return null
+  if (!dependencies || Object.keys(dependencies).length === 0) return null
   if (dependencies.playwright) return IMPORT_KIND_PLAYWRIGHT
   if (dependencies[`playwright-${CHROMIUM}`]) {
     packages[CHROMIUM] = CHROMIUM
@@ -88,7 +88,7 @@ export const readPackage = async (): Promise<
   const playwright =
     checkDependencies(packageConfig.dependencies) ||
     checkDependencies(packageConfig.devDependencies)
-  if (!playwright || !Object.keys(playwright).length) {
+  if (playwright === null) {
     throw new Error('None of playwright packages was not found in dependencies')
   }
   return playwright
