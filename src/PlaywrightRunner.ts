@@ -9,7 +9,7 @@ import type {
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
-import type { BrowserType, GenericBrowser } from './types'
+import type { BrowserType } from './types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -53,40 +53,8 @@ const getBrowserTest = (
   }
 }
 
-const getTests = async (tests: Test[]): Promise<Test[]> => {
-  const playwrightPackage = await readPackage()
-  const pwTests: Test[] = []
-  const browser2Server: Partial<Record<BrowserType, BrowserServer>> = {}
-  for (const test of tests) {
-    const { rootDir } = test.context.config
-    const { browsers, devices, launchBrowserApp } = await readConfig(rootDir)
-    for (const browser of browsers) {
-      checkBrowserEnv(browser)
-      const { devices: availableDevices, instance } = getPlaywrightInstance(
-        playwrightPackage,
-        browser,
-      )
-      if (!browser2Server[browser]) {
-        browser2Server[browser] = await instance.launchServer(launchBrowserApp)
-      }
-      const wsEndpoint = browser2Server[browser]!.wsEndpoint()
-
-      if (devices && devices.length) {
-        devices.forEach((device) => {
-          const availableDeviceNames = Object.keys(availableDevices)
-          checkDeviceEnv(device, availableDeviceNames)
-          pwTests.push(getBrowserTest(test, browser, wsEndpoint, device))
-        })
-      } else {
-        pwTests.push(getBrowserTest(test, browser, wsEndpoint, null))
-      }
-    }
-  }
-
-  return pwTests
-}
-
 class PlaywrightRunner extends JestRunner {
+  browser2Server: Partial<Record<BrowserType, BrowserServer>>
   constructor(
     globalConfig: JestConfig.GlobalConfig,
     context: TestRunnerContext,
@@ -95,6 +63,41 @@ class PlaywrightRunner extends JestRunner {
     // Set default timeout to 15s
     config.testTimeout = config.testTimeout || DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
     super(config, context)
+    this.browser2Server = {}
+  }
+
+  async getTests(tests: Test[]): Promise<Test[]> {
+    const playwrightPackage = await readPackage()
+    const pwTests: Test[] = []
+    for (const test of tests) {
+      const { rootDir } = test.context.config
+      const { browsers, devices, launchBrowserApp } = await readConfig(rootDir)
+      for (const browser of browsers) {
+        checkBrowserEnv(browser)
+        const { devices: availableDevices, instance } = getPlaywrightInstance(
+          playwrightPackage,
+          browser,
+        )
+        if (!this.browser2Server[browser]) {
+          this.browser2Server[browser] = await instance.launchServer(
+            launchBrowserApp,
+          )
+        }
+        const wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
+
+        if (devices && devices.length) {
+          devices.forEach((device) => {
+            const availableDeviceNames = Object.keys(availableDevices)
+            checkDeviceEnv(device, availableDeviceNames)
+            pwTests.push(getBrowserTest(test, browser, wsEndpoint, device))
+          })
+        } else {
+          pwTests.push(getBrowserTest(test, browser, wsEndpoint, null))
+        }
+      }
+    }
+
+    return pwTests
   }
 
   async runTests(
@@ -105,9 +108,9 @@ class PlaywrightRunner extends JestRunner {
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ): Promise<void> {
-    const browserTests = await getTests(tests)
+    const browserTests = await this.getTests(tests)
 
-    return await (options.serial
+    await (options.serial
       ? this['_createInBandTestRun'](
           browserTests,
           watcher,
@@ -122,6 +125,11 @@ class PlaywrightRunner extends JestRunner {
           onResult,
           onFailure,
         ))
+
+    for (const browser in this.browser2Server) {
+      await this.browser2Server[browser as BrowserType]!.close()
+    }
+    return
   }
 }
 
