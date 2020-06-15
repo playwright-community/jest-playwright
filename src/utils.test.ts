@@ -153,6 +153,16 @@ describe('checkDeviceEnv', () => {
 })
 
 describe('checkDependencies', () => {
+  it('should return null for empty dependencies', () => {
+    const dep = checkDependencies({})
+    expect(dep).toBe(null)
+  })
+
+  it('should return null for dependencies without playwright packages', () => {
+    const dep = checkDependencies({ test: '0.0.1' })
+    expect(dep).toBe(null)
+  })
+
   it('should return right package object for single package', () => {
     const dep = checkDependencies({ 'playwright-chromium': '*' })
     expect(dep).toStrictEqual({ [CHROMIUM]: CHROMIUM })
