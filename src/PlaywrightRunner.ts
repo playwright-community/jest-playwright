@@ -141,7 +141,6 @@ class PlaywrightRunner extends JestRunner {
     for (const browser in this.browser2Server) {
       await this.browser2Server[browser as BrowserType]!.close()
     }
-    return
   }
 }
 

@@ -17,11 +17,7 @@ export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
 export type DeviceType = string | null
 
-export type Packages = {
-  [CHROMIUM]?: typeof CHROMIUM
-  [FIREFOX]?: typeof FIREFOX
-  [WEBKIT]?: typeof WEBKIT
-}
+export type Packages = Partial<Record<BrowserType, BrowserType>>
 
 export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
