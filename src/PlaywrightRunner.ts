@@ -9,7 +9,7 @@ import type {
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
-import type { BrowserType } from './types'
+import type { BrowserType, DeviceType, JestPlaywrightTest } from './types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -22,11 +22,11 @@ import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 import { BrowserServer } from 'playwright-core'
 
 const getBrowserTest = (
-  test: Test,
+  test: JestPlaywrightTest,
   browser: BrowserType,
   wsEndpoint: string,
-  device: string | null,
-): Test => {
+  device: DeviceType,
+): JestPlaywrightTest => {
   const { displayName } = test.context.config
   const playwrightDisplayName = getDisplayName(browser, device)
   return {
@@ -35,9 +35,7 @@ const getBrowserTest = (
       ...test.context,
       config: {
         ...test.context.config,
-        // @ts-ignore
         browserName: browser,
-        // @ts-ignore
         wsEndpoint,
         device,
         displayName: {
@@ -89,10 +87,24 @@ class PlaywrightRunner extends JestRunner {
           devices.forEach((device) => {
             const availableDeviceNames = Object.keys(availableDevices)
             checkDeviceEnv(device, availableDeviceNames)
-            pwTests.push(getBrowserTest(test, browser, wsEndpoint, device))
+            pwTests.push(
+              getBrowserTest(
+                test as JestPlaywrightTest,
+                browser,
+                wsEndpoint,
+                device,
+              ),
+            )
           })
         } else {
-          pwTests.push(getBrowserTest(test, browser, wsEndpoint, null))
+          pwTests.push(
+            getBrowserTest(
+              test as JestPlaywrightTest,
+              browser,
+              wsEndpoint,
+              null,
+            ),
+          )
         }
       }
     }

@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
-import type { Config as JestConfig } from '@jest/types'
 import type { Event, State } from 'jest-circus'
 import type { Browser } from 'playwright-core'
-import type { Config, GenericBrowser, BrowserType } from './types'
+import type {
+  Config,
+  GenericBrowser,
+  BrowserType,
+  JestPlaywrightConfig,
+} from './types'
 import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
   getBrowserType,
@@ -49,19 +53,18 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     : 'jest-environment-jsdom')
 
   return class PlaywrightEnvironment extends RootEnv {
-    private _config: JestConfig.ProjectConfig
+    readonly _config: JestPlaywrightConfig
 
-    constructor(config: JestConfig.ProjectConfig) {
+    constructor(config: JestPlaywrightConfig) {
       super(config)
       this._config = config
     }
 
     async setup(): Promise<void> {
-      const config = await readConfig(this._config.rootDir)
-      //@ts-ignore
-      config.connectBrowserApp = { wsEndpoint: this._config.wsEndpoint }
-      //@ts-ignore
-      const browserType = getBrowserType(this._config.browserName)
+      const { rootDir, wsEndpoint, browserName } = this._config
+      const config = await readConfig(rootDir)
+      config.connectBrowserApp = { wsEndpoint }
+      const browserType = getBrowserType(browserName)
       const { context, exitOnPageError, selectors } = config
       const playwrightPackage = await readPackage()
       if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
@@ -75,7 +78,6 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
           )
         }
       }
-      //@ts-ignore
       const device = getDeviceType(this._config.device)
       const { instance: playwrightInstance, devices } = getPlaywrightInstance(
         playwrightPackage,
