@@ -3,7 +3,6 @@ import path from 'path'
 import * as Utils from './utils'
 import { DEFAULT_CONFIG, CHROMIUM, WEBKIT, FIREFOX } from './constants'
 import type { BrowserType } from './types'
-import { getDisplayName } from './utils'
 
 const {
   readConfig,
@@ -14,6 +13,7 @@ const {
   checkDependencies,
   readPackage,
   getPlaywrightInstance,
+  getDisplayName,
 } = Utils
 
 jest.spyOn(fs, 'exists')

@@ -45,8 +45,8 @@
   "dependencies": {
     "expect-playwright": "^0.2.4",
     "jest-circus": "^26.0.1",
-    "jest-dev-server": "^4.4.0",
-    "jest-environment-node": "^26.0.1"
+    "jest-environment-node": "^26.0.1",
+    "jest-process-manager": "^0.2.2"
   },
   "devDependencies": {
     "@types/debug": "4.1.5",
@@ -63,12 +63,12 @@
     "eslint-plugin-prettier": "3.1.4",
     "husky": "4.2.5",
     "jest": "26.0.1",
-    "lint-staged": "10.2.10",
+    "lint-staged": "10.2.11",
     "playwright": ">=1.1.1",
     "playwright-chromium": ">=1.1.1",
     "playwright-core": "npm:playwright-chromium@>=1.1.1",
     "prettier": "2.0.5",
-    "snyk": "^1.341.1",
+    "snyk": "^1.343.0",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   }

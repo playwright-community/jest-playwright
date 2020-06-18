@@ -10,7 +10,7 @@ import type {
 import type { Config as JestConfig } from '@jest/types'
 import type { Context } from 'jest-runner/build/types'
 import type { Test } from 'jest-runner'
-import type { JestDevServerOptions } from 'jest-dev-server'
+import type { JestProcessManagerOptions } from 'jest-process-manager'
 import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
@@ -43,7 +43,7 @@ export interface Config {
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: string[]
-  server?: JestDevServerOptions
+  server?: JestProcessManagerOptions
   selectors?: SelectorType[]
   connectBrowserApp?: Parameters<GenericBrowser['connect']>[0]
 }

@@ -4,7 +4,7 @@ import {
   teardown as teardownServer,
   ERROR_TIMEOUT,
   ERROR_NO_COMMAND,
-} from 'jest-dev-server'
+} from 'jest-process-manager'
 import { readConfig } from './utils'
 import type { Config as JestConfig } from '@jest/types'
 
