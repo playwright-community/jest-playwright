@@ -63,12 +63,12 @@
     "eslint-plugin-prettier": "3.1.4",
     "husky": "4.2.5",
     "jest": "26.0.1",
-    "lint-staged": "10.2.10",
+    "lint-staged": "10.2.11",
     "playwright": ">=1.1.1",
     "playwright-chromium": ">=1.1.1",
     "playwright-core": "npm:playwright-chromium@>=1.1.1",
     "prettier": "2.0.5",
-    "snyk": "^1.341.1",
+    "snyk": "^1.343.0",
     "ts-jest": "26.1.0",
     "typescript": "3.9.5"
   }
