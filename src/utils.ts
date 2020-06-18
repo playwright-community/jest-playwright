@@ -1,7 +1,13 @@
 import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
-import type { BrowserType, Config, Playwright, Packages } from './types'
+import type {
+  BrowserType,
+  DeviceType,
+  Config,
+  Playwright,
+  Packages,
+} from './types'
 import {
   CHROMIUM,
   DEFAULT_CONFIG,
@@ -54,12 +60,12 @@ export const checkDeviceEnv = (
 
 export const getDisplayName = (
   browser: BrowserType,
-  device: string | null,
+  device: DeviceType,
 ): string => {
   return `browser: ${browser}${device ? ` device: ${device}` : ''}`
 }
 
-export const getDeviceType = (device?: string): string | undefined => {
+export const getDeviceType = (device: DeviceType): DeviceType => {
   const processDevice = process.env.DEVICE
   if (processDevice) {
     return processDevice
