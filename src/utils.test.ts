@@ -125,13 +125,13 @@ describe('getBrowserType', () => {
 })
 
 describe('getDeviceType', () => {
-  it('should return "undefined" when there is no device', async () => {
-    const device = getDeviceType()
-    expect(device).toBe(undefined)
+  it('should return "null" when there is no device', async () => {
+    const device = getDeviceType(null)
+    expect(device).toBe(null)
   })
   it('should return BROWSER if defined', async () => {
     process.env.DEVICE = 'iPhone 11'
-    const device = getDeviceType()
+    const device = getDeviceType(null)
     expect(device).toBe(process.env.DEVICE)
     delete process.env.DEVICE
   })
