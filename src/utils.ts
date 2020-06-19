@@ -146,13 +146,13 @@ export const readConfig = async (
   return {
     ...DEFAULT_CONFIG,
     ...localConfig,
-    launchBrowserApp: {
-      ...DEFAULT_CONFIG.launchBrowserApp,
-      ...(localConfig.launchBrowserApp || {}),
+    launchOptions: {
+      ...DEFAULT_CONFIG.launchOptions,
+      ...(localConfig.launchOptions || {}),
     },
-    context: {
-      ...DEFAULT_CONFIG.context,
-      ...(localConfig.context || {}),
+    contextOptions: {
+      ...DEFAULT_CONFIG.contextOptions,
+      ...(localConfig.contextOptions || {}),
     },
   }
 }

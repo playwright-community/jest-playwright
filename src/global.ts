@@ -34,9 +34,9 @@ export async function setup(
     didAlreadyRunInWatchMode = true
   }
 
-  if (config.server) {
+  if (config.serverOptions) {
     try {
-      await setupServer(config.server)
+      await setupServer(config.serverOptions)
     } catch (error) {
       if (error.code === ERROR_TIMEOUT) {
         logMessage({

@@ -34,11 +34,11 @@ describe('readConfig', () => {
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
-        launchBrowserApp: {
+        launchOptions: {
           headless: true,
         },
         browser: 'chromium',
-        context: {
+        contextOptions: {
           ignoreHTTPSErrors: true,
         },
       }),
@@ -46,10 +46,10 @@ describe('readConfig', () => {
     )
     const config = await readConfig()
     const expectedConfig = {
-      launchBrowserApp: {
+      launchOptions: {
         headless: true,
       },
-      context: {
+      contextOptions: {
         ignoreHTTPSErrors: true,
       },
       browser: 'chromium',
@@ -57,17 +57,17 @@ describe('readConfig', () => {
     }
     expect(config).toMatchObject(expectedConfig)
   })
-  it('should overwrite with a custom configuration and spread the "launchBrowserApp" and "context" setting', async () => {
+  it('should overwrite with a custom configuration and spread the "launchOptions" and "contextOptions" setting', async () => {
     ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
       (_, cb: (exists: boolean) => void) => cb(true),
     )
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
-        launchBrowserApp: {
+        launchOptions: {
           headless: true,
         },
-        context: {
+        contextOptions: {
           foo: true,
         },
       }),
@@ -75,10 +75,10 @@ describe('readConfig', () => {
     )
     const config = await readConfig()
     const expectedConfig = {
-      launchBrowserApp: {
+      launchOptions: {
         headless: true,
       },
-      context: {
+      contextOptions: {
         foo: true,
       },
       browsers: ['chromium'],
