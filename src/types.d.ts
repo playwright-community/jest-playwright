@@ -38,14 +38,14 @@ export interface Playwright {
 export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface Config {
-  launchBrowserApp?: LaunchOptions
-  context?: BrowserContextOptions
+  launchOptions?: LaunchOptions
+  contextOptions?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: string[]
-  server?: JestProcessManagerOptions
+  serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  connectBrowserApp?: Parameters<GenericBrowser['connect']>[0]
+  connectOptions?: Parameters<GenericBrowser['connect']>[0]
 }
 
 export interface JestPlaywrightConfig extends JestConfig.ProjectConfig {

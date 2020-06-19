@@ -7,8 +7,8 @@ export const FIREFOX = 'firefox'
 export const WEBKIT = 'webkit'
 
 export const DEFAULT_CONFIG: Config = {
-  launchBrowserApp: {},
-  context: {},
+  launchOptions: {},
+  contextOptions: {},
   browsers: [CHROMIUM],
   devices: [],
   exitOnPageError: true,

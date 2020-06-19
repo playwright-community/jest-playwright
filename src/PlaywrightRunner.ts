@@ -69,7 +69,7 @@ class PlaywrightRunner extends JestRunner {
     const pwTests: Test[] = []
     for (const test of tests) {
       const { rootDir } = test.context.config
-      const { browsers, devices, launchBrowserApp } = await readConfig(rootDir)
+      const { browsers, devices, launchOptions } = await readConfig(rootDir)
       for (const browser of browsers) {
         checkBrowserEnv(browser)
         const { devices: availableDevices, instance } = getPlaywrightInstance(
@@ -78,7 +78,7 @@ class PlaywrightRunner extends JestRunner {
         )
         if (!this.browser2Server[browser]) {
           this.browser2Server[browser] = await instance.launchServer(
-            launchBrowserApp,
+            launchOptions,
           )
         }
         const wsEndpoint = this.browser2Server[browser]!.wsEndpoint()

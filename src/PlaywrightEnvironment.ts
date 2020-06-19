@@ -31,18 +31,18 @@ const getBrowserPerProcess = async (
   browserType: BrowserType,
   config: Config,
 ): Promise<Browser> => {
-  const { launchBrowserApp, connectBrowserApp } = config
+  const { launchOptions, connectOptions } = config
   // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
-  if (browserType !== CHROMIUM && launchBrowserApp && launchBrowserApp.args) {
-    launchBrowserApp.args = launchBrowserApp.args.filter(
+  if (browserType !== CHROMIUM && launchOptions && launchOptions.args) {
+    launchOptions.args = launchOptions.args.filter(
       (item: string) => item !== '--no-sandbox',
     )
   }
 
-  if (connectBrowserApp) {
-    return await playwrightInstance.connect(connectBrowserApp)
+  if (connectOptions) {
+    return await playwrightInstance.connect(connectOptions)
   } else {
-    return await playwrightInstance.launch(launchBrowserApp)
+    return await playwrightInstance.launch(launchOptions)
   }
 }
 
@@ -63,9 +63,10 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     async setup(): Promise<void> {
       const { rootDir, wsEndpoint, browserName } = this._config
       const config = await readConfig(rootDir)
-      config.connectBrowserApp = { wsEndpoint }
+      config.connectOptions = { wsEndpoint }
       const browserType = getBrowserType(browserName)
-      const { context, exitOnPageError, selectors } = config
+      const { exitOnPageError, selectors } = config
+      let { contextOptions } = config
       const playwrightPackage = await readPackage()
       if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -83,7 +84,6 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         playwrightPackage,
         browserType,
       )
-      let contextOptions = context
 
       if (device) {
         const { viewport, userAgent } = devices[device]
