@@ -46,7 +46,7 @@ export interface JestPlaywrightConfig {
   devices?: string[]
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  collectCoverage?: boolean
+  collectCoverage: boolean
 }
 
 export interface JestPlaywrightJestConfig extends JestConfig.ProjectConfig {

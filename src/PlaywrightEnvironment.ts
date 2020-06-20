@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { Event, State } from 'jest-circus'
-import type { Browser } from 'playwright-core'
+import type { Browser, Page } from 'playwright-core'
 import type {
   JestPlaywrightConfig,
   GenericBrowser,
@@ -141,7 +141,8 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
             stdin.on('data', onKeyPress)
           })
         },
-        saveCoverage,
+        saveCoverage: async (page: Page): Promise<void> =>
+          saveCoverage(page, config.collectCoverage),
       }
     }
 

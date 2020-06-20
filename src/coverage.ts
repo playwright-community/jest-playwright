@@ -24,7 +24,16 @@ export const setupCoverage = async (): Promise<void> => {
   await fsAsync.mkdir(COV_MERGE_DIR)
 }
 
-export const saveCoverage = async (page: Page): Promise<void> => {
+export const saveCoverage = async (
+  page: Page,
+  collectCoverage: boolean,
+): Promise<void> => {
+  if (!collectCoverage) {
+    console.warn(
+      'jest-playwright: saveCoverage was called but collectCoverage is not true in jest-playwright.js',
+    )
+    return
+  }
   const coverage = await page.evaluate(`window.__coverage__`)
   if (coverage) {
     await fsAsync.writeFile(
