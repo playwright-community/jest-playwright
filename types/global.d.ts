@@ -13,6 +13,7 @@ interface JestPlaywright {
    * ```
    */
   debug: () => Promise<void>
+  saveCoverage: (page: Page) => Promise<void>
 }
 
 declare global {

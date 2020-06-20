@@ -2,10 +2,10 @@
 import type { Event, State } from 'jest-circus'
 import type { Browser } from 'playwright-core'
 import type {
-  Config,
+  JestPlaywrightConfig,
   GenericBrowser,
   BrowserType,
-  JestPlaywrightConfig,
+  JestPlaywrightJestConfig,
 } from './types'
 import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
@@ -15,6 +15,7 @@ import {
   readConfig,
   readPackage,
 } from './utils'
+import { saveCoverage } from './coverage'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -29,7 +30,7 @@ const KEYS = {
 const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
   browserType: BrowserType,
-  config: Config,
+  config: JestPlaywrightConfig,
 ): Promise<Browser> => {
   const { launchOptions, connectOptions } = config
   // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
@@ -53,9 +54,9 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     : 'jest-environment-jsdom')
 
   return class PlaywrightEnvironment extends RootEnv {
-    readonly _config: JestPlaywrightConfig
+    readonly _config: JestPlaywrightJestConfig
 
-    constructor(config: JestPlaywrightConfig) {
+    constructor(config: JestPlaywrightJestConfig) {
       super(config)
       this._config = config
     }
@@ -140,6 +141,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
             stdin.on('data', onKeyPress)
           })
         },
+        saveCoverage,
       }
     }
 

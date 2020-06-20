@@ -37,25 +37,26 @@ export interface Playwright {
 
 export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
-export interface Config {
+export interface JestPlaywrightConfig {
   launchOptions?: LaunchOptions
+  connectOptions?: Parameters<GenericBrowser['connect']>[0]
   contextOptions?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: string[]
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  connectOptions?: Parameters<GenericBrowser['connect']>[0]
+  collectCoverage?: boolean
 }
 
-export interface JestPlaywrightConfig extends JestConfig.ProjectConfig {
+export interface JestPlaywrightJestConfig extends JestConfig.ProjectConfig {
   browserName: BrowserType
   wsEndpoint: string
   device: DeviceType
 }
 
 interface JestPlaywrightContext extends Context {
-  config: JestPlaywrightConfig
+  config: JestPlaywrightJestConfig
 }
 
 export interface JestPlaywrightTest extends Test {
