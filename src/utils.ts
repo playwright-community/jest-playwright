@@ -14,6 +14,7 @@ import {
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
   WEBKIT,
+  PACKAGE_NAME,
 } from './constants'
 
 const exists = promisify(fs.exists)
@@ -42,7 +43,9 @@ export const checkDependencies = (
 export const checkBrowserEnv = (param: BrowserType): void => {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
     throw new Error(
-      `jest-playwright-preset: Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
+      formatError(
+        `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
+      ),
     )
   }
 }
@@ -53,7 +56,9 @@ export const checkDeviceEnv = (
 ): void => {
   if (!availableDevices.includes(device)) {
     throw new Error(
-      `jest-playwright-preset: Wrong device. Should be one of [${availableDevices}], but got ${device}`,
+      formatError(
+        `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
+      ),
     )
   }
 }
@@ -96,7 +101,7 @@ export const readPackage = async (): Promise<
     checkDependencies(packageConfig.devDependencies)
   if (playwright === null) {
     throw new Error(
-      'jest-playwright-preset: None of playwright packages was not found in dependencies',
+      formatError('None of playwright packages was not found in dependencies'),
     )
   }
   return playwright
@@ -118,9 +123,7 @@ export const getPlaywrightInstance = (
     return buildPlaywrightStructure('playwright')
   }
   if (!playwrightPackage[browserName]) {
-    throw new Error(
-      'jest-playwright-preset: Cannot find provided playwright package',
-    )
+    throw new Error(formatError('Cannot find provided playwright package'))
   }
   return buildPlaywrightStructure(
     `playwright-${playwrightPackage[browserName]}`,
@@ -149,14 +152,14 @@ const validateConfig = (config: Config) => {
   const hasError = renamings.some(({ from, to }) => {
     if (from in config) {
       console.warn(
-        `jest-playwright-preset: "${from}" was renamed to "${to}" in version 1.0`,
+        formatError(`"${from}" was renamed to "${to}" in version 1.0`),
       )
       return true
     }
     return false
   })
   if (hasError) {
-    throw new Error('jest-playwright-preset: validation error occurred')
+    throw new Error(formatError('validation error occurred'))
   }
 }
 
@@ -171,7 +174,9 @@ export const readConfig = async (
 
   if (hasCustomConfigPath && !configExists) {
     throw new Error(
-      `jest-playwright-preset: Error: Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
+      formatError(
+        `Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
+      ),
     )
   }
 
@@ -194,3 +199,6 @@ export const readConfig = async (
     },
   }
 }
+
+export const formatError = (error: string): string =>
+  `${PACKAGE_NAME}: ${error}`
