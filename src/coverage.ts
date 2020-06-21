@@ -24,7 +24,7 @@ export const setupCoverage = async (): Promise<void> => {
   await fsAsync.mkdir(COV_MERGE_DIR)
 }
 
-export const saveCoverage = async (
+export const savePageCoverage = async (
   page: Page,
   collectCoverage: boolean,
 ): Promise<void> => {

@@ -15,7 +15,7 @@ import {
   readConfig,
   readPackage,
 } from './utils'
-import { saveCoverage } from './coverage'
+import { savePageCoverage } from './coverage'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -142,7 +142,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
           })
         },
         saveCoverage: async (page: Page): Promise<void> =>
-          saveCoverage(page, config.collectCoverage),
+          savePageCoverage(page, config.collectCoverage),
       }
     }
 
