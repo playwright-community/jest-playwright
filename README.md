@@ -83,7 +83,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `webkit` Each test runs Webkit.
 - `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]> Exits process on any page error. Defaults to `true`.
-- `server` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
+- `serverOptions` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
 - `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
   Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
