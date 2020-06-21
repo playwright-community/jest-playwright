@@ -16,3 +16,5 @@ export const DEFAULT_CONFIG: JestPlaywrightConfig = {
 }
 
 export const DEFAULT_TEST_PLAYWRIGHT_TIMEOUT = 15000
+
+export const PACKAGE_NAME = 'jest-playwright-preset'
