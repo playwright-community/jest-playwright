@@ -23,10 +23,8 @@ export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
 
-type SelectorFunction = (...args: any[]) => void
-
 export type SelectorType = {
-  script: string | SelectorFunction | { path?: string; content?: string }
+  script: string | Function | { path?: string; content?: string }
   name: string
 }
 
