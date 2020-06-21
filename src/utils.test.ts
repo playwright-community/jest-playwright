@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM, WEBKIT, FIREFOX } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM } from './constants'
 import type { BrowserType } from './types'
 
 const {
@@ -10,8 +10,6 @@ const {
   getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
-  checkDependencies,
-  readPackage,
   getPlaywrightInstance,
   getDisplayName,
 } = Utils
@@ -152,147 +150,35 @@ describe('checkDeviceEnv', () => {
   })
 })
 
-describe('checkDependencies', () => {
-  it('should return null for empty dependencies', () => {
-    const dep = checkDependencies({})
-    expect(dep).toBe(null)
-  })
-
-  it('should return null for dependencies without playwright packages', () => {
-    const dep = checkDependencies({ test: '0.0.1' })
-    expect(dep).toBe(null)
-  })
-
-  it('should return right package object for single package', () => {
-    const dep = checkDependencies({ 'playwright-chromium': '*' })
-    expect(dep).toStrictEqual({ [CHROMIUM]: CHROMIUM })
-  })
-
-  it('should return right package object for multiple packages', () => {
-    const dep = checkDependencies({
-      'playwright-webkit': '*',
-      'playwright-chromium': '*',
-    })
-    expect(dep).toStrictEqual({ [WEBKIT]: WEBKIT, [CHROMIUM]: CHROMIUM })
-  })
-})
-
-describe('readPackage', () => {
-  it('should return null when dependencies does not passed', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'package.json'),
-      () => ({
-        dependencies: {},
-      }),
-      { virtual: true },
-    )
-
-    await expect(readPackage()).rejects.toThrowError(
-      'None of playwright packages was not found in dependencies',
-    )
-  })
-  it('should return playwright when it is defined', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'package.json'),
-      () => ({
-        dependencies: {
-          playwright: '*',
-        },
-      }),
-      { virtual: true },
-    )
-
-    const playwright = await readPackage()
-    expect(playwright).toEqual('playwright')
-  })
-  it('should return playwright-firefox when it is defined', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'package.json'),
-      () => ({
-        devDependencies: {
-          'playwright-firefox': '*',
-        },
-      }),
-      { virtual: true },
-    )
-
-    const playwright = await readPackage()
-    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
-  })
-  it('should return playwright-firefox when it is defined and empty dependencies are persistent', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'package.json'),
-      () => ({
-        dependencies: {},
-        devDependencies: {
-          'playwright-firefox': '*',
-        },
-      }),
-      { virtual: true },
-    )
-
-    const playwright = await readPackage()
-    expect(playwright).toStrictEqual({ [FIREFOX]: FIREFOX })
-  })
-})
-
 describe('getPlaywrightInstance', () => {
-  const spy = jest.spyOn(Utils, 'readPackage')
-
   it('should return specified instance from playwright package', async () => {
-    spy.mockResolvedValue('playwright')
-
     jest.doMock('playwright', () => ({
       firefox: 'firefox',
       chromium: 'chromium',
     }))
 
-    const { instance } = getPlaywrightInstance('playwright', 'firefox')
+    const { instance } = getPlaywrightInstance('firefox')
     expect(instance).toEqual('firefox')
   })
 
   it('should return specified instance from specified playwright package', () => {
-    spy.mockResolvedValue({
-      chromium: 'chromium',
-    })
-
     jest.doMock('playwright-chromium', () => ({
       chromium: 'chromium',
     }))
 
-    const { instance } = getPlaywrightInstance(
-      { chromium: 'chromium' },
-      'chromium',
-    )
+    const { instance } = getPlaywrightInstance('chromium')
     expect(instance).toEqual('chromium')
   })
 
   it('should throw error when playwright package is not provided', () => {
-    spy.mockResolvedValue({
-      chromium: 'chromium',
-    })
-
-    jest.doMock('playwright-chromium', () => ({
+    jest.doMock('playwright', () => ({
       chromium: 'chromium',
     }))
 
-    const getMissedPlaywrightInstance = () =>
-      getPlaywrightInstance({ chromium: 'chromium' }, 'firefox')
+    const getMissedPlaywrightInstance = () => getPlaywrightInstance('firefox')
 
     expect(getMissedPlaywrightInstance).toThrowError(
-      'Cannot find provided playwright package',
+      'jest-playwright-preset: Cannot find playwright package to use firefox',
     )
   })
 })

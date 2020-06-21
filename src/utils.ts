@@ -6,7 +6,7 @@ import type {
   DeviceType,
   Config,
   Playwright,
-  Packages,
+  PlaywrightRequireType,
 } from './types'
 import {
   CHROMIUM,
@@ -18,27 +18,6 @@ import {
 } from './constants'
 
 const exists = promisify(fs.exists)
-
-export const checkDependencies = (
-  dependencies: Record<string, string>,
-): Packages | typeof IMPORT_KIND_PLAYWRIGHT | null => {
-  const packages: Packages = {}
-  if (!dependencies || Object.keys(dependencies).length === 0) return null
-  if (dependencies.playwright) return IMPORT_KIND_PLAYWRIGHT
-  if (dependencies[`playwright-${CHROMIUM}`]) {
-    packages[CHROMIUM] = CHROMIUM
-  }
-  if (dependencies[`playwright-${FIREFOX}`]) {
-    packages[FIREFOX] = FIREFOX
-  }
-  if (dependencies[`playwright-${WEBKIT}`]) {
-    packages[WEBKIT] = WEBKIT
-  }
-  if (Object.keys(packages).length === 0) {
-    return null
-  }
-  return packages
-}
 
 export const checkBrowserEnv = (param: BrowserType): void => {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
@@ -86,48 +65,32 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
   return browser || CHROMIUM
 }
 
-export const readPackage = async (): Promise<
-  Packages | typeof IMPORT_KIND_PLAYWRIGHT
-> => {
-  const packagePath = 'package.json'
-  const absConfigPath = path.resolve(process.cwd(), packagePath)
-  const packageConfig = await require(absConfigPath)
-  // for handling the local tests
-  if (packageConfig.name === 'jest-playwright-preset') {
-    return IMPORT_KIND_PLAYWRIGHT
-  }
-  const playwright =
-    checkDependencies(packageConfig.dependencies) ||
-    checkDependencies(packageConfig.devDependencies)
-  if (playwright === null) {
-    throw new Error(
-      formatError('None of playwright packages was not found in dependencies'),
-    )
-  }
-  return playwright
-}
-
-export const getPlaywrightInstance = (
-  playwrightPackage: typeof IMPORT_KIND_PLAYWRIGHT | Packages,
-  browserName: BrowserType,
-): Playwright => {
-  const buildPlaywrightStructure = (importName: string): Playwright => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const pw = require(importName)
-    return {
-      instance: pw[browserName],
-      devices: pw['devices'],
+export const getPlaywrightInstance = (browserName: BrowserType): Playwright => {
+  let pw
+  let name: PlaywrightRequireType
+  try {
+    pw = require(`${IMPORT_KIND_PLAYWRIGHT}-${browserName}`)
+    name = browserName
+  } catch (e) {
+    try {
+      pw = require(IMPORT_KIND_PLAYWRIGHT)
+      name = IMPORT_KIND_PLAYWRIGHT
+    } catch (e) {
+      throw new Error(
+        formatError(`Cannot find playwright package to use ${browserName}`),
+      )
     }
   }
-  if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
-    return buildPlaywrightStructure('playwright')
+  if (!pw[browserName]) {
+    throw new Error(
+      formatError(`Cannot find playwright package to use ${browserName}`),
+    )
   }
-  if (!playwrightPackage[browserName]) {
-    throw new Error(formatError('Cannot find provided playwright package'))
+  return {
+    name,
+    instance: pw[browserName],
+    devices: pw['devices'],
   }
-  return buildPlaywrightStructure(
-    `playwright-${playwrightPackage[browserName]}`,
-  )
 }
 
 const validateConfig = (config: Config) => {

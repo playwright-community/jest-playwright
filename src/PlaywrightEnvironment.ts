@@ -13,7 +13,6 @@ import {
   getDeviceType,
   getPlaywrightInstance,
   readConfig,
-  readPackage,
 } from './utils'
 
 const handleError = (error: Error): void => {
@@ -67,8 +66,14 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       const browserType = getBrowserType(browserName)
       const { exitOnPageError, selectors } = config
       let { contextOptions } = config
-      const playwrightPackage = await readPackage()
-      if (playwrightPackage === IMPORT_KIND_PLAYWRIGHT) {
+      const device = getDeviceType(this._config.device)
+      const {
+        name,
+        instance: playwrightInstance,
+        devices,
+      } = getPlaywrightInstance(browserType)
+
+      if (name === IMPORT_KIND_PLAYWRIGHT) {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
         const playwright = require('playwright')
         if (selectors) {
@@ -79,11 +84,6 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
           )
         }
       }
-      const device = getDeviceType(this._config.device)
-      const { instance: playwrightInstance, devices } = getPlaywrightInstance(
-        playwrightPackage,
-        browserType,
-      )
 
       if (device) {
         const { viewport, userAgent } = devices[device]
