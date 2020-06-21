@@ -13,6 +13,18 @@ interface JestPlaywright {
    * ```
    */
   debug: () => Promise<void>
+  /**
+   * Saves the coverage to the disk which will only work if `collectCoverage`
+   * in `jest-playwright.config.js` file is set to true. The merged coverage file
+   * is then available in `.nyc_output/coverage.json`. Mostly its needed in the
+   * `afterEach` handler like that:
+   *
+   * ```ts
+   * afterEach(async () => {
+   *   await jestPlaywright.saveCoverage(page)
+   * })
+   * ```
+   */
   saveCoverage: (page: Page) => Promise<void>
 }
 
