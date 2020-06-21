@@ -130,7 +130,7 @@ export const getPlaywrightInstance = (
   )
 }
 
-const validateConfig = (config: Config) => {
+const validateConfig = (config: JestPlaywrightConfig) => {
   const renamings = [
     {
       from: 'launchBrowserApp',
