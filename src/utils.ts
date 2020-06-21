@@ -159,7 +159,7 @@ const validateConfig = (config: Config) => {
     return false
   })
   if (hasError) {
-    throw new Error(formatError('validation error occurred'))
+    throw new Error(formatError('Validation error occurred'))
   }
 }
 
