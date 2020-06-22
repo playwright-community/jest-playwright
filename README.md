@@ -38,7 +38,7 @@ or with `jest.config.js`:
 
 ```javascript
 module.exports = {
-    preset: "jest-playwright-preset",
+  preset: 'jest-playwright-preset',
 }
 ```
 
@@ -104,10 +104,10 @@ module.exports = {
 
 ```
 
-**Note**:
+### Notes
 
-- You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
-- You can specify device with `DEVICE` environment variable.
+You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
+You can specify device with `DEVICE` environment variable.
 
 ## Globals
 
