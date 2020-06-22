@@ -26,7 +26,7 @@ npm install -D jest jest-playwright-preset playwright-firefox
 
 Update your Jest configuration, either:
 
-- with `package.json`:
+with `package.json`:
 
 ```json
 "jest": {
@@ -34,20 +34,15 @@ Update your Jest configuration, either:
 }
 ```
 
-- with `jest.config.js`:
+or with `jest.config.js`:
 
 ```javascript
 module.exports = {
     preset: "jest-playwright-preset",
-    ...
 }
 ```
 
-**NOTE**: Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
-
-Use Playwright in your tests:
-
-- with `package.json`
+And add the Jest command as in the script section of your `package.json`:
 
 ```json
 {
@@ -57,18 +52,24 @@ Use Playwright in your tests:
 }
 ```
 
-```js
-describe('What is my browser', () => {
-  beforeAll(async () => {
-    await page.goto('https://whatismybrowser.com/')
-  })
+Now you can use Playwright in your tests:
 
-  it('should display "google" text on page', async () => {
-    const browser = await page.$eval('.string-major', (el) => el.innerHTML)
-    expect(browser).toContain('Chrome')
-  })
+```js
+beforeAll(async () => {
+  await page.goto('https://whatismybrowser.com/')
+})
+
+test('should display "google" text on page', async () => {
+  const browser = await page.$eval('.string-major', (el) => el.innerHTML)
+  expect(browser).toContain('Chrome')
 })
 ```
+
+### Notes
+
+It's recommend to use a separate Jest configuration `jest.e2e.config.js` for `jest-playwright` to gain speed improvments and by that to only use Playwright in the end-to-end tests. For that you have to use the `-c` flag when calling Jest and use the [`testMatch`](https://jestjs.io/docs/en/configuration#testmatch-arraystring) or [`testRegex`](https://jestjs.io/docs/en/configuration#testregex-string--arraystring) in your Jest config to split them.
+
+Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
 ## Configuration
 
