@@ -40,9 +40,9 @@ const getBrowserPerProcess = async (
   }
 
   if (connectOptions) {
-    return await playwrightInstance.connect(connectOptions)
+    return playwrightInstance.connect(connectOptions)
   } else {
-    return await playwrightInstance.launch(launchOptions)
+    return playwrightInstance.launch(launchOptions)
   }
 }
 
