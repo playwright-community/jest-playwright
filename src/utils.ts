@@ -6,6 +6,7 @@ import type {
   DeviceType,
   JestPlaywrightConfig,
   Playwright,
+  PlaywrightRequireType,
 } from './types'
 import {
   CHROMIUM,
