@@ -23,10 +23,8 @@ export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
 
-type SelectorFunction = (...args: any[]) => void
-
 export type SelectorType = {
-  script: string | SelectorFunction | { path?: string; content?: string }
+  script: string | Function | { path?: string; content?: string }
   name: string
 }
 
@@ -38,25 +36,26 @@ export interface Playwright {
   devices: typeof devices
 }
 
-export interface Config {
+export interface JestPlaywrightConfig {
   launchOptions?: LaunchOptions
+  connectOptions?: Parameters<GenericBrowser['connect']>[0]
   contextOptions?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: string[]
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  connectOptions?: Parameters<GenericBrowser['connect']>[0]
+  collectCoverage: boolean
 }
 
-export interface JestPlaywrightConfig extends JestConfig.ProjectConfig {
+export interface JestPlaywrightJestConfig extends JestConfig.ProjectConfig {
   browserName: BrowserType
   wsEndpoint: string
   device: DeviceType
 }
 
 interface JestPlaywrightContext extends Context {
-  config: JestPlaywrightConfig
+  config: JestPlaywrightJestConfig
 }
 
 export interface JestPlaywrightTest extends Test {
