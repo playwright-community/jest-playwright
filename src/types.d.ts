@@ -5,6 +5,7 @@ import type {
   ChromiumBrowser,
   FirefoxBrowser,
   BrowserType as PlaywrightBrowserType,
+  ViewportSize,
   devices,
 } from 'playwright-core'
 import type { Config as JestConfig } from '@jest/types'
@@ -15,7 +16,16 @@ import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
-export type DeviceType = string | null
+export type CustomDeviceType = {
+  name: string
+  viewport: ViewportSize
+  userAgent: string
+  deviceScaleFactor: number
+  isMobile: boolean
+  hasTouch: boolean
+}
+
+export type DeviceType = CustomDeviceType | string | null
 
 export type Packages = Partial<Record<BrowserType, BrowserType>>
 
@@ -42,7 +52,7 @@ export interface JestPlaywrightConfig {
   contextOptions?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
-  devices?: string[]
+  devices?: string[] | CustomDeviceType[]
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
   collectCoverage: boolean
@@ -51,7 +61,7 @@ export interface JestPlaywrightConfig {
 export interface JestPlaywrightJestConfig extends JestConfig.ProjectConfig {
   browserName: BrowserType
   wsEndpoint: string
-  device: DeviceType
+  device: DeviceType | CustomDeviceType
 }
 
 interface JestPlaywrightContext extends Context {

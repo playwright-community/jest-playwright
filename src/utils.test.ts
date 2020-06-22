@@ -107,6 +107,20 @@ describe('getDisplayName', () => {
       'browser: chromium device: iPhone 6',
     )
   })
+
+  it('should return right display name for passed browser and custom device', () => {
+    const customDevice = {
+      name: 'Custom device',
+      userAgent: 'test',
+      viewport: { width: 1920, height: 1080 },
+      deviceScaleFactor: 1,
+      isMobile: false,
+      hasTouch: false,
+    }
+    expect(getDisplayName('chromium', customDevice)).toBe(
+      'browser: chromium device: Custom device',
+    )
+  })
 })
 
 describe('getBrowserType', () => {

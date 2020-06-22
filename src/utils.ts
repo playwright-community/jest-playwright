@@ -46,7 +46,15 @@ export const getDisplayName = (
   browser: BrowserType,
   device: DeviceType,
 ): string => {
-  return `browser: ${browser}${device ? ` device: ${device}` : ''}`
+  if (device !== null) {
+    if (typeof device === 'string') {
+      return `browser: ${browser} device: ${device}`
+    }
+    if (device.name) {
+      return `browser: ${browser} device: ${device.name}`
+    }
+  }
+  return `browser: ${browser}`
 }
 
 export const getDeviceType = (device: DeviceType): DeviceType => {

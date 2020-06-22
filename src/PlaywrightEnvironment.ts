@@ -86,8 +86,13 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         }
       }
 
-      if (device) {
-        contextOptions = { ...devices[device], ...contextOptions }
+      if (device !== null) {
+        if (typeof device === 'string') {
+          contextOptions = { ...devices[device], ...contextOptions }
+        } else {
+          const { name, ...deviceProps } = device
+          contextOptions = { ...deviceProps, ...contextOptions }
+        }
       }
       this.global.browserName = browserType
       this.global.deviceName = device
