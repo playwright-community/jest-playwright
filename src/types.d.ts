@@ -61,7 +61,7 @@ export interface JestPlaywrightConfig {
 export interface JestPlaywrightJestConfig extends JestConfig.ProjectConfig {
   browserName: BrowserType
   wsEndpoint: string
-  device: DeviceType | CustomDeviceType
+  device: DeviceType
 }
 
 interface JestPlaywrightContext extends Context {
