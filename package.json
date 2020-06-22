@@ -46,13 +46,18 @@
     "expect-playwright": "^0.2.4",
     "jest-circus": "^26.0.1",
     "jest-environment-node": "^26.0.1",
-    "jest-process-manager": "^0.2.2"
+    "jest-process-manager": "^0.2.2",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@types/debug": "4.1.5",
     "@types/jest": "26.0.0",
     "@types/jest-dev-server": "4.2.0",
     "@types/node": "14.0.13",
+    "@types/rimraf": "^3.0.0",
+    "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "3.3.0",
     "@typescript-eslint/parser": "3.3.0",
     "coveralls": "3.1.0",

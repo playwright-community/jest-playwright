@@ -4,7 +4,7 @@ import { promisify } from 'util'
 import type {
   BrowserType,
   DeviceType,
-  Config,
+  JestPlaywrightConfig,
   Playwright,
   Packages,
 } from './types'
@@ -130,7 +130,7 @@ export const getPlaywrightInstance = (
   )
 }
 
-const validateConfig = (config: Config) => {
+const validateConfig = (config: JestPlaywrightConfig) => {
   const renamings = [
     {
       from: 'launchBrowserApp',
@@ -165,7 +165,7 @@ const validateConfig = (config: Config) => {
 
 export const readConfig = async (
   rootDir: string = process.cwd(),
-): Promise<Config> => {
+): Promise<JestPlaywrightConfig> => {
   const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
   const configPath =
     process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js'
