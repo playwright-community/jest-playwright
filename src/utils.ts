@@ -66,30 +66,26 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
 }
 
 export const getPlaywrightInstance = (browserName: BrowserType): Playwright => {
-  let pw
-  let name: PlaywrightRequireType
   try {
-    pw = require(`${IMPORT_KIND_PLAYWRIGHT}-${browserName}`)
-    name = browserName
+    const pw = require(`${IMPORT_KIND_PLAYWRIGHT}-${browserName}`)
+    return {
+      name: browserName,
+      instance: pw[browserName],
+      devices: pw['devices'],
+    }
   } catch (e) {
     try {
-      pw = require(IMPORT_KIND_PLAYWRIGHT)
-      name = IMPORT_KIND_PLAYWRIGHT
+      const pw = require(IMPORT_KIND_PLAYWRIGHT)
+      return {
+        name: IMPORT_KIND_PLAYWRIGHT,
+        instance: pw[browserName],
+        devices: pw['devices'],
+      }
     } catch (e) {
       throw new Error(
         formatError(`Cannot find playwright package to use ${browserName}`),
       )
     }
-  }
-  if (!pw[browserName]) {
-    throw new Error(
-      formatError(`Cannot find playwright package to use ${browserName}`),
-    )
-  }
-  return {
-    name,
-    instance: pw[browserName],
-    devices: pw['devices'],
   }
 }
 
