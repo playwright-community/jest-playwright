@@ -39,9 +39,10 @@ Update your Jest configuration, either:
 ```javascript
 module.exports = {
     preset: "jest-playwright-preset",
-    ...
 }
 ```
+
+**NOTE**: It's recommend to use a separate Jest configuration `jest.e2e.config.js` for `jest-playwright` to gain speed improvments and by that to only use Playwright in the end-to-end tests. For that you have to use the `-c` flag when calling Jest and use the [`testMatch`](https://jestjs.io/docs/en/configuration#testmatch-arraystring) or [`testRegex`](https://jestjs.io/docs/en/configuration#testregex-string--arraystring) in your Jest config to split them.
 
 **NOTE**: Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
