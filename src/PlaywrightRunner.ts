@@ -9,7 +9,12 @@ import type {
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
-import type { BrowserType, DeviceType, JestPlaywrightTest } from './types'
+import type {
+  BrowserType,
+  DeviceType,
+  JestPlaywrightTest,
+  JestPlaywrightConfig,
+} from './types'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
@@ -19,6 +24,7 @@ import {
 } from './utils'
 import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 import { BrowserServer } from 'playwright-core'
+import { setupCoverage, mergeCoverage } from './coverage'
 
 const getBrowserTest = (
   test: JestPlaywrightTest,
@@ -63,11 +69,10 @@ class PlaywrightRunner extends JestRunner {
     this.browser2Server = {}
   }
 
-  async getTests(tests: Test[]): Promise<Test[]> {
+  async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
+    const { browsers, devices, launchOptions } = config
     const pwTests: Test[] = []
     for (const test of tests) {
-      const { rootDir } = test.context.config
-      const { browsers, devices, launchOptions } = await readConfig(rootDir)
       for (const browser of browsers) {
         checkBrowserEnv(browser)
         const { devices: availableDevices, instance } = getPlaywrightInstance(
@@ -117,8 +122,11 @@ class PlaywrightRunner extends JestRunner {
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ): Promise<void> {
-    const browserTests = await this.getTests(tests)
-
+    const config = await readConfig(tests[0].context.config.rootDir)
+    const browserTests = await this.getTests(tests, config)
+    if (config.collectCoverage) {
+      await setupCoverage()
+    }
     await (options.serial
       ? this['_createInBandTestRun'](
           browserTests,
@@ -137,6 +145,9 @@ class PlaywrightRunner extends JestRunner {
 
     for (const browser in this.browser2Server) {
       await this.browser2Server[browser as BrowserType]!.close()
+    }
+    if (config.collectCoverage) {
+      await mergeCoverage()
     }
   }
 }

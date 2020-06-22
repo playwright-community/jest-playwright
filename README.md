@@ -75,20 +75,19 @@ describe('What is my browser', () => {
 You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using the `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
 
 - `launchOptions` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
-- `connectOptions` <[object]> [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
-- `contextOptions` <[object]> [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
+- `connectOptions` <[object]>. [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
+- `contextOptions` <[object]>. [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
 - `browsers` <[string[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests in.
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
 - `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
-- `exitOnPageError` <[boolean]> Exits process on any page error. Defaults to `true`.
-- `serverOptions` <[object]> [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
+- `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
+- `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
+- `serverOptions` <[object]>. [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
 - `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
-  Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom):
-
-  `jest-playwright.config.js`:
+Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
 
 ```javascript
 const {
@@ -126,6 +125,30 @@ Debugging tests can be hard sometimes and it is very useful to be able to pause 
 ```javascript
 await jestPlaywright.debug()
 ```
+
+## Tracking the coverage
+
+It's possible to track the coverage of the end-to-end tests with the [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) Babel plugin configured. It needs to be included in the web application which you are gonna test otherwise it won't work. To use it, you have to set `collectCoverage` in the `jest-playwright.config.js` to `true` and add the corresponding `saveCoverage(page)` call to your tests like that:
+
+```js
+afterEach(async () => {
+  await jestPlaywright.saveCoverage(page)
+})
+```
+
+With this change, it will write the coverage data to the `.nyc_output/coverage.json` file which can be transformed using [`nyc`](https://github.com/istanbuljs/nyc#readme) to the lcov format:
+
+```
+npx nyc report --reporter=lcovonly
+```
+
+or to HTML:
+
+```
+npx nyc report --reporter=html
+```
+
+which will create a HTML website in the `coverage` directory.
 
 ## Start a server
 
