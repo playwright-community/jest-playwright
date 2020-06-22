@@ -28,12 +28,13 @@ export type SelectorType = {
   name: string
 }
 
+export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
+
 export interface Playwright {
+  name: PlaywrightRequireType
   instance: GenericBrowser
   devices: typeof devices
 }
-
-export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface JestPlaywrightConfig {
   launchOptions?: LaunchOptions

@@ -61,7 +61,7 @@
     "@typescript-eslint/eslint-plugin": "3.3.0",
     "@typescript-eslint/parser": "3.3.0",
     "coveralls": "3.1.0",
-    "eslint": "7.2.0",
+    "eslint": "7.3.0",
     "eslint-config-airbnb-base": "14.2.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-plugin-import": "2.21.2",
@@ -73,8 +73,8 @@
     "playwright-chromium": ">=1.1.1",
     "playwright-core": "npm:playwright-chromium@>=1.1.1",
     "prettier": "2.0.5",
-    "snyk": "^1.343.0",
-    "ts-jest": "26.1.0",
+    "snyk": "^1.346.0",
+    "ts-jest": "26.1.1",
     "typescript": "3.9.5"
   }
 }

@@ -21,7 +21,6 @@ import {
   getDisplayName,
   readConfig,
   getPlaywrightInstance,
-  readPackage,
 } from './utils'
 import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 import { BrowserServer } from 'playwright-core'
@@ -72,13 +71,11 @@ class PlaywrightRunner extends JestRunner {
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
     const { browsers, devices, launchOptions } = config
-    const playwrightPackage = await readPackage()
     const pwTests: Test[] = []
     for (const test of tests) {
       for (const browser of browsers) {
         checkBrowserEnv(browser)
         const { devices: availableDevices, instance } = getPlaywrightInstance(
-          playwrightPackage,
           browser,
         )
         if (!this.browser2Server[browser]) {
