@@ -41,7 +41,6 @@ export const saveCoverageOnPage = async (
     )
     return
   }
-  console.log('collecting')
   const coverage = await page.evaluate(`window.__coverage__`)
   if (coverage) {
     await saveCoverageToFile(coverage)
