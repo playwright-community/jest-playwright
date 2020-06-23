@@ -82,7 +82,28 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
+- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts). Also you can define custom device:
+
+```js
+{
+  // Name of device
+  name: string
+  // Page width and height
+  viewport: {
+    width: number
+    height: number
+  }
+  // user agent
+  userAgent: string
+  // device scale factor
+  deviceScaleFactor: number
+  // is device is mobile
+  isMobile: boolean
+  // support of touch events
+  hasTouch: boolean
+}
+```
+
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
