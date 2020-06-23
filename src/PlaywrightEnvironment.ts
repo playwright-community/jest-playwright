@@ -90,6 +90,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         if (typeof device === 'string') {
           contextOptions = { ...devices[device], ...contextOptions }
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { name, ...deviceProps } = device
           contextOptions = { ...deviceProps, ...contextOptions }
         }
