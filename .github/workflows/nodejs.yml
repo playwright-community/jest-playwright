@@ -25,6 +25,7 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Install required apt dependencies
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
       run: |
         sudo apt-get update
         sudo apt-get install libgbm-dev
