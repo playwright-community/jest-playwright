@@ -52,7 +52,7 @@ export interface JestPlaywrightConfig {
   contextOptions?: BrowserContextOptions
   exitOnPageError: boolean
   browsers: BrowserType[]
-  devices?: string[] | CustomDeviceType[]
+  devices?: (string | CustomDeviceType)[]
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
   collectCoverage: boolean
