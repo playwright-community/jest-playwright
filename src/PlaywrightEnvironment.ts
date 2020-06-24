@@ -114,7 +114,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           saveCoverageToFile,
         )
         ;(this.global.context as BrowserContext).addInitScript(() =>
-          window.addEventListener('unload', () => {
+          window.addEventListener('beforeunload', () => {
             // @ts-ignore
             reportCodeCoverage(window.__coverage__)
           }),
@@ -181,13 +181,21 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     }
 
     async teardown(): Promise<void> {
-      const { page, browser } = this.global
+      const { browser, context, page } = this.global
       const { collectCoverage } = this._jestPlaywrightConfig
-      if (collectCoverage) {
-        await saveCoverageOnPage(page, collectCoverage)
-      }
       if (page) {
         page.removeListener('pageerror', handleError)
+      }
+      if (collectCoverage) {
+        await Promise.all(
+          (context as BrowserContext).pages().map((p) =>
+            p.close({
+              runBeforeUnload: true,
+            }),
+          ),
+        )
+        // wait until coverage data was sent successfully to the exposed function
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       if (browser) {
