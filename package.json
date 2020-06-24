@@ -46,7 +46,7 @@
     "expect-playwright": "^0.2.4",
     "jest-circus": "^26.0.1",
     "jest-environment-node": "^26.0.1",
-    "jest-process-manager": "^0.2.2",
+    "jest-process-manager": "^0.2.3",
     "nyc": "^15.1.0",
     "rimraf": "^3.0.2",
     "uuid": "^8.1.0"
