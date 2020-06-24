@@ -6,10 +6,10 @@ on:
     branches: [ master ]
 jobs:
   build:
-    env:
-      CI: true
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js
@@ -25,25 +25,17 @@ jobs:
     - name: Install dependencies
       run: npm install
     - name: Install required apt dependencies
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
       run: |
         sudo apt-get update
         sudo apt-get install libgbm-dev
-    - name: Run Snyk to check for vulnerabilities
-      if: ${{ github.repository == 'mmarkelov/jest-playwright' }}
-      uses: snyk/actions/node@master
     - name: Lint Source Code
       run: npm run lint
     - name: Build project
       run: npm run build
     - name: Run tests
       run: npm run test
-    - name: Coveralls Parallel
+    - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel: true
-    - name: Coveralls Finished
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
