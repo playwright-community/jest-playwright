@@ -8,7 +8,6 @@ jobs:
   build:
     env:
       CI: true
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -28,9 +27,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install libgbm-dev
-    - name: Run Snyk to check for vulnerabilities
-      if: ${{ github.repository == 'mmarkelov/jest-playwright' }}
-      uses: snyk/actions/node@master
     - name: Lint Source Code
       run: npm run lint
     - name: Build project
