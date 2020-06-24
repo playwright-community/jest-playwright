@@ -38,7 +38,7 @@ or with `jest.config.js`:
 
 ```javascript
 module.exports = {
-    preset: "jest-playwright-preset",
+  preset: 'jest-playwright-preset',
 }
 ```
 
@@ -129,15 +129,13 @@ await jestPlaywright.debug()
 
 ## Tracking the coverage
 
-It's possible to track the coverage of the end-to-end tests with the [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) Babel plugin configured. It needs to be included in the web application which you are gonna test otherwise it won't work. To use it, you have to set `collectCoverage` in the `jest-playwright.config.js` to `true` and add the corresponding `saveCoverage(page)` call to your tests like that:
+It's possible to track the coverage of the end-to-end tests with the [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) Babel plugin configured. It needs to be included in the web application which you are gonna test otherwise it won't work. To use it, you have to set `collectCoverage` in the `jest-playwright.config.js` to `true`. Per default the test coverage will be automatically saved after each navigation change (`beforeunload` event). If a certain code path is not covered, you can manually call and add the corresponding `saveCoverage(page)` call to your tests like that:
 
 ```js
-afterEach(async () => {
-  await jestPlaywright.saveCoverage(page)
-})
+await jestPlaywright.saveCoverage(page)
 ```
 
-With this change, it will write the coverage data to the `.nyc_output/coverage.json` file which can be transformed using [`nyc`](https://github.com/istanbuljs/nyc#readme) to the lcov format:
+By using coverage collection, it will write the coverage data to the `.nyc_output/coverage.json` file which can be transformed using [`nyc`](https://github.com/istanbuljs/nyc#readme) to the lcov format:
 
 ```
 npx nyc report --reporter=lcovonly
