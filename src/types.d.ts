@@ -16,13 +16,8 @@ import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
-export type CustomDeviceType = {
+export type CustomDeviceType = BrowserContextOptions & {
   name: string
-  viewport: ViewportSize
-  userAgent: string
-  deviceScaleFactor: number
-  isMobile: boolean
-  hasTouch: boolean
 }
 
 export type DeviceType = CustomDeviceType | string | null
