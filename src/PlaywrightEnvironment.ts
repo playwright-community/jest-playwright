@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { Event, State } from 'jest-circus'
-import type { Browser, Page } from 'playwright-core'
+import type { Browser, Page, BrowserContext } from 'playwright-core'
 import type {
   JestPlaywrightConfig,
   GenericBrowser,
@@ -15,7 +15,7 @@ import {
   getPlaywrightInstance,
   readConfig,
 } from './utils'
-import { savePageCoverage } from './coverage'
+import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -49,7 +49,7 @@ const getBrowserPerProcess = async (
   }
 }
 
-export const getPlaywrightEnv = (basicEnv = 'node') => {
+export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const RootEnv = require(basicEnv === 'node'
     ? 'jest-environment-node'
@@ -57,6 +57,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
 
   return class PlaywrightEnvironment extends RootEnv {
     readonly _config: JestPlaywrightJestConfig
+    _jestPlaywrightConfig!: JestPlaywrightConfig
 
     constructor(config: JestPlaywrightJestConfig) {
       super(config)
@@ -65,11 +66,23 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
 
     async setup(): Promise<void> {
       const { rootDir, wsEndpoint, browserName } = this._config
-      const config = await readConfig(rootDir)
-      config.connectOptions = { wsEndpoint }
+      this._jestPlaywrightConfig = await readConfig(rootDir)
+      if (
+        wsEndpoint &&
+        !this._jestPlaywrightConfig.connectOptions?.wsEndpoint
+      ) {
+        this._jestPlaywrightConfig.connectOptions = { wsEndpoint }
+      }
       const browserType = getBrowserType(browserName)
-      const { exitOnPageError, selectors } = config
-      let contextOptions = getBrowserOptions(browserName, config.contextOptions)
+      const {
+        exitOnPageError,
+        selectors,
+        collectCoverage,
+      } = this._jestPlaywrightConfig
+      let contextOptions = getBrowserOptions(
+        browserName,
+        this._jestPlaywrightConfig.contextOptions,
+      )
       const device = getDeviceType(this._config.device)
       const {
         name,
@@ -103,9 +116,21 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       this.global.browser = await getBrowserPerProcess(
         playwrightInstance,
         browserType,
-        config,
+        this._jestPlaywrightConfig,
       )
       this.global.context = await this.global.browser.newContext(contextOptions)
+      if (collectCoverage) {
+        ;(this.global.context as BrowserContext).exposeFunction(
+          'reportCodeCoverage',
+          saveCoverageToFile,
+        )
+        ;(this.global.context as BrowserContext).addInitScript(() =>
+          window.addEventListener('beforeunload', () => {
+            // @ts-ignore
+            reportCodeCoverage(window.__coverage__)
+          }),
+        )
+      }
       this.global.page = await this.global.context.newPage()
       if (exitOnPageError) {
         this.global.page.on('pageerror', handleError)
@@ -150,7 +175,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
           })
         },
         saveCoverage: async (page: Page): Promise<void> =>
-          savePageCoverage(page, config.collectCoverage),
+          saveCoverageOnPage(page, this._jestPlaywrightConfig.collectCoverage),
       }
     }
 
@@ -167,9 +192,21 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
     }
 
     async teardown(): Promise<void> {
-      const { page, browser } = this.global
+      const { browser, context, page } = this.global
+      const { collectCoverage } = this._jestPlaywrightConfig
       if (page) {
         page.removeListener('pageerror', handleError)
+      }
+      if (collectCoverage) {
+        await Promise.all(
+          (context as BrowserContext).pages().map((p) =>
+            p.close({
+              runBeforeUnload: true,
+            }),
+          ),
+        )
+        // wait until coverage data was sent successfully to the exposed function
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       if (browser) {
