@@ -5,7 +5,6 @@ import type {
   ChromiumBrowser,
   FirefoxBrowser,
   BrowserType as PlaywrightBrowserType,
-  ViewportSize,
   devices,
 } from 'playwright-core'
 import type { Config as JestConfig } from '@jest/types'

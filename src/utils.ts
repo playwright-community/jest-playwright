@@ -140,7 +140,11 @@ export function getBrowserOptions<T>(
   options?: Options<T>,
 ): T {
   if (options && options[browserName]) {
-    return { ...options, ...options[browserName] }
+    const result = { ...options, ...options[browserName] }
+    ;[CHROMIUM, FIREFOX, WEBKIT].forEach((browser) => {
+      delete result[browser as BrowserType]
+    })
+    return result
   }
   return options as T
 }
