@@ -21,6 +21,7 @@ import {
   getDisplayName,
   readConfig,
   getPlaywrightInstance,
+  getBrowserOptions,
 } from './utils'
 import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 import { BrowserServer } from 'playwright-core'
@@ -79,9 +80,8 @@ class PlaywrightRunner extends JestRunner {
           browser,
         )
         if (!this.browser2Server[browser]) {
-          this.browser2Server[browser] = await instance.launchServer(
-            launchOptions,
-          )
+          const options = getBrowserOptions(browser, launchOptions)
+          this.browser2Server[browser] = await instance.launchServer(options)
         }
         const wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
 

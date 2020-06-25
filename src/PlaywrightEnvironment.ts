@@ -9,6 +9,7 @@ import type {
 } from './types'
 import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
+  getBrowserOptions,
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
@@ -32,17 +33,19 @@ const getBrowserPerProcess = async (
   config: JestPlaywrightConfig,
 ): Promise<Browser> => {
   const { launchOptions, connectOptions } = config
-  // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
-  if (browserType !== CHROMIUM && launchOptions && launchOptions.args) {
-    launchOptions.args = launchOptions.args.filter(
-      (item: string) => item !== '--no-sandbox',
-    )
-  }
 
   if (connectOptions) {
-    return playwrightInstance.connect(connectOptions)
+    const options = getBrowserOptions(browserType, connectOptions)
+    return playwrightInstance.connect(options)
   } else {
-    return playwrightInstance.launch(launchOptions)
+    // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
+    if (browserType !== CHROMIUM && launchOptions && launchOptions.args) {
+      launchOptions.args = launchOptions.args.filter(
+        (item: string) => item !== '--no-sandbox',
+      )
+    }
+    const options = getBrowserOptions(browserType, launchOptions)
+    return playwrightInstance.launch(options)
   }
 }
 
@@ -66,7 +69,7 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
       config.connectOptions = { wsEndpoint }
       const browserType = getBrowserType(browserName)
       const { exitOnPageError, selectors } = config
-      let { contextOptions } = config
+      let contextOptions = getBrowserOptions(browserName, config.contextOptions)
       const device = getDeviceType(this._config.device)
       const {
         name,

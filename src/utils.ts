@@ -7,6 +7,7 @@ import type {
   JestPlaywrightConfig,
   Playwright,
   PlaywrightRequireType,
+  Options,
 } from './types'
 import {
   CHROMIUM,
@@ -132,6 +133,16 @@ const validateConfig = (config: JestPlaywrightConfig) => {
   if (hasError) {
     throw new Error(formatError('Validation error occurred'))
   }
+}
+
+export function getBrowserOptions<T>(
+  browserName: BrowserType,
+  options?: Options<T>,
+): T {
+  if (options && options[browserName]) {
+    return { ...options, ...options[browserName] }
+  }
+  return options as T
 }
 
 export const readConfig = async (
