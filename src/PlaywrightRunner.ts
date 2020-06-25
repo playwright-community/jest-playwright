@@ -86,9 +86,11 @@ class PlaywrightRunner extends JestRunner {
         const wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
 
         if (devices && devices.length) {
-          devices.forEach((device) => {
-            const availableDeviceNames = Object.keys(availableDevices)
-            checkDeviceEnv(device, availableDeviceNames)
+          devices.forEach((device: DeviceType) => {
+            if (typeof device === 'string') {
+              const availableDeviceNames = Object.keys(availableDevices)
+              checkDeviceEnv(device, availableDeviceNames)
+            }
             pwTests.push(
               getBrowserTest(
                 test as JestPlaywrightTest,

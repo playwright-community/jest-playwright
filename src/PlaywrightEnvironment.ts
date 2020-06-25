@@ -40,9 +40,9 @@ const getBrowserPerProcess = async (
   }
 
   if (connectOptions) {
-    return await playwrightInstance.connect(connectOptions)
+    return playwrightInstance.connect(connectOptions)
   } else {
-    return await playwrightInstance.launch(launchOptions)
+    return playwrightInstance.launch(launchOptions)
   }
 }
 
@@ -86,9 +86,14 @@ export const getPlaywrightEnv = (basicEnv = 'node') => {
         }
       }
 
-      if (device) {
-        const { viewport, userAgent } = devices[device]
-        contextOptions = { viewport, userAgent, ...contextOptions }
+      if (device !== null) {
+        if (typeof device === 'string') {
+          contextOptions = { ...devices[device], ...contextOptions }
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { name, ...deviceProps } = device
+          contextOptions = { ...deviceProps, ...contextOptions }
+        }
       }
       this.global.browserName = browserType
       this.global.deviceName = device
