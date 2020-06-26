@@ -6,12 +6,14 @@ import type {
   GenericBrowser,
   BrowserType,
   JestPlaywrightJestConfig,
+  SkipOption,
 } from './types'
 import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
 import {
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
+  getSkipFlag,
   readConfig,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
@@ -78,6 +80,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       } = this._jestPlaywrightConfig
       let { contextOptions } = this._jestPlaywrightConfig
       const device = getDeviceType(this._config.device)
+      let deviceName: string | null = null
       const {
         name,
         instance: playwrightInstance,
@@ -98,15 +101,16 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
       if (device !== null) {
         if (typeof device === 'string') {
+          deviceName = device
           contextOptions = { ...devices[device], ...contextOptions }
         } else {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { name, ...deviceProps } = device
+          deviceName = name
           contextOptions = { ...deviceProps, ...contextOptions }
         }
       }
       this.global.browserName = browserType
-      this.global.deviceName = device
+      this.global.deviceName = deviceName
       this.global.browser = await getBrowserPerProcess(
         playwrightInstance,
         browserType,
@@ -130,6 +134,15 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         this.global.page.on('pageerror', handleError)
       }
       this.global.jestPlaywright = {
+        skip: (skipOption: SkipOption, callback: () => void): void => {
+          const skipFlag = getSkipFlag(skipOption, browserName, deviceName)
+          if (skipFlag) {
+            this.global.describe = this.global.describe.skip
+            this.global.it = this.global.it.skip
+            this.global.test = this.global.test.skip
+          }
+          callback()
+        },
         debug: async (): Promise<void> => {
           // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
           await this.global.page.evaluate(() => {

@@ -16,6 +16,11 @@ import { CHROMIUM, FIREFOX, IMPORT_KIND_PLAYWRIGHT, WEBKIT } from './constants'
 
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
+export type SkipOption = {
+  browser: BrowserType
+  device?: string
+}
+
 export type CustomDeviceType = BrowserContextOptions & {
   name: string
 }
