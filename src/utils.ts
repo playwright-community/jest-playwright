@@ -138,15 +138,18 @@ const validateConfig = (config: JestPlaywrightConfig) => {
 export function getBrowserOptions<T>(
   browserName: BrowserType,
   options?: Options<T>,
-): T {
-  if (options && options[browserName]) {
-    const result = { ...options, ...options[browserName] }
+): T | undefined {
+  let result: Options<T> | undefined = options
+  if (result) {
+    if (result[browserName]) {
+      result = { ...result, ...result[browserName] }
+    }
     ;[CHROMIUM, FIREFOX, WEBKIT].forEach((browser) => {
-      delete result[browser as BrowserType]
+      delete result![browser as BrowserType]
     })
     return result
   }
-  return options as T
+  return result
 }
 
 export const readConfig = async (

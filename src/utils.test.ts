@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, FIREFOX } from './constants'
 import type { BrowserType } from './types'
 
 const {
@@ -152,6 +152,12 @@ describe('getBrowserOptions', () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(CHROMIUM, launchOptions)
     expect(options).toStrictEqual({ headless: true })
+  })
+
+  it('should return root options for other browser', async () => {
+    const launchOptions = { headless: false, chromium: { headless: true } }
+    const options = getBrowserOptions(FIREFOX, launchOptions)
+    expect(options).toStrictEqual({ headless: false })
   })
 })
 
