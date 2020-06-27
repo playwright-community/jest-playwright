@@ -138,7 +138,7 @@ const validateConfig = (config: JestPlaywrightConfig) => {
 export function getBrowserOptions<T>(
   browserName: BrowserType,
   options?: Options<T>,
-): T | undefined {
+): T {
   let result: Options<T> | undefined = options
   if (result) {
     if (result[browserName]) {
@@ -149,7 +149,7 @@ export function getBrowserOptions<T>(
     })
     return result
   }
-  return result
+  return result as T
 }
 
 export const readConfig = async (
