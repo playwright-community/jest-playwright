@@ -164,7 +164,6 @@ export const getSkipFlag = (
   } else {
     return browser === browserName && device === deviceName
   }
-  return false
 }
 
 export const readConfig = async (
