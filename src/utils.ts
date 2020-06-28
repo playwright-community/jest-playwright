@@ -8,6 +8,7 @@ import type {
   Playwright,
   PlaywrightRequireType,
   SkipOption,
+  Options,
 } from './types'
 import {
   CHROMIUM,
@@ -133,6 +134,23 @@ const validateConfig = (config: JestPlaywrightConfig) => {
   if (hasError) {
     throw new Error(formatError('Validation error occurred'))
   }
+}
+
+export function getBrowserOptions<T>(
+  browserName: BrowserType,
+  options?: Options<T>,
+): T {
+  let result: Options<T> | undefined = options
+  if (result) {
+    if (result[browserName]) {
+      result = { ...result, ...result[browserName] }
+    }
+    ;[CHROMIUM, FIREFOX, WEBKIT].forEach((browser) => {
+      delete result![browser as BrowserType]
+    })
+    return result
+  }
+  return result as T
 }
 
 export const getSkipFlag = (
