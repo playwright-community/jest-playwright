@@ -142,12 +142,16 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       this.global.jestPlaywright = {
         skip: (skipOption: SkipOption, callback: () => void): void => {
           const skipFlag = getSkipFlag(skipOption, browserName, deviceName)
+          const { describe, it, test } = this.global
           if (skipFlag) {
-            this.global.describe = this.global.describe.skip
-            this.global.it = this.global.it.skip
-            this.global.test = this.global.test.skip
+            this.global.describe = describe.skip
+            this.global.it = it.skip
+            this.global.test = test.skip
           }
           callback()
+          this.global.describe = describe
+          this.global.it = it
+          this.global.test = test
         },
         debug: async (): Promise<void> => {
           // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
