@@ -5,7 +5,6 @@ import type {
   ChromiumBrowser,
   FirefoxBrowser,
   BrowserType as PlaywrightBrowserType,
-  ViewportSize,
   devices,
 } from 'playwright-core'
 import type { Config as JestConfig } from '@jest/types'
@@ -41,10 +40,14 @@ export interface Playwright {
   devices: typeof devices
 }
 
+type Options<T> = T & Partial<Record<BrowserType, T>>
+
+type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
+
 export interface JestPlaywrightConfig {
-  launchOptions?: LaunchOptions
-  connectOptions?: Parameters<GenericBrowser['connect']>[0]
-  contextOptions?: BrowserContextOptions
+  launchOptions?: Options<LaunchOptions>
+  connectOptions?: Options<ConnectOptions>
+  contextOptions?: Options<BrowserContextOptions>
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: (string | CustomDeviceType)[]

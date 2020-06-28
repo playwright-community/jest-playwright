@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
-import { DEFAULT_CONFIG, CHROMIUM } from './constants'
+import { DEFAULT_CONFIG, CHROMIUM, FIREFOX } from './constants'
 import type { BrowserType } from './types'
 
 const {
@@ -12,6 +12,7 @@ const {
   checkDeviceEnv,
   getPlaywrightInstance,
   getDisplayName,
+  getBrowserOptions,
 } = Utils
 
 jest.spyOn(fs, 'exists')
@@ -132,6 +133,31 @@ describe('getBrowserType', () => {
     const browserType = getBrowserType('firefox')
     expect(browserType).toBe(process.env.BROWSER)
     delete process.env.BROWSER
+  })
+})
+
+describe('getBrowserOptions', () => {
+  it('should return undefined for empty options', async () => {
+    const options = getBrowserOptions(CHROMIUM)
+    expect(options).toBe(undefined)
+  })
+
+  it('should return root options', async () => {
+    const launchOptions = { headless: false }
+    const options = getBrowserOptions(CHROMIUM, launchOptions)
+    expect(options).toBe(launchOptions)
+  })
+
+  it('should return options for defined browser', async () => {
+    const launchOptions = { headless: false, chromium: { headless: true } }
+    const options = getBrowserOptions(CHROMIUM, launchOptions)
+    expect(options).toStrictEqual({ headless: true })
+  })
+
+  it('should return root options for other browser', async () => {
+    const launchOptions = { headless: false, chromium: { headless: true } }
+    const options = getBrowserOptions(FIREFOX, launchOptions)
+    expect(options).toStrictEqual({ headless: false })
   })
 })
 
