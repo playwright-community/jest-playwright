@@ -148,6 +148,17 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this.global.page.addListener('pageerror', handleError)
           }
         },
+        resetContext: async (): Promise<void> => {
+          const { browser, context } = this.global
+
+          if (context) {
+            await context.close()
+          }
+
+          this.global.context = await browser.newContext(contextOptions)
+
+          await this.global.jestPlaywright.resetPage()
+        },
         resetBrowser: async (): Promise<void> => {
           const { browser } = this.global
 

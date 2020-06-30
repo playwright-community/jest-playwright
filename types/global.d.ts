@@ -12,6 +12,16 @@ interface JestPlaywright {
    */
   resetPage: () => Promise<void>
   /**
+   * Reset global.context
+   *
+   * ```ts
+   * it('should reset context', async () => {
+   *   await jestPlaywright.resetContext()
+   * })
+   * ```
+   */
+  resetContext: () => Promise<void>
+  /**
    * Reset global.browser, global.context, and global.page
    *
    * ```ts
