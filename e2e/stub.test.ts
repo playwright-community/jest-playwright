@@ -1,3 +1,4 @@
+/// <reference types="./../types/global" />
 import path from 'path'
 
 describe('Example HTML file', () => {
@@ -5,6 +6,6 @@ describe('Example HTML file', () => {
     await page.goto(`file:${path.join(__dirname, 'example.html')}`)
     const browser = await page.$eval('h1', (el) => el.textContent)
     expect(browser).toBe('Example')
-    expect(browserName).toBe('chromium')
+    expect(browserName).toBeTruthy()
   })
 })

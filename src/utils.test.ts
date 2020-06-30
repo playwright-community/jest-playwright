@@ -12,6 +12,7 @@ const {
   checkDeviceEnv,
   getPlaywrightInstance,
   getDisplayName,
+  getSkipFlag,
   getBrowserOptions,
 } = Utils
 
@@ -23,6 +24,9 @@ beforeEach(() => {
 
 describe('readConfig', () => {
   it('should return the default configuration if there was no separate configuration specified', async () => {
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
+      (_, cb: (exists: boolean) => void) => cb(false),
+    )
     const config = await readConfig()
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
@@ -186,6 +190,38 @@ describe('checkDeviceEnv', () => {
     const device = 'unknown'
     const devices = ['iPhone 11', 'Pixel 2', 'Nexus 4']
     expect(() => checkDeviceEnv(device, devices)).toThrow()
+  })
+})
+
+describe('getSkipFlag', () => {
+  it('should return true if skipOption.browser = browserName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType }
+    const skipFlag = getSkipFlag(skipOptions, CHROMIUM, null)
+    expect(skipFlag).toBe(true)
+  })
+
+  it('should return false if skipOption.browser != browserName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType }
+    const skipFlag = getSkipFlag(skipOptions, FIREFOX, null)
+    expect(skipFlag).toBe(false)
+  })
+
+  it('should return true if skipOption.browser = browserName & skipOption.device = deviceName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+    const skipFlag = getSkipFlag(skipOptions, CHROMIUM, 'Pixel 2')
+    expect(skipFlag).toBe(true)
+  })
+
+  it('should return false if skipOption.browser != browserName & skipOption.device = deviceName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+    const skipFlag = getSkipFlag(skipOptions, FIREFOX, 'Pixel 2')
+    expect(skipFlag).toBe(false)
+  })
+
+  it('should return false if skipOption.browser != browserName & skipOption.device != deviceName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+    const skipFlag = getSkipFlag(skipOptions, FIREFOX, null)
+    expect(skipFlag).toBe(false)
   })
 })
 

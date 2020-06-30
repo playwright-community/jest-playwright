@@ -24,11 +24,7 @@ jobs:
           ${{ runner.os }}-node-
     - name: Install dependencies
       run: npm install
-    - name: Install required apt dependencies
-      if: ${{ matrix.platform == 'ubuntu-latest' }}
-      run: |
-        sudo apt-get update
-        sudo apt-get install libgbm-dev
+    - uses: microsoft/playwright-github-action@v1
     - name: Lint Source Code
       run: npm run lint
     - name: Build project
