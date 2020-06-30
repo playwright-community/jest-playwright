@@ -7,6 +7,7 @@ import type {
   JestPlaywrightConfig,
   Playwright,
   PlaywrightRequireType,
+  SkipOption,
   Options,
 } from './types'
 import {
@@ -150,6 +151,19 @@ export function getBrowserOptions<T>(
     return result
   }
   return result as T
+}
+
+export const getSkipFlag = (
+  skipOptions: SkipOption,
+  browserName: BrowserType,
+  deviceName: string | null,
+): boolean => {
+  const { browser, device } = skipOptions
+  if (!device) {
+    return browser === browserName
+  } else {
+    return browser === browserName && device === deviceName
+  }
 }
 
 export const readConfig = async (

@@ -1,6 +1,8 @@
-import { Page, Browser, BrowserContext } from 'playwright-core'
+import type { Page, Browser, BrowserContext } from 'playwright-core'
+import type { SkipOption } from '../src/types'
 
 interface JestPlaywright {
+  skip: (skipOptions: SkipOption, callback: Function) => void
   /**
    * Reset global.page
    *
@@ -60,7 +62,7 @@ interface JestPlaywright {
 
 declare global {
   const browserName: string
-  const deviceName: string
+  const deviceName: string | null
   const page: Page
   const browser: Browser
   const context: BrowserContext
