@@ -24,6 +24,9 @@ beforeEach(() => {
 
 describe('readConfig', () => {
   it('should return the default configuration if there was no separate configuration specified', async () => {
+    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
+      (_, cb: (exists: boolean) => void) => cb(false),
+    )
     const config = await readConfig()
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
