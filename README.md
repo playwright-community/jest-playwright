@@ -150,7 +150,7 @@ await jestPlaywright.debug()
 
 ## Reset helper functions
 
-- Reset current page
+### Reset current page
 
 ```js
 beforeEach(async () => {
@@ -158,13 +158,17 @@ beforeEach(async () => {
 })
 ```
 
-- Reset current browser
+To create a new page for each test, you can use this snippet to have a new page object for each individual test.
+
+### Reset current browser
 
 ```js
 beforeEach(async () => {
   await jestPlaywright.resetBrowser()
 })
 ```
+
+To create a new context for each test, you can use this snippet to have a new context object for each individual test.
 
 ## Tracking the coverage
 
