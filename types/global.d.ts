@@ -2,6 +2,16 @@ import { Page, Browser, BrowserContext } from 'playwright-core'
 
 interface JestPlaywright {
   /**
+   * Reset global.page
+   *
+   * ```ts
+   * it('should reset page', async () => {
+   *   await jestPlaywright.resetPage()
+   * })
+   * ```
+   */
+  resetPage: () => Promise<void>
+  /**
    * Suspends test execution and gives you opportunity to see what's going on in the browser
    * - Jest is suspended (no timeout)
    * - A debugger instruction to the Browser, if Playwright has been launched with { devtools: true } it will stop

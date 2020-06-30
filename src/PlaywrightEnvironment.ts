@@ -136,6 +136,18 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         this.global.page.on('pageerror', handleError)
       }
       this.global.jestPlaywright = {
+        resetPage: async (): Promise<void> => {
+          const { context, page } = this.global
+          if (page) {
+            page.removeListener('pageerror', handleError)
+            await page.close()
+          }
+
+          this.global.page = await context.newPage()
+          if (exitOnPageError) {
+            this.global.page.addListener('pageerror', handleError)
+          }
+        },
         debug: async (): Promise<void> => {
           // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
           await this.global.page.evaluate(() => {
