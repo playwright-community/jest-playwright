@@ -2,7 +2,7 @@ import type { Page, Browser, BrowserContext } from 'playwright-core'
 import type { SkipOption } from '../src/types'
 
 interface JestPlaywright {
-  skip: (skipOptions: SkipOption) => void
+  skip: (skipOptions: SkipOption, callback: Function) => void
   /**
    * Suspends test execution and gives you opportunity to see what's going on in the browser
    * - Jest is suspended (no timeout)
