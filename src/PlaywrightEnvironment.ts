@@ -153,6 +153,48 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           this.global.it = it
           this.global.test = test
         },
+        resetPage: async (): Promise<void> => {
+          const { context, page } = this.global
+          if (page) {
+            page.removeListener('pageerror', handleError)
+            await page.close()
+          }
+
+          this.global.page = await context.newPage()
+          if (exitOnPageError) {
+            this.global.page.addListener('pageerror', handleError)
+          }
+        },
+        resetContext: async (): Promise<void> => {
+          const { browser, context } = this.global
+
+          if (context) {
+            await context.close()
+          }
+
+          this.global.context = await browser.newContext(contextOptions)
+
+          await this.global.jestPlaywright.resetPage()
+        },
+        resetBrowser: async (): Promise<void> => {
+          const { browser } = this.global
+
+          if (browser) {
+            await browser.close()
+          }
+
+          this.global.browser = await getBrowserPerProcess(
+            playwrightInstance,
+            browserType,
+            this._jestPlaywrightConfig,
+          )
+
+          this.global.context = await this.global.browser.newContext(
+            contextOptions,
+          )
+
+          await this.global.jestPlaywright.resetPage()
+        },
         debug: async (): Promise<void> => {
           // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
           await this.global.page.evaluate(() => {

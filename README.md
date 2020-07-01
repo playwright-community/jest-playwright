@@ -148,6 +148,38 @@ Debugging tests can be hard sometimes and it is very useful to be able to pause 
 await jestPlaywright.debug()
 ```
 
+## Reset helper functions
+
+### Reset current page
+
+```js
+beforeEach(async () => {
+  await jestPlaywright.resetPage()
+})
+```
+
+To create a new page for each test, you can use this snippet to have a new page object for each individual test.
+
+### Reset current context
+
+```js
+beforeEach(async () => {
+  await jestPlaywright.resetContext()
+})
+```
+
+To create a new context for each test, you can use this snippet to have a new context object for each individual test.
+
+### Reset current browser
+
+```js
+beforeEach(async () => {
+  await jestPlaywright.resetBrowser()
+})
+```
+
+You can use this snippet to reset current browser for each individual test. It will reset browser, context and page.
+
 ## Tracking the coverage
 
 It's possible to track the coverage of the end-to-end tests with the [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) Babel plugin configured. It needs to be included in the web application which you are gonna test otherwise it won't work. To use it, you have to set `collectCoverage` in the `jest-playwright.config.js` to `true`. Per default the test coverage will be automatically saved after each navigation change (`beforeunload` event). If a certain code path is not covered, you can manually call and add the corresponding `saveCoverage(page)` call to your tests like that:
