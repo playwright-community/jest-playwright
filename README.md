@@ -160,6 +160,16 @@ beforeEach(async () => {
 
 To create a new page for each test, you can use this snippet to have a new page object for each individual test.
 
+### Reset current context
+
+```js
+beforeEach(async () => {
+  await jestPlaywright.resetContext()
+})
+```
+
+To create a new context for each test, you can use this snippet to have a new context object for each individual test.
+
 ### Reset current browser
 
 ```js
@@ -168,7 +178,7 @@ beforeEach(async () => {
 })
 ```
 
-To create a new context for each test, you can use this snippet to have a new context object for each individual test.
+You can use this snippet to reset current browser for each individual test. It will reset browser, context and page.
 
 ## Tracking the coverage
 
