@@ -202,6 +202,23 @@ npx nyc report --reporter=html
 
 which will create a HTML website in the `coverage` directory.
 
+## Skip tests for specific browser and device
+
+It's possible to skip tests for browser or combination of browser and device
+
+```js
+jestPlaywright.skip({ browser: 'chromium' }, () => {
+  test('should skip this one', async () => {
+    const title = await page.title()
+    expect(title).toBe('Google')
+  })
+
+  test('and this one', () => {
+    expect(1).toBe(2)
+  })
+})
+```
+
 ## Start a server
 
 Jest Playwright integrates a functionality to start a server when running your test suite, like [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer/blob/master/README.md#start-a-server). It automatically closes the server when tests are done.
