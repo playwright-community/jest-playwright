@@ -74,6 +74,6 @@
     "playwright-core": "npm:playwright-chromium@>=1.1.1",
     "prettier": "2.0.5",
     "ts-jest": "26.1.1",
-    "typescript": "3.9.5"
+    "typescript": "3.9.6"
   }
 }
