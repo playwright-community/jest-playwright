@@ -105,7 +105,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         }
       }
 
-      if (device !== null) {
+      if (device != null) {
         if (typeof device === 'string') {
           deviceName = device
           contextOptions = { ...devices[device], ...contextOptions }
