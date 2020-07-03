@@ -33,7 +33,7 @@ const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
   browserType: BrowserType,
   config: JestPlaywrightConfig,
-): Promise<Browser> => {
+): Promise<Browser | BrowserContext> => {
   const { launchOptions, connectOptions } = config
 
   if (connectOptions) {
@@ -47,6 +47,12 @@ const getBrowserPerProcess = async (
       )
     }
     const options = getBrowserOptions(browserType, launchOptions)
+    if (config.persistentDataDir != null) {
+      return playwrightInstance.launchPersistentContext(
+        config.persistentDataDir,
+        options,
+      )
+    }
     return playwrightInstance.launch(options)
   }
 }
@@ -117,12 +123,21 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
-      this.global.browser = await getBrowserPerProcess(
+
+      const browserOrBrowserContext = await getBrowserPerProcess(
         playwrightInstance,
         browserType,
         this._jestPlaywrightConfig,
       )
-      this.global.context = await this.global.browser.newContext(contextOptions)
+      if (this._jestPlaywrightConfig.persistentDataDir == null) {
+        this.global.browser = browserOrBrowserContext
+        this.global.context = await this.global.browser.newContext(
+          contextOptions,
+        )
+      } else {
+        this.global.context = browserOrBrowserContext
+      }
+
       if (collectCoverage) {
         ;(this.global.context as BrowserContext).exposeFunction(
           'reportCodeCoverage',
@@ -182,17 +197,19 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           if (browser) {
             await browser.close()
           }
-
-          this.global.browser = await getBrowserPerProcess(
+          const browserOrBrowserContext = await getBrowserPerProcess(
             playwrightInstance,
             browserType,
             this._jestPlaywrightConfig,
           )
-
-          this.global.context = await this.global.browser.newContext(
-            contextOptions,
-          )
-
+          if (this._jestPlaywrightConfig.persistentDataDir == null) {
+            this.global.browser = browserOrBrowserContext
+            this.global.context = await this.global.browser.newContext(
+              contextOptions,
+            )
+          } else {
+            this.global.context = browserOrBrowserContext
+          }
           await this.global.jestPlaywright.resetPage()
         },
         debug: async (): Promise<void> => {

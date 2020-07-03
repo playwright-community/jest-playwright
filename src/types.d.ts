@@ -53,6 +53,7 @@ export interface JestPlaywrightConfig {
   launchOptions?: Options<LaunchOptions>
   connectOptions?: Options<ConnectOptions>
   contextOptions?: Options<BrowserContextOptions>
+  persistentDataDir?: string
   exitOnPageError: boolean
   browsers: BrowserType[]
   devices?: (string | CustomDeviceType)[]
