@@ -8,7 +8,12 @@ import type {
   JestPlaywrightJestConfig,
   SkipOption,
 } from './types'
-import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT } from './constants'
+import {
+  CHROMIUM,
+  IMPORT_KIND_PLAYWRIGHT,
+  LAUNCH,
+  PERSISTENT,
+} from './constants'
 import {
   getBrowserOptions,
   getBrowserType,
@@ -33,22 +38,31 @@ const getBrowserPerProcess = async (
   playwrightInstance: GenericBrowser,
   browserType: BrowserType,
   config: JestPlaywrightConfig,
-): Promise<Browser> => {
-  const { launchOptions, connectOptions } = config
+): Promise<Browser | BrowserContext> => {
+  const { launchType, userDataDir, launchOptions, connectOptions } = config
 
-  if (connectOptions) {
-    const options = getBrowserOptions(browserType, connectOptions)
-    return playwrightInstance.connect(options)
-  } else {
+  if (launchType === LAUNCH || launchType === PERSISTENT) {
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchOptions && launchOptions.args) {
       launchOptions.args = launchOptions.args.filter(
         (item: string) => item !== '--no-sandbox',
       )
     }
+
     const options = getBrowserOptions(browserType, launchOptions)
-    return playwrightInstance.launch(options)
+
+    if (launchType === LAUNCH) {
+      return playwrightInstance.launch(options)
+    }
+
+    if (launchType === PERSISTENT) {
+      // @ts-ignore
+      return playwrightInstance.launchPersistentContext(userDataDir!, options)
+    }
   }
+
+  const options = getBrowserOptions(browserType, connectOptions)
+  return playwrightInstance.connect(options)
 }
 
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
@@ -80,6 +94,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         exitOnPageError,
         selectors,
         collectCoverage,
+        launchType,
       } = this._jestPlaywrightConfig
       let contextOptions = getBrowserOptions(
         browserName,
@@ -117,12 +132,22 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
-      this.global.browser = await getBrowserPerProcess(
-        playwrightInstance,
-        browserType,
-        this._jestPlaywrightConfig,
-      )
-      this.global.context = await this.global.browser.newContext(contextOptions)
+      this.global.browser =
+        launchType === PERSISTENT
+          ? null
+          : await getBrowserPerProcess(
+              playwrightInstance,
+              browserType,
+              this._jestPlaywrightConfig,
+            )
+      this.global.context =
+        launchType === PERSISTENT
+          ? await getBrowserPerProcess(
+              playwrightInstance,
+              browserType,
+              this._jestPlaywrightConfig,
+            )
+          : await this.global.browser.newContext(contextOptions)
       if (collectCoverage) {
         ;(this.global.context as BrowserContext).exposeFunction(
           'reportCodeCoverage',

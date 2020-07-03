@@ -6,11 +6,15 @@ export const CHROMIUM = 'chromium'
 export const FIREFOX = 'firefox'
 export const WEBKIT = 'webkit'
 
+export const LAUNCH = 'LAUNCH'
+export const PERSISTENT = 'PERSISTENT'
+export const SERVER = 'SERVER'
+
 export const DEFAULT_CONFIG: JestPlaywrightConfig = {
+  launchType: SERVER,
   launchOptions: {},
   contextOptions: {},
   browsers: [CHROMIUM],
-  devices: [],
   exitOnPageError: true,
   collectCoverage: false,
 }
