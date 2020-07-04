@@ -12,6 +12,7 @@ import type { Config as JestConfig } from '@jest/types'
 import type {
   BrowserType,
   DeviceType,
+  WsEndpointType,
   JestPlaywrightTest,
   JestPlaywrightConfig,
 } from './types'
@@ -23,14 +24,14 @@ import {
   getPlaywrightInstance,
   getBrowserOptions,
 } from './utils'
-import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
+import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT, SERVER } from './constants'
 import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
 
 const getBrowserTest = (
   test: JestPlaywrightTest,
   browser: BrowserType,
-  wsEndpoint: string,
+  wsEndpoint: WsEndpointType,
   device: DeviceType,
 ): JestPlaywrightTest => {
   const { displayName } = test.context.config
@@ -71,7 +72,7 @@ class PlaywrightRunner extends JestRunner {
   }
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
-    const { browsers, devices, launchOptions } = config
+    const { browsers, devices, launchType, launchOptions } = config
     const pwTests: Test[] = []
     for (const test of tests) {
       for (const browser of browsers) {
@@ -79,11 +80,14 @@ class PlaywrightRunner extends JestRunner {
         const { devices: availableDevices, instance } = getPlaywrightInstance(
           browser,
         )
-        if (!this.browser2Server[browser]) {
-          const options = getBrowserOptions(browser, launchOptions)
-          this.browser2Server[browser] = await instance.launchServer(options)
+        let wsEndpoint: WsEndpointType = null
+        if (launchType === SERVER) {
+          if (!this.browser2Server[browser]) {
+            const options = getBrowserOptions(browser, launchOptions)
+            this.browser2Server[browser] = await instance.launchServer(options)
+          }
+          wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
         }
-        const wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
 
         if (devices && devices.length) {
           devices.forEach((device: DeviceType) => {
