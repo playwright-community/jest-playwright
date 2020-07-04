@@ -25,7 +25,7 @@ export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
 export type SkipOption = {
   browser: BrowserType
-  device?: string
+  device?: string | RegExp
 }
 
 export type CustomDeviceType = BrowserContextOptions & {
@@ -69,7 +69,7 @@ export interface JestPlaywrightConfig {
   userDataDir?: string
   exitOnPageError: boolean
   browsers: BrowserType[]
-  devices?: (string | CustomDeviceType)[]
+  devices?: (string | CustomDeviceType)[] | RegExp
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
   collectCoverage: boolean

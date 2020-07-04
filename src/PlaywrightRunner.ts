@@ -11,6 +11,7 @@ import type {
 import type { Config as JestConfig } from '@jest/types'
 import type {
   BrowserType,
+  CustomDeviceType,
   DeviceType,
   WsEndpointType,
   JestPlaywrightTest,
@@ -73,6 +74,7 @@ class PlaywrightRunner extends JestRunner {
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
     const { browsers, devices, launchType, launchOptions } = config
+    let resultDevices: (string | CustomDeviceType)[] = []
     const pwTests: Test[] = []
     for (const test of tests) {
       for (const browser of browsers) {
@@ -89,8 +91,18 @@ class PlaywrightRunner extends JestRunner {
           wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
         }
 
-        if (devices && devices.length) {
-          devices.forEach((device: DeviceType) => {
+        if (devices instanceof RegExp) {
+          resultDevices = Object.keys(availableDevices).filter((item) =>
+            item.match(devices),
+          )
+        } else {
+          if (devices) {
+            resultDevices = devices
+          }
+        }
+
+        if (resultDevices.length) {
+          resultDevices.forEach((device: DeviceType) => {
             if (typeof device === 'string') {
               const availableDeviceNames = Object.keys(availableDevices)
               checkDeviceEnv(device, availableDeviceNames)
