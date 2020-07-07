@@ -59,7 +59,7 @@ type LaunchType = typeof LAUNCH | typeof SERVER | typeof PERSISTENT
 
 type Options<T> = T & Partial<Record<BrowserType, T>>
 
-type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
+export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
 
 export interface JestPlaywrightConfig {
   launchType?: LaunchType

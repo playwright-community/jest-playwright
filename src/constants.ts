@@ -1,4 +1,4 @@
-import { JestPlaywrightConfig } from './types'
+import type { JestPlaywrightConfig, ConnectOptions } from './types'
 
 export const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
@@ -13,6 +13,7 @@ export const SERVER = 'SERVER'
 export const DEFAULT_CONFIG: JestPlaywrightConfig = {
   launchType: SERVER,
   launchOptions: {},
+  connectOptions: {} as ConnectOptions,
   contextOptions: {},
   browsers: [CHROMIUM],
   exitOnPageError: true,
