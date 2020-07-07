@@ -83,19 +83,20 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     async setup(): Promise<void> {
       const { rootDir, wsEndpoint, browserName } = this._config
       this._jestPlaywrightConfig = await readConfig(rootDir)
-      if (
-        wsEndpoint &&
-        !this._jestPlaywrightConfig.connectOptions?.wsEndpoint
-      ) {
-        this._jestPlaywrightConfig.connectOptions = { wsEndpoint }
-      }
-      const browserType = getBrowserType(browserName)
       const {
+        connectOptions,
+        collectCoverage,
         exitOnPageError,
         selectors,
-        collectCoverage,
         launchType,
       } = this._jestPlaywrightConfig
+      if (wsEndpoint && !connectOptions?.wsEndpoint) {
+        this._jestPlaywrightConfig.connectOptions = {
+          ...connectOptions,
+          wsEndpoint,
+        }
+      }
+      const browserType = getBrowserType(browserName)
       let contextOptions = getBrowserOptions(
         browserName,
         this._jestPlaywrightConfig.contextOptions,
@@ -259,7 +260,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           })
         },
         saveCoverage: async (page: Page): Promise<void> =>
-          saveCoverageOnPage(page, this._jestPlaywrightConfig.collectCoverage),
+          saveCoverageOnPage(page, collectCoverage),
       }
     }
 

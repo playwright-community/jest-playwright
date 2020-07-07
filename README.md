@@ -75,7 +75,8 @@ Be sure to remove any existing `testEnvironment` option from your Jest configura
 
 You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using the `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
 
-- `launchOptions` <[object]> [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
+- `launchOptions` <[object]>. [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
+- `launchType` <[**LAUNCH**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) | [**PERSISTENT**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchpersistentcontextuserdatadir-options) | [**SERVER**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions)>. Method to launch browser instance. `jest-playwright` attaches Playwright to an existing browser instance by default.
 - `connectOptions` <[object]>. [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
 - `contextOptions` <[object]>. [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
 - `browsers` <[string[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests in.
@@ -83,7 +84,6 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
 - `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
-
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
@@ -93,7 +93,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 
 There are different ways to define browsers in your tests:
 
-- You can you array of device names:
+- You can use array of device names:
 
 ```js
 module.exports = {
@@ -407,6 +407,10 @@ in your tests at the top. (30 seconds is the default Playwright timeout for wait
 ### New Browser instance for each test
 
 If for your individual tests a new entire browser instance spins up each time and it won't be reused, then you probably run them in parallel. If you run them in a synchronous way with the `--runInBand` CLI option for Jest, then the same browser instance will be re-used and this should fix the issue.
+
+## Examples
+
+Demonstration the usage of `jest-playwright` for various test cases can be found in [`playwright-jest-examples`](https://github.com/playwright-community/playwright-jest-examples)
 
 ## Inspiration
 
