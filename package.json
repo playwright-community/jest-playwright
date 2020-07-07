@@ -69,9 +69,9 @@
     "husky": "4.2.5",
     "jest": "26.1.0",
     "lint-staged": "10.2.11",
-    "playwright": ">=1.1.1",
-    "playwright-chromium": ">=1.1.1",
-    "playwright-core": "npm:playwright-chromium@>=1.1.1",
+    "playwright": ">=1.2.0",
+    "playwright-chromium": ">=1.2.0",
+    "playwright-core": ">=1.2.0",
     "prettier": "2.0.5",
     "ts-jest": "26.1.1",
     "typescript": "3.9.6"
