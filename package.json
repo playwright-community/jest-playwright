@@ -48,6 +48,7 @@
     "jest-environment-node": "^26.0.1",
     "jest-process-manager": "^0.2.3",
     "nyc": "^15.1.0",
+    "playwright-core": ">=1.2.0",
     "rimraf": "^3.0.2",
     "uuid": "^8.1.0"
   },
@@ -71,7 +72,6 @@
     "lint-staged": "10.2.11",
     "playwright": ">=1.2.0",
     "playwright-chromium": ">=1.2.0",
-    "playwright-core": ">=1.2.0",
     "prettier": "2.0.5",
     "ts-jest": "26.1.1",
     "typescript": "3.9.6"
