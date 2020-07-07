@@ -93,7 +93,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 
 There are different ways to define browsers in your tests:
 
-- You can you array of device names:
+- You can use array of device names:
 
 ```js
 module.exports = {
