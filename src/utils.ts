@@ -162,6 +162,9 @@ export const getSkipFlag = (
   if (!device) {
     return browser === browserName
   } else {
+    if (device instanceof RegExp) {
+      return browser === browserName && device.test(deviceName!)
+    }
     return browser === browserName && device === deviceName
   }
 }

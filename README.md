@@ -82,7 +82,36 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[string[]]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts). Also you can define custom device:
+- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
+
+- `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
+- `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
+- `serverOptions` <[object]>. [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
+- `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
+
+### Device configuration
+
+There are different ways to define browsers in your tests:
+
+- You can you array of device names:
+
+```js
+module.exports = {
+  devices: ["iPhone 6", "Pixel 2"],
+  ...
+}
+```
+
+- You can use **RegExp**:
+
+```js
+module.exports = {
+  devices: /iPhone 8/,
+  ...
+}
+```
+
+- Also you can define custom device:
 
 ```js
 {
@@ -104,12 +133,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
 }
 ```
 
-- `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
-- `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
-- `serverOptions` <[object]>. [All `jest-dev-server` options](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server#options).
-- `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
-
-Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
+### Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
 
 ```javascript
 const {

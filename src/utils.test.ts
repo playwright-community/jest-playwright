@@ -207,6 +207,12 @@ describe('getSkipFlag', () => {
   })
 
   it('should return true if skipOption.browser = browserName & skipOption.device = deviceName', async () => {
+    const skipOptions = { browser: CHROMIUM as BrowserType, device: /Pixel/ }
+    const skipFlag = getSkipFlag(skipOptions, CHROMIUM, 'Pixel 2')
+    expect(skipFlag).toBe(true)
+  })
+
+  it('should return true if skipOption.device is RegExp', async () => {
     const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
     const skipFlag = getSkipFlag(skipOptions, CHROMIUM, 'Pixel 2')
     expect(skipFlag).toBe(true)
