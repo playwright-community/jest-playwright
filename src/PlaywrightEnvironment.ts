@@ -87,7 +87,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         wsEndpoint &&
         !this._jestPlaywrightConfig.connectOptions?.wsEndpoint
       ) {
-        this._jestPlaywrightConfig.connectOptions!.wsEndpoint = wsEndpoint
+        this._jestPlaywrightConfig.connectOptions = { wsEndpoint }
       }
       const browserType = getBrowserType(browserName)
       const {
