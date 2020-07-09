@@ -1,7 +1,9 @@
 import type { Page, Browser, BrowserContext } from 'playwright-core'
 
+type BrowserType = 'chromium' | 'firefox' | 'webkit'
+
 type SkipOption = {
-  browser: 'chromium' | 'firefox' | 'webkit'
+  browser: BrowserType
   device?: string | RegExp
 }
 
@@ -65,7 +67,7 @@ interface JestPlaywright {
 }
 
 declare global {
-  const browserName: string
+  const browserName: BrowserType
   const deviceName: string | null
   const page: Page
   const browser: Browser
