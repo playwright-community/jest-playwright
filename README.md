@@ -259,7 +259,7 @@ module.exports = {
 }
 ```
 
-Other options are documented in [jest-dev-server](https://github.com/smooth-code/jest-puppeteer/tree/master/packages/jest-dev-server).
+Other options are documented in [jest-process-manager](https://github.com/playwright-community/jest-process-manager).
 
 ## Using with different jest environments
 
