@@ -1,5 +1,9 @@
 import type { Page, Browser, BrowserContext } from 'playwright-core'
-import type { SkipOption } from '../src/types'
+
+type SkipOption = {
+  browser: 'chromium' | 'firefox' | 'webkit'
+  device?: string | RegExp
+}
 
 interface JestPlaywright {
   skip: (skipOptions: SkipOption, callback: Function) => void
