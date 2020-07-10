@@ -7,6 +7,7 @@ import type {
   BrowserType,
   JestPlaywrightJestConfig,
   SkipOption,
+  ConnectOptions,
 } from './types'
 import {
   CHROMIUM,
@@ -23,7 +24,6 @@ import {
   readConfig,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
-import { ConnectOptions } from './types'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
