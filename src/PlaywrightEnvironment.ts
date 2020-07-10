@@ -23,6 +23,7 @@ import {
   readConfig,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
+import { ConnectOptions } from './types'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -191,14 +192,20 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this.global.page.addListener('pageerror', handleError)
           }
         },
-        resetContext: async (): Promise<void> => {
+        resetContext: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser, context } = this.global
 
           if (context) {
             await context.close()
           }
 
-          this.global.context = await browser.newContext(contextOptions)
+          let newContextOptions = contextOptions
+
+          if (newOptions) {
+            newContextOptions = { ...newContextOptions, ...newOptions }
+          }
+
+          this.global.context = await browser.newContext(newContextOptions)
 
           await this.global.jestPlaywright.resetPage()
         },

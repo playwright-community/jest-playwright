@@ -1,4 +1,12 @@
-import type { Page, Browser, BrowserContext } from 'playwright-core'
+import type {
+  Page,
+  Browser,
+  BrowserContext,
+  BrowserType as PlaywrightBrowserType,
+  ChromiumBrowser,
+  FirefoxBrowser,
+  WebKitBrowser,
+} from 'playwright-core'
 
 type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
@@ -6,6 +14,10 @@ type SkipOption = {
   browser: BrowserType
   device?: string | RegExp
 }
+
+type GenericBrowser = PlaywrightBrowserType<
+  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
+>
 
 interface JestPlaywright {
   skip: (skipOptions: SkipOption, callback: Function) => void
@@ -28,7 +40,9 @@ interface JestPlaywright {
    * })
    * ```
    */
-  resetContext: () => Promise<void>
+  resetContext: (
+    newOptions?: Parameters<GenericBrowser['connect']>[0],
+  ) => Promise<void>
   /**
    * Reset global.browser, global.context, and global.page
    *
