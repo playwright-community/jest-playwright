@@ -209,7 +209,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
           await this.global.jestPlaywright.resetPage()
         },
-        resetBrowser: async (): Promise<void> => {
+        resetBrowser: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser } = this.global
 
           if (browser) {
@@ -222,9 +222,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this._jestPlaywrightConfig,
           )
 
-          this.global.context = await this.global.browser.newContext(
-            contextOptions,
-          )
+          await this.global.jestPlaywright.resetContext(newOptions)
 
           await this.global.jestPlaywright.resetPage()
         },
