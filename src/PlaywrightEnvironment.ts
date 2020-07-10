@@ -7,6 +7,7 @@ import type {
   BrowserType,
   JestPlaywrightJestConfig,
   SkipOption,
+  ConnectOptions,
 } from './types'
 import {
   CHROMIUM,
@@ -191,18 +192,24 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this.global.page.addListener('pageerror', handleError)
           }
         },
-        resetContext: async (): Promise<void> => {
+        resetContext: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser, context } = this.global
 
           if (context) {
             await context.close()
           }
 
-          this.global.context = await browser.newContext(contextOptions)
+          let newContextOptions = contextOptions
+
+          if (newOptions) {
+            newContextOptions = { ...newContextOptions, ...newOptions }
+          }
+
+          this.global.context = await browser.newContext(newContextOptions)
 
           await this.global.jestPlaywright.resetPage()
         },
-        resetBrowser: async (): Promise<void> => {
+        resetBrowser: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser } = this.global
 
           if (browser) {
@@ -215,9 +222,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this._jestPlaywrightConfig,
           )
 
-          this.global.context = await this.global.browser.newContext(
-            contextOptions,
-          )
+          await this.global.jestPlaywright.resetContext(newOptions)
 
           await this.global.jestPlaywright.resetPage()
         },

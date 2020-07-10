@@ -1,4 +1,12 @@
-import type { Page, Browser, BrowserContext } from 'playwright-core'
+import type {
+  Page,
+  Browser,
+  BrowserContext,
+  BrowserType as PlaywrightBrowserType,
+  ChromiumBrowser,
+  FirefoxBrowser,
+  WebKitBrowser,
+} from 'playwright-core'
 
 type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
@@ -6,6 +14,12 @@ type SkipOption = {
   browser: BrowserType
   device?: string | RegExp
 }
+
+type GenericBrowser = PlaywrightBrowserType<
+  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
+>
+
+type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
 interface JestPlaywright {
   skip: (skipOptions: SkipOption, callback: Function) => void
@@ -28,7 +42,7 @@ interface JestPlaywright {
    * })
    * ```
    */
-  resetContext: () => Promise<void>
+  resetContext: (newOptions?: ContextOptions) => Promise<void>
   /**
    * Reset global.browser, global.context, and global.page
    *
@@ -38,7 +52,7 @@ interface JestPlaywright {
    * })
    * ```
    */
-  resetBrowser: () => Promise<void>
+  resetBrowser: (newOptions?: ContextOptions) => Promise<void>
   /**
    * Suspends test execution and gives you opportunity to see what's going on in the browser
    * - Jest is suspended (no timeout)
