@@ -172,8 +172,13 @@ export const readConfig = async (
   rootDir: string = process.cwd(),
 ): Promise<JestPlaywrightConfig> => {
   const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
+  let fileExtension = 'js'
+  if (process.env.npm_package_type === 'module') {
+    fileExtension = 'cjs'
+  }
   const configPath =
-    process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js'
+    process.env.JEST_PLAYWRIGHT_CONFIG ||
+    `jest-playwright.config.${fileExtension}`
   const absConfigPath = path.resolve(rootDir, configPath)
   let configExists = true
   try {

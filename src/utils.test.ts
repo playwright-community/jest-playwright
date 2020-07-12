@@ -16,8 +16,6 @@ const {
   getBrowserOptions,
 } = Utils
 
-jest.spyOn(fs, 'exists')
-
 beforeEach(() => {
   jest.resetModules()
 })
@@ -82,6 +80,35 @@ describe('readConfig', () => {
     }
     expect(error).toBeTruthy()
     delete process.env.JEST_PLAYWRIGHT_CONFIG
+  })
+  it('should check cjs config if npm_package_type is module', async () => {
+    process.env.npm_package_type = 'module'
+    const configPath = path.join(__dirname, '..', 'jest-playwright.config.cjs')
+    const configObject = {
+      browsers: ['webkit'],
+      launchOptions: {
+        headless: true,
+      },
+      contextOptions: {
+        foo: true,
+      },
+    }
+    fs.writeFileSync(configPath, '')
+    jest.mock(
+      path.join(__dirname, '..', 'jest-playwright.config.cjs'),
+      () => configObject,
+      {
+        virtual: true,
+      },
+    )
+    const expectedConfig = {
+      ...configObject,
+      exitOnPageError: true,
+    }
+    const config = await readConfig()
+    expect(config).toMatchObject(expectedConfig)
+    delete process.env.npm_package_type
+    fs.unlinkSync(configPath)
   })
 })
 
