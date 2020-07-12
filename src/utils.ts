@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-import { promisify } from 'util'
 import type {
   BrowserType,
   DeviceType,
@@ -19,7 +18,7 @@ import {
   PACKAGE_NAME,
 } from './constants'
 
-const exists = promisify(fs.exists)
+const fsPromises = fs.promises
 
 export const checkBrowserEnv = (param: BrowserType): void => {
   if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
@@ -176,7 +175,12 @@ export const readConfig = async (
   const configPath =
     process.env.JEST_PLAYWRIGHT_CONFIG || 'jest-playwright.config.js'
   const absConfigPath = path.resolve(rootDir, configPath)
-  const configExists = await exists(absConfigPath)
+  let configExists = true
+  try {
+    await fsPromises.access(absConfigPath)
+  } catch (e) {
+    configExists = false
+  }
 
   if (hasCustomConfigPath && !configExists) {
     throw new Error(
