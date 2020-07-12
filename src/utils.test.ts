@@ -24,66 +24,49 @@ beforeEach(() => {
 
 describe('readConfig', () => {
   it('should return the default configuration if there was no separate configuration specified', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(false),
+    jest.mock(
+      path.join(__dirname, '..', 'jest-playwright.config.js'),
+      () => ({}),
+      { virtual: true },
     )
     const config = await readConfig()
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
   it('should overwrite with a custom configuration', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
-    jest.mock(
-      path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => ({
-        launchOptions: {
-          headless: true,
-        },
-        browser: 'chromium',
-        contextOptions: {
-          ignoreHTTPSErrors: true,
-        },
-      }),
-      { virtual: true },
-    )
-    const config = await readConfig()
-    const expectedConfig = {
+    const configObject = {
       launchOptions: {
         headless: true,
       },
+      browser: 'chromium',
       contextOptions: {
         ignoreHTTPSErrors: true,
       },
-      browser: 'chromium',
-      exitOnPageError: true,
     }
-    expect(config).toMatchObject(expectedConfig)
-  })
-  it('should overwrite with a custom configuration and spread the "launchOptions" and "contextOptions" setting', async () => {
-    ;((fs.exists as unknown) as jest.Mock).mockImplementationOnce(
-      (_, cb: (exists: boolean) => void) => cb(true),
-    )
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
-      () => ({
-        launchOptions: {
-          headless: true,
-        },
-        contextOptions: {
-          foo: true,
-        },
-      }),
+      () => configObject,
       { virtual: true },
     )
     const config = await readConfig()
-    const expectedConfig = {
+    expect(config).toMatchObject(configObject)
+  })
+  it('should overwrite with a custom configuration and spread the "launchOptions" and "contextOptions" setting', async () => {
+    const configObject = {
       launchOptions: {
         headless: true,
       },
       contextOptions: {
         foo: true,
       },
+    }
+    jest.mock(
+      path.join(__dirname, '..', 'jest-playwright.config.js'),
+      () => configObject,
+      { virtual: true },
+    )
+    const config = await readConfig()
+    const expectedConfig = {
+      ...configObject,
       browsers: ['chromium'],
       exitOnPageError: true,
     }
