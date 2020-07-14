@@ -204,38 +204,50 @@ describe('checkDeviceEnv', () => {
 })
 
 describe('getSkipFlag', () => {
-  it('should return true if skipOption.browser = browserName', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType }
+  it('should return true if skipOption.browsers includes browserName', async () => {
+    const skipOptions = { browsers: [CHROMIUM as BrowserType] }
     const skipFlag = getSkipFlag(skipOptions, CHROMIUM, null)
     expect(skipFlag).toBe(true)
   })
 
-  it('should return false if skipOption.browser != browserName', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType }
+  it('should return false if skipOption.browsers does not include browserName', async () => {
+    const skipOptions = { browsers: [CHROMIUM as BrowserType] }
     const skipFlag = getSkipFlag(skipOptions, FIREFOX, null)
     expect(skipFlag).toBe(false)
   })
 
-  it('should return true if skipOption.browser = browserName & skipOption.device = deviceName', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType, device: /Pixel/ }
+  it('should return true if skipOption.browser includes browserName & skipOption.devices includes deviceName', async () => {
+    const skipOptions = {
+      browsers: [CHROMIUM as BrowserType],
+      devices: /Pixel/,
+    }
     const skipFlag = getSkipFlag(skipOptions, CHROMIUM, 'Pixel 2')
     expect(skipFlag).toBe(true)
   })
 
-  it('should return true if skipOption.device is RegExp', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+  it('should return true if skipOption.devices is RegExp and match to deviceName', async () => {
+    const skipOptions = {
+      browsers: [CHROMIUM as BrowserType],
+      devices: ['Pixel 2'],
+    }
     const skipFlag = getSkipFlag(skipOptions, CHROMIUM, 'Pixel 2')
     expect(skipFlag).toBe(true)
   })
 
-  it('should return false if skipOption.browser != browserName & skipOption.device = deviceName', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+  it('should return false if skipOption.browser does not include browserName & skipOption.devices includes deviceName', async () => {
+    const skipOptions = {
+      browsers: [CHROMIUM as BrowserType],
+      devices: ['Pixel 2'],
+    }
     const skipFlag = getSkipFlag(skipOptions, FIREFOX, 'Pixel 2')
     expect(skipFlag).toBe(false)
   })
 
-  it('should return false if skipOption.browser != browserName & skipOption.device != deviceName', async () => {
-    const skipOptions = { browser: CHROMIUM as BrowserType, device: 'Pixel 2' }
+  it('should return false if skipOption.browser does not includes browserName & skipOption.devices does not include deviceName', async () => {
+    const skipOptions = {
+      browsers: [CHROMIUM as BrowserType],
+      devices: ['Pixel 2'],
+    }
     const skipFlag = getSkipFlag(skipOptions, FIREFOX, null)
     expect(skipFlag).toBe(false)
   })
