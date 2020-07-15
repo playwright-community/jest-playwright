@@ -24,8 +24,8 @@ import {
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
 export type SkipOption = {
-  browser: BrowserType
-  device?: string | RegExp
+  browsers: BrowserType[]
+  devices?: string[] | RegExp
 }
 
 export type CustomDeviceType = BrowserContextOptions & {

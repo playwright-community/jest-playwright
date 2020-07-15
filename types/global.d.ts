@@ -11,8 +11,8 @@ import type {
 type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
 type SkipOption = {
-  browser: BrowserType
-  device?: string | RegExp
+  browsers: BrowserType[]
+  devices?: string[] | RegExp
 }
 
 type GenericBrowser = PlaywrightBrowserType<

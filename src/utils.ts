@@ -157,14 +157,15 @@ export const getSkipFlag = (
   browserName: BrowserType,
   deviceName: string | null,
 ): boolean => {
-  const { browser, device } = skipOptions
-  if (!device) {
-    return browser === browserName
+  const { browsers, devices } = skipOptions
+  const isBrowserIncluded = browsers.includes(browserName)
+  if (!devices) {
+    return isBrowserIncluded
   } else {
-    if (device instanceof RegExp) {
-      return browser === browserName && device.test(deviceName!)
+    if (devices instanceof RegExp) {
+      return isBrowserIncluded && devices.test(deviceName!)
     }
-    return browser === browserName && device === deviceName
+    return isBrowserIncluded && devices.includes(deviceName!)
   }
 }
 

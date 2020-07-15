@@ -226,12 +226,12 @@ npx nyc report --reporter=html
 
 which will create a HTML website in the `coverage` directory.
 
-## Skip tests for specific browser and device
+## Skip tests for specific browsers and devices
 
-It's possible to skip tests for browser or combination of browser and device
+It's possible to skip tests for browsers or combination of browsers and devices
 
 ```js
-jestPlaywright.skip({ browser: 'chromium' }, () => {
+jestPlaywright.skip({ browsers: ['chromium'] }, () => {
   test('should skip this one', async () => {
     const title = await page.title()
     expect(title).toBe('Google')
