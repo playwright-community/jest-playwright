@@ -180,6 +180,30 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           this.global.it = it
           this.global.test = test
         },
+        config: async (
+          config: JestPlaywrightConfig,
+          callback: ({ browser, context, page }) => void,
+        ): Promise<void> => {
+          const browser = await getBrowserPerProcess(
+            playwrightInstance,
+            browserType,
+            { ...this._jestPlaywrightConfig, ...config },
+          )
+          const newContextOptions = getBrowserOptions(
+            browserName,
+            config.contextOptions,
+          )
+          const context = await browser.newContext(newContextOptions)
+          const page = await context.newPage()
+          const runTest = async ({ browser, context, page }) => {
+            await callback({ browser, context, page })
+          }
+          try {
+            await runTest({ browser, context, page })
+          } finally {
+            await browser.close()
+          }
+        },
         resetPage: async (): Promise<void> => {
           const { context, page } = this.global
           if (page) {
