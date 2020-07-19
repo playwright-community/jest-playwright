@@ -36,8 +36,6 @@ export type DeviceType = CustomDeviceType | string | null
 
 export type WsEndpointType = string | null
 
-export type Packages = Partial<Record<BrowserType, BrowserType>>
-
 export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >

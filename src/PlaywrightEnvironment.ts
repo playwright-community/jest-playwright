@@ -25,6 +25,12 @@ import {
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
 
+type ConfigParams = {
+  browser: Browser | BrowserContext | null
+  context: BrowserContext
+  page: Page
+}
+
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
 }
@@ -134,21 +140,15 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
-      this.global.browser =
-        launchType === PERSISTENT
-          ? null
-          : await getBrowserPerProcess(
-              playwrightInstance,
-              browserType,
-              this._jestPlaywrightConfig,
-            )
+      const browserOrContext = await getBrowserPerProcess(
+        playwrightInstance,
+        browserType,
+        this._jestPlaywrightConfig,
+      )
+      this.global.browser = launchType === PERSISTENT ? null : browserOrContext
       this.global.context =
         launchType === PERSISTENT
-          ? await getBrowserPerProcess(
-              playwrightInstance,
-              browserType,
-              this._jestPlaywrightConfig,
-            )
+          ? browserOrContext
           : await this.global.browser.newContext(contextOptions)
       if (collectCoverage) {
         ;(this.global.context as BrowserContext).exposeFunction(
@@ -182,26 +182,36 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         },
         config: async (
           config: JestPlaywrightConfig,
-          callback: ({ browser, context, page }) => void,
+          callback: ({ browser, context, page }: ConfigParams) => void,
         ): Promise<void> => {
-          const browser = await getBrowserPerProcess(
+          const { contextOptions, launchType } = config
+          const browserOrContext = await getBrowserPerProcess(
             playwrightInstance,
             browserType,
-            { ...this._jestPlaywrightConfig, ...config },
+            {
+              ...this._jestPlaywrightConfig,
+              ...config,
+            },
           )
+          const browser = launchType === PERSISTENT ? null : browserOrContext
           const newContextOptions = getBrowserOptions(
             browserName,
-            config.contextOptions,
+            contextOptions,
           )
-          const context = await browser.newContext(newContextOptions)
-          const page = await context.newPage()
-          const runTest = async ({ browser, context, page }) => {
+          const context =
+            launchType === PERSISTENT
+              ? (browserOrContext as BrowserContext)
+              : await (browser as Browser)!.newContext(newContextOptions)
+          const page = await context!.newPage()
+          const runTest = async ({ browser, context, page }: ConfigParams) => {
             await callback({ browser, context, page })
           }
           try {
             await runTest({ browser, context, page })
           } finally {
-            await browser.close()
+            if (browser) {
+              await browser.close()
+            }
           }
         },
         resetPage: async (): Promise<void> => {
