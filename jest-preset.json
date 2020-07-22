@@ -5,6 +5,7 @@
   "runner": "jest-playwright-preset/runner.js",
   "testRunner": "jest-circus/runner",
   "setupFilesAfterEnv": [
-    "expect-playwright"
+    "expect-playwright",
+    "jest-playwright-preset/extends.js"
   ]
 }
