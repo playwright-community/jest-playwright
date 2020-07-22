@@ -1,4 +1,4 @@
-/* global jestPlaywright */
+/* global jestPlaywright, browserName */
 const DEBUG_OPTIONS = {
   launchType: 'LAUNCH',
   launchOptions: {
@@ -22,15 +22,23 @@ it.jestPlaywrightDebug = (...args) => {
 }
 
 it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
-  it(args[0], async () => {
-    const { browser, context, page } = await jestPlaywright._configSeparateEnv({
-      ...DEBUG_OPTIONS,
-      playwrightOptions,
+  if (playwrightOptions.browser && playwrightOptions.browser !== browserName) {
+    it.skip(...args)
+  } else {
+    it(args[0], async () => {
+      const {
+        browser,
+        context,
+        page,
+      } = await jestPlaywright._configSeparateEnv({
+        ...DEBUG_OPTIONS,
+        playwrightOptions,
+      })
+      try {
+        await args[1]({ browser, context, page })
+      } finally {
+        await browser.close()
+      }
     })
-    try {
-      await args[1]({ browser, context, page })
-    } finally {
-      await browser.close()
-    }
-  })
+  }
 }
