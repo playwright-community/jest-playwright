@@ -4,5 +4,6 @@ module.exports = {
   runner: './runner.js',
   testPathIgnorePatterns: ['/node_modules/', 'lib'],
   testMatch: ['**/e2e/**/*.test.ts'],
+  setupFilesAfterEnv: ['./extends.js'],
   verbose: true,
 }

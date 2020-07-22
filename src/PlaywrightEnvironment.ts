@@ -6,7 +6,6 @@ import type {
   GenericBrowser,
   BrowserType,
   JestPlaywrightJestConfig,
-  SkipOption,
   ConnectOptions,
 } from './types'
 import {
@@ -20,7 +19,6 @@ import {
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
-  getSkipFlag,
   readConfig,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
