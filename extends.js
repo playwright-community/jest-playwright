@@ -8,7 +8,10 @@ const DEBUG_OPTIONS = {
 }
 
 it.jestPlaywrightDebug = (...args) => {
-  // TODO Add some input validation
+  // TODO:
+  //  1. Add input validation
+  //  2. Unite jestPlaywrightDebug and jestPlaywrightConfig in one function
+  //  3. Check out passing config to jestPlaywright._configSeparateEnv
   it(args[0], async () => {
     const { browser, context, page } = await jestPlaywright._configSeparateEnv(
       DEBUG_OPTIONS,
