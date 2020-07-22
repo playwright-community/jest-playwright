@@ -1,4 +1,6 @@
-/* global jestPlaywright, browserName */
+/* global jestPlaywright, browserName, deviceName */
+const { getSkipFlag } = require('./lib/utils')
+
 const DEBUG_OPTIONS = {
   launchType: 'LAUNCH',
   launchOptions: {
@@ -44,4 +46,21 @@ it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
       }
     })
   }
+}
+
+const customSkip = (skipOption, type, ...args) => {
+  const skipFlag = getSkipFlag(skipOption, browserName, deviceName)
+  if (skipFlag) {
+    global[type].skip(...args)
+  } else {
+    global[type](...args)
+  }
+}
+
+it.jestPlaywrightSkip = (skipOption, ...args) => {
+  customSkip(skipOption, 'it', ...args)
+}
+
+describe.jestPlaywrightSkip = (skipOption, ...args) => {
+  customSkip(skipOption, 'describe', ...args)
 }

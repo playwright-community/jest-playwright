@@ -10,11 +10,6 @@ import {
 
 type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
-type SkipOption = {
-  browsers: BrowserType[]
-  devices?: string[] | RegExp
-}
-
 type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
@@ -22,7 +17,6 @@ type GenericBrowser = PlaywrightBrowserType<
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
 interface JestPlaywright {
-  skip: (skipOptions: SkipOption, callback: Function) => void
   /**
    * Reset global.page
    *
