@@ -10,7 +10,7 @@ const DEBUG_OPTIONS = {
 }
 
 it.jestPlaywrightDebug = (...args) => {
-  const isConfigProvided = args.length > 2 && typeof args[0] === 'object'
+  const isConfigProvided = typeof args[0] === 'object'
   // TODO Looks wierd - need to be rewritten
   let options = DEBUG_OPTIONS
   if (isConfigProvided) {
