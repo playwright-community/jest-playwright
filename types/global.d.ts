@@ -22,12 +22,6 @@ type SkipOption = {
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
 interface JestPlaywright {
-  skip: (
-    options: SkipOption,
-    name: string,
-    fn?: jest.ProvidesCallback,
-    timeout?: number,
-  ) => void
   /**
    * Reset global.page
    *
@@ -92,4 +86,14 @@ declare global {
   const browser: Browser
   const context: BrowserContext
   const jestPlaywright: JestPlaywright
+  namespace jest {
+    interface It {
+      jestPlaywrightSkip(
+        skipOption: SkipOption,
+        name: string,
+        fn?: ProvidesCallback,
+        timeout?: number,
+      ): void
+    }
+  }
 }

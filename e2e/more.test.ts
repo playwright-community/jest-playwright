@@ -5,7 +5,7 @@ describe('Example setContext test', () => {
     const element = await page.waitForSelector('text=test')
     expect(element).toBeTruthy()
   })
-  jestPlaywright.skip(
+  it.jestPlaywrightSkip(
     { browsers: ['chromium'] },
     'should be able to execute javascript 2',
     async () => {
