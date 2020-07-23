@@ -14,9 +14,20 @@ type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
 
+type SkipOption = {
+  browsers: BrowserType[]
+  devices?: string[] | RegExp
+}
+
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
 interface JestPlaywright {
+  skip: (
+    options: SkipOption,
+    name: string,
+    fn?: jest.ProvidesCallback,
+    timeout?: number,
+  ) => void
   /**
    * Reset global.page
    *
