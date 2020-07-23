@@ -1,4 +1,6 @@
-/* global jestPlaywright, browserName */
+/* global jestPlaywright, browserName, deviceName */
+const { getSkipFlag } = require('./lib/utils')
+
 const DEBUG_OPTIONS = {
   launchType: 'LAUNCH',
   launchOptions: {
@@ -8,10 +10,7 @@ const DEBUG_OPTIONS = {
 }
 
 it.jestPlaywrightDebug = (...args) => {
-  // TODO:
-  //  1. Add input validation
-  //  2. Unite jestPlaywrightDebug and jestPlaywrightConfig in one function
-  //  3. Check out passing config to jestPlaywright._configSeparateEnv
+  // TODO: Check out passing config to jestPlaywright._configSeparateEnv
   it(args[0], async () => {
     const { browser, context, page } = await jestPlaywright._configSeparateEnv(
       DEBUG_OPTIONS,
@@ -44,4 +43,22 @@ it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
       }
     })
   }
+}
+
+const customSkip = (skipOption, type, ...args) => {
+  const skipFlag = getSkipFlag(skipOption, browserName, deviceName)
+  if (skipFlag) {
+    global[type].skip(...args)
+  } else {
+    global[type](...args)
+  }
+}
+
+// TODO Put information about changes in Readme before 1.3.0
+it.jestPlaywrightSkip = (skipOption, ...args) => {
+  customSkip(skipOption, 'it', ...args)
+}
+
+describe.jestPlaywrightSkip = (skipOption, ...args) => {
+  customSkip(skipOption, 'describe', ...args)
 }

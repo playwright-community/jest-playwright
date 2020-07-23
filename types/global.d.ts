@@ -10,19 +10,22 @@ import {
 
 type BrowserType = 'chromium' | 'firefox' | 'webkit'
 
+type GenericBrowser = PlaywrightBrowserType<
+  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
+>
+
 type SkipOption = {
   browsers: BrowserType[]
   devices?: string[] | RegExp
 }
 
-type GenericBrowser = PlaywrightBrowserType<
-  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
->
-
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
+interface JestParams<T> {
+  (options: T, name: string, fn?: jest.ProvidesCallback, timeout?: number): void
+}
+
 interface JestPlaywright {
-  skip: (skipOptions: SkipOption, callback: Function) => void
   /**
    * Reset global.page
    *
@@ -87,4 +90,16 @@ declare global {
   const browser: Browser
   const context: BrowserContext
   const jestPlaywright: JestPlaywright
+  namespace jest {
+    interface It {
+      jestPlaywrightSkip: JestParams<SkipOption>
+      jestPlaywrightDebug: (
+        name: string,
+        fn?: jest.ProvidesCallback,
+        timeout?: number,
+      ) => void
+      // TODO Replace any
+      jestPlaywrightConfig: JestParams<any>
+    }
+  }
 }
