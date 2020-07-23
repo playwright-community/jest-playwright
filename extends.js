@@ -10,13 +10,30 @@ const DEBUG_OPTIONS = {
 }
 
 it.jestPlaywrightDebug = (...args) => {
-  // TODO: Check out passing config to jestPlaywright._configSeparateEnv
-  it(args[0], async () => {
+  const isConfigProvided = typeof args[0] === 'object'
+  // TODO Looks wierd - need to be rewritten
+  let options = DEBUG_OPTIONS
+  if (isConfigProvided) {
+    const {
+      contextOptions,
+      launchOptions = {},
+      launchType = DEBUG_OPTIONS.launchType,
+    } = args[0]
+    options = {
+      ...DEBUG_OPTIONS,
+      launchType,
+      launchOptions: { ...DEBUG_OPTIONS.launchOptions, ...launchOptions },
+      contextOptions,
+    }
+  }
+
+  it(args[isConfigProvided ? 1 : 0], async () => {
     const { browser, context, page } = await jestPlaywright._configSeparateEnv(
-      DEBUG_OPTIONS,
+      options,
+      true,
     )
     try {
-      await args[1]({ browser, context, page })
+      await args[isConfigProvided ? 2 : 1]({ browser, context, page })
     } finally {
       await browser.close()
     }
@@ -32,10 +49,7 @@ it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
         browser,
         context,
         page,
-      } = await jestPlaywright._configSeparateEnv({
-        ...DEBUG_OPTIONS,
-        playwrightOptions,
-      })
+      } = await jestPlaywright._configSeparateEnv(playwrightOptions)
       try {
         await args[1]({ browser, context, page })
       } finally {
