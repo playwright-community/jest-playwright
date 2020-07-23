@@ -10,10 +10,11 @@ const DEBUG_OPTIONS = {
 }
 
 it.jestPlaywrightDebug = (...args) => {
-  // TODO: Check out passing config to jestPlaywright._configSeparateEnv
+  // TODO: Add ability to pass config with the first argument
   it(args[0], async () => {
     const { browser, context, page } = await jestPlaywright._configSeparateEnv(
       DEBUG_OPTIONS,
+      true,
     )
     try {
       await args[1]({ browser, context, page })
@@ -32,10 +33,7 @@ it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
         browser,
         context,
         page,
-      } = await jestPlaywright._configSeparateEnv({
-        ...DEBUG_OPTIONS,
-        playwrightOptions,
-      })
+      } = await jestPlaywright._configSeparateEnv(playwrightOptions)
       try {
         await args[1]({ browser, context, page })
       } finally {

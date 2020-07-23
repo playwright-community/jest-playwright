@@ -1,6 +1,11 @@
 /* eslint-disable no-console */
 import type { Event, State } from 'jest-circus'
-import type { Browser, Page, BrowserContext } from 'playwright-core'
+import type {
+  Browser,
+  Page,
+  BrowserContext,
+  BrowserContextOptions,
+} from 'playwright-core'
 import type {
   JestPlaywrightConfig,
   GenericBrowser,
@@ -167,20 +172,37 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       this.global.jestPlaywright = {
         _configSeparateEnv: async (
           config: JestPlaywrightConfig,
+          isDebug?: boolean,
         ): Promise<ConfigParams> => {
-          const { contextOptions, launchType } = config
+          const { contextOptions, launchOptions, launchType } = config
+          let resultBrowserConfig: JestPlaywrightConfig
+          let resultContextOptions: BrowserContextOptions | undefined
+          if (isDebug) {
+            resultBrowserConfig = config
+            resultContextOptions = contextOptions
+          } else {
+            resultBrowserConfig = {
+              ...this._jestPlaywrightConfig,
+              launchType,
+              launchOptions: {
+                ...this._jestPlaywrightConfig.launchOptions,
+                ...launchOptions,
+              },
+            }
+            resultContextOptions = {
+              ...this._jestPlaywrightConfig.contextOptions,
+              ...contextOptions,
+            }
+          }
           const browserOrContext = await getBrowserPerProcess(
             playwrightInstance,
             browserType,
-            {
-              ...this._jestPlaywrightConfig,
-              ...config,
-            },
+            resultBrowserConfig,
           )
           const browser = launchType === PERSISTENT ? null : browserOrContext
           const newContextOptions = getBrowserOptions(
             browserName,
-            contextOptions,
+            resultContextOptions,
           )
           const context =
             launchType === PERSISTENT
