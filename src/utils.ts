@@ -8,7 +8,7 @@ import type {
   PlaywrightRequireType,
   SkipOption,
   Options,
-} from './types'
+} from '../types/global'
 import {
   CHROMIUM,
   DEFAULT_CONFIG,

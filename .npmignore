@@ -1,6 +1,6 @@
 /*
 !/lib/*.js
-!src/types.d.ts
+!types/
 !index.js
 !setup.js
 !teardown.js

@@ -12,7 +12,7 @@ import type {
   BrowserType,
   JestPlaywrightProjectConfig,
   ConnectOptions,
-} from './types'
+} from '../types/global'
 import {
   CHROMIUM,
   IMPORT_KIND_PLAYWRIGHT,
