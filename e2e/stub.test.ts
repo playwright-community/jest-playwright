@@ -1,4 +1,4 @@
-/// <reference types="./../types/global" />
+/// <reference types="./../src/types" />
 import path from 'path'
 
 describe('Example HTML file', () => {
