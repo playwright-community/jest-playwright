@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
 import { DEFAULT_CONFIG, CHROMIUM, FIREFOX } from './constants'
-import type { BrowserType } from './types'
+import type { BrowserType } from '../types/global'
 
 const {
   readConfig,
