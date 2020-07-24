@@ -181,6 +181,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             resultBrowserConfig = config
             resultContextOptions = contextOptions
           } else {
+            // TODO Add function for deep objects merging
             resultBrowserConfig = {
               ...this._jestPlaywrightConfig,
               launchType,
