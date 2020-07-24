@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/playwright-community/jest-playwright/issues"
   },
-  "types": "./types/global.d.ts",
+  "types": "./src/types.d.ts",
   "repository": {
     "url": "https://github.com/playwright-community/jest-playwright.git",
     "type": "git"

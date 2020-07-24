@@ -10,7 +10,7 @@ import type {
   JestPlaywrightConfig,
   GenericBrowser,
   BrowserType,
-  JestPlaywrightJestConfig,
+  JestPlaywrightProjectConfig,
   ConnectOptions,
 } from './types'
 import {
@@ -82,10 +82,10 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     : 'jest-environment-jsdom')
 
   return class PlaywrightEnvironment extends RootEnv {
-    readonly _config: JestPlaywrightJestConfig
+    readonly _config: JestPlaywrightProjectConfig
     _jestPlaywrightConfig!: JestPlaywrightConfig
 
-    constructor(config: JestPlaywrightJestConfig) {
+    constructor(config: JestPlaywrightProjectConfig) {
       super(config)
       this._config = config
     }

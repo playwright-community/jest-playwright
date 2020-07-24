@@ -1,4 +1,4 @@
-/// <reference types="./../types/global" />
+/// <reference types="./../src/types" />
 describe('Example setContext test', () => {
   it('should be able to execute javascript 1', async () => {
     page.setContent(`<script>document.write("test")</script>`)
