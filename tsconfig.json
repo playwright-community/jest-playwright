@@ -8,7 +8,7 @@
     "forceConsistentCasingInFileNames": true
   },
   "files": [
-    "src/types.d.ts"
+    "types/global.d.ts"
   ],
   "include": [
     "src/**/*"
