@@ -9,7 +9,7 @@ const DEBUG_OPTIONS = {
   },
 }
 
-it.jestPlaywrightDebug = (...args) => {
+const runDebugTest = (jestTestType, ...args) => {
   const isConfigProvided = typeof args[0] === 'object'
   // TODO Looks wierd - need to be rewritten
   let options = DEBUG_OPTIONS
@@ -27,7 +27,7 @@ it.jestPlaywrightDebug = (...args) => {
     }
   }
 
-  it(args[isConfigProvided ? 1 : 0], async () => {
+  jestTestType(args[isConfigProvided ? 1 : 0], async () => {
     const { browser, context, page } = await jestPlaywright._configSeparateEnv(
       options,
       true,
@@ -40,11 +40,23 @@ it.jestPlaywrightDebug = (...args) => {
   })
 }
 
-it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
+it.jestPlaywrightDebug = (...args) => {
+  runDebugTest(it, ...args)
+}
+
+it.jestPlaywrightDebug.only = (...args) => {
+  runDebugTest(it.only, ...args)
+}
+
+it.jestPlaywrightDebug.skip = (...args) => {
+  runDebugTest(it.skip, ...args)
+}
+
+const runConfigTest = (jestTypeTest, playwrightOptions, ...args) => {
   if (playwrightOptions.browser && playwrightOptions.browser !== browserName) {
     it.skip(...args)
   } else {
-    it(args[0], async () => {
+    jestTypeTest(args[0], async () => {
       const {
         browser,
         context,
@@ -57,6 +69,18 @@ it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
       }
     })
   }
+}
+
+it.jestPlaywrightConfig = (playwrightOptions, ...args) => {
+  runConfigTest(it, playwrightOptions, ...args)
+}
+
+it.jestPlaywrightConfig.only = (...args) => {
+  runConfigTest(it.only, ...args)
+}
+
+it.jestPlaywrightConfig.skip = (...args) => {
+  runConfigTest(it.skip, ...args)
 }
 
 const customSkip = (skipOption, type, ...args) => {

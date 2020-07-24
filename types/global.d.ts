@@ -21,10 +21,6 @@ type SkipOption = {
 
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
-interface JestParams<T> {
-  (options: T, name: string, fn?: jest.ProvidesCallback, timeout?: number): void
-}
-
 interface JestPlaywright {
   /**
    * Reset global.page
@@ -83,6 +79,22 @@ interface JestPlaywright {
   saveCoverage: (page: Page) => Promise<void>
 }
 
+interface JestParams<T> {
+  (options: T, name: string, fn?: jest.ProvidesCallback, timeout?: number): void
+}
+
+// TODO Replace any
+interface JestPlaywrightDebug extends JestParams<any> {
+  (name: string, fn?: jest.ProvidesCallback, timeout?: number): void
+  skip: JestParams<any> | JestPlaywrightDebug
+  only: JestParams<any> | JestPlaywrightDebug
+}
+
+interface JestPlaywrightConfig extends JestParams<any> {
+  skip: JestParams<any> | JestPlaywrightConfig
+  only: JestParams<any> | JestPlaywrightConfig
+}
+
 declare global {
   const browserName: BrowserType
   const deviceName: string | null
@@ -93,13 +105,8 @@ declare global {
   namespace jest {
     interface It {
       jestPlaywrightSkip: JestParams<SkipOption>
-      jestPlaywrightDebug: (
-        name: string,
-        fn?: jest.ProvidesCallback,
-        timeout?: number,
-      ) => void
-      // TODO Replace any
-      jestPlaywrightConfig: JestParams<any>
+      jestPlaywrightDebug: JestPlaywrightDebug
+      jestPlaywrightConfig: JestPlaywrightConfig
     }
   }
 }
