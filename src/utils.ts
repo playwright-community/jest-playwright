@@ -202,6 +202,7 @@ export const readConfig = async (
 
   const localConfig = await require(absConfigPath)
   validateConfig(localConfig)
+  // TODO Add function for deep objects merging
   return {
     ...DEFAULT_CONFIG,
     ...localConfig,

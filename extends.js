@@ -19,6 +19,7 @@ const runDebugTest = (jestTestType, ...args) => {
       launchOptions = {},
       launchType = DEBUG_OPTIONS.launchType,
     } = args[0]
+    // TODO Add function for deep objects merging
     options = {
       ...DEBUG_OPTIONS,
       launchType,
