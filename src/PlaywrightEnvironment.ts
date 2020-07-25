@@ -2,24 +2,21 @@
 import type { Event, State } from 'jest-circus'
 import type {
   Browser,
-  Page,
   BrowserContext,
   BrowserContextOptions,
+  Page,
 } from 'playwright-core'
 import type {
-  JestPlaywrightConfig,
-  GenericBrowser,
   BrowserType,
-  JestPlaywrightProjectConfig,
   ConnectOptions,
+  GenericBrowser,
+  JestPlaywrightConfig,
+  JestPlaywrightProjectConfig,
 } from '../types/global'
+import { LAUNCH } from '../types/global'
+import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT, PERSISTENT } from './constants'
 import {
-  CHROMIUM,
-  IMPORT_KIND_PLAYWRIGHT,
-  LAUNCH,
-  PERSISTENT,
-} from './constants'
-import {
+  deepMerge,
   getBrowserOptions,
   getBrowserType,
   getDeviceType,
@@ -174,41 +171,33 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           config: JestPlaywrightConfig,
           isDebug?: boolean,
         ): Promise<ConfigParams> => {
-          const { contextOptions, launchOptions, launchType } = config
           let resultBrowserConfig: JestPlaywrightConfig
           let resultContextOptions: BrowserContextOptions | undefined
           if (isDebug) {
             resultBrowserConfig = config
-            resultContextOptions = contextOptions
+            resultContextOptions = config.contextOptions
           } else {
-            // TODO Add function for deep objects merging
-            resultBrowserConfig = {
-              ...this._jestPlaywrightConfig,
-              launchType,
-              launchOptions: {
-                ...this._jestPlaywrightConfig.launchOptions,
-                ...launchOptions,
-              },
-            }
+            resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, {
+              ...config,
+              launchType: LAUNCH,
+            })
             resultContextOptions = {
               ...this._jestPlaywrightConfig.contextOptions,
-              ...contextOptions,
+              ...config.contextOptions,
             }
           }
-          const browserOrContext = await getBrowserPerProcess(
+          const browser = await getBrowserPerProcess(
             playwrightInstance,
             browserType,
             resultBrowserConfig,
           )
-          const browser = launchType === PERSISTENT ? null : browserOrContext
           const newContextOptions = getBrowserOptions(
             browserName,
             resultContextOptions,
           )
-          const context =
-            launchType === PERSISTENT
-              ? (browserOrContext as BrowserContext)
-              : await (browser as Browser)!.newContext(newContextOptions)
+          const context = await (browser as Browser)!.newContext(
+            newContextOptions,
+          )
           const page = await context!.newPage()
           return { browser, context, page }
         },

@@ -1,8 +1,8 @@
 /* global jestPlaywright, browserName, deviceName */
-const { getSkipFlag } = require('./lib/utils')
+// TODO Rewrite with TS?
+const { getSkipFlag, deepMerge } = require('./lib/utils')
 
 const DEBUG_OPTIONS = {
-  launchType: 'LAUNCH',
   launchOptions: {
     headless: false,
     devtools: true,
@@ -14,18 +14,7 @@ const runDebugTest = (jestTestType, ...args) => {
   // TODO Looks wierd - need to be rewritten
   let options = DEBUG_OPTIONS
   if (isConfigProvided) {
-    const {
-      contextOptions,
-      launchOptions = {},
-      launchType = DEBUG_OPTIONS.launchType,
-    } = args[0]
-    // TODO Add function for deep objects merging
-    options = {
-      ...DEBUG_OPTIONS,
-      launchType,
-      launchOptions: { ...DEBUG_OPTIONS.launchOptions, ...launchOptions },
-      contextOptions,
-    }
+    options = deepMerge(DEBUG_OPTIONS, args[0])
   }
 
   jestTestType(args[isConfigProvided ? 1 : 0], async () => {

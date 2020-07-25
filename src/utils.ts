@@ -30,6 +30,32 @@ export const checkBrowserEnv = (param: BrowserType): void => {
   }
 }
 
+const isObject = (item: any) => {
+  return item && typeof item === 'object' && !Array.isArray(item)
+}
+
+export const deepMerge = <T extends Record<string, any>>(
+  target: T,
+  source: T,
+): T => {
+  let output = { ...target }
+  const keys: (keyof T)[] = Object.keys(source)
+  if (isObject(target) && isObject(source)) {
+    keys.forEach((key) => {
+      if (isObject(source[key])) {
+        if (!(key in target)) {
+          output = { ...output, [key]: source[key] }
+        } else {
+          output[key] = deepMerge(target[key], source[key])
+        }
+      } else {
+        output = { ...output, [key]: source[key] }
+      }
+    })
+  }
+  return output
+}
+
 export const checkDeviceEnv = (
   device: string,
   availableDevices: string[],
@@ -202,19 +228,7 @@ export const readConfig = async (
 
   const localConfig = await require(absConfigPath)
   validateConfig(localConfig)
-  // TODO Add function for deep objects merging
-  return {
-    ...DEFAULT_CONFIG,
-    ...localConfig,
-    launchOptions: {
-      ...DEFAULT_CONFIG.launchOptions,
-      ...(localConfig.launchOptions || {}),
-    },
-    contextOptions: {
-      ...DEFAULT_CONFIG.contextOptions,
-      ...(localConfig.contextOptions || {}),
-    },
-  }
+  return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, localConfig)
 }
 
 export const formatError = (error: string): string =>
