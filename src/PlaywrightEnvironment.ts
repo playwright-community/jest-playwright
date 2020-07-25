@@ -13,8 +13,12 @@ import type {
   JestPlaywrightConfig,
   JestPlaywrightProjectConfig,
 } from '../types/global'
-import { LAUNCH } from '../types/global'
-import { CHROMIUM, IMPORT_KIND_PLAYWRIGHT, PERSISTENT } from './constants'
+import {
+  CHROMIUM,
+  IMPORT_KIND_PLAYWRIGHT,
+  PERSISTENT,
+  LAUNCH,
+} from './constants'
 import {
   deepMerge,
   getBrowserOptions,
