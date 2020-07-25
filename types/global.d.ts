@@ -1,23 +1,41 @@
 import {
-  Page,
   Browser,
   BrowserContext,
+  Page,
+  BrowserContextOptions,
+  LaunchOptions,
   BrowserType as PlaywrightBrowserType,
   ChromiumBrowser,
   FirefoxBrowser,
   WebKitBrowser,
+  devices,
 } from 'playwright-core'
+import { Config as JestConfig } from '@jest/types'
+import { Context } from 'jest-runner/build/types'
+import { Test } from 'jest-runner'
+import { JestProcessManagerOptions } from 'jest-process-manager'
 
-type BrowserType = 'chromium' | 'firefox' | 'webkit'
+// TODO Find out flexable ways to reuse constants
+declare const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
-type GenericBrowser = PlaywrightBrowserType<
-  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
->
+declare const CHROMIUM = 'chromium'
+declare const FIREFOX = 'firefox'
+declare const WEBKIT = 'webkit'
 
-type SkipOption = {
+declare const LAUNCH = 'LAUNCH'
+declare const PERSISTENT = 'PERSISTENT'
+declare const SERVER = 'SERVER'
+
+export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
+
+export type SkipOption = {
   browsers: BrowserType[]
   devices?: string[] | RegExp
 }
+
+export type GenericBrowser = PlaywrightBrowserType<
+  WebKitBrowser | ChromiumBrowser | FirefoxBrowser
+>
 
 type ContextOptions = Parameters<GenericBrowser['connect']>[0]
 
@@ -83,16 +101,15 @@ interface JestParams<T> {
   (options: T, name: string, fn?: jest.ProvidesCallback, timeout?: number): void
 }
 
-// TODO Replace any
-interface JestPlaywrightDebug extends JestParams<any> {
+interface JestPlaywrightTestDebug extends JestParams<JestPlaywrightConfig> {
   (name: string, fn?: jest.ProvidesCallback, timeout?: number): void
-  skip: JestParams<any> | JestPlaywrightDebug
-  only: JestParams<any> | JestPlaywrightDebug
+  skip: JestParams<JestPlaywrightConfig> | JestPlaywrightTestDebug
+  only: JestParams<JestPlaywrightConfig> | JestPlaywrightTestDebug
 }
 
-interface JestPlaywrightConfig extends JestParams<any> {
-  skip: JestParams<any> | JestPlaywrightConfig
-  only: JestParams<any> | JestPlaywrightConfig
+interface JestPlaywrightTestConfig extends JestParams<JestPlaywrightConfig> {
+  skip: JestParams<JestPlaywrightConfig> | JestPlaywrightTestConfig
+  only: JestParams<JestPlaywrightConfig> | JestPlaywrightTestConfig
 }
 
 declare global {
@@ -105,8 +122,63 @@ declare global {
   namespace jest {
     interface It {
       jestPlaywrightSkip: JestParams<SkipOption>
-      jestPlaywrightDebug: JestPlaywrightDebug
-      jestPlaywrightConfig: JestPlaywrightConfig
+      jestPlaywrightDebug: JestPlaywrightTestDebug
+      jestPlaywrightConfig: JestPlaywrightTestConfig
     }
   }
+}
+
+export type CustomDeviceType = BrowserContextOptions & {
+  name: string
+}
+
+export type DeviceType = CustomDeviceType | string | null
+
+export type WsEndpointType = string | null
+
+export type SelectorType = {
+  script: string | Function | { path?: string; content?: string }
+  name: string
+}
+
+export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
+
+export interface Playwright {
+  name: PlaywrightRequireType
+  instance: GenericBrowser
+  devices: typeof devices
+}
+
+type LaunchType = typeof LAUNCH | typeof SERVER | typeof PERSISTENT
+
+type Options<T> = T & Partial<Record<BrowserType, T>>
+
+export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
+
+export interface JestPlaywrightConfig {
+  launchType?: LaunchType
+  launchOptions?: Options<LaunchOptions>
+  connectOptions?: Options<ConnectOptions>
+  contextOptions?: Options<BrowserContextOptions>
+  userDataDir?: string
+  exitOnPageError: boolean
+  browsers: BrowserType[]
+  devices?: (string | CustomDeviceType)[] | RegExp
+  serverOptions?: JestProcessManagerOptions
+  selectors?: SelectorType[]
+  collectCoverage: boolean
+}
+
+export interface JestPlaywrightProjectConfig extends JestConfig.ProjectConfig {
+  browserName: BrowserType
+  wsEndpoint: WsEndpointType
+  device: DeviceType
+}
+
+interface JestPlaywrightContext extends Context {
+  config: JestPlaywrightProjectConfig
+}
+
+export interface JestPlaywrightTest extends Test {
+  context: JestPlaywrightContext
 }

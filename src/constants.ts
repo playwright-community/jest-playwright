@@ -1,4 +1,4 @@
-import type { JestPlaywrightConfig, ConnectOptions } from './types'
+import type { JestPlaywrightConfig, ConnectOptions } from '../types/global'
 
 export const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 

@@ -16,7 +16,7 @@ import type {
   WsEndpointType,
   JestPlaywrightTest,
   JestPlaywrightConfig,
-} from './types'
+} from '../types/global'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
