@@ -37,6 +37,10 @@ describe('readConfig', () => {
       },
       browser: 'chromium',
       contextOptions: {
+        viewport: {
+          width: 800,
+          height: 640,
+        },
         ignoreHTTPSErrors: true,
       },
     }
