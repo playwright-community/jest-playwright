@@ -126,7 +126,13 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         if (selectors) {
           await Promise.all(
             selectors.map(({ name, script }) => {
-              return playwright.selectors.register(name, script)
+              return playwright.selectors
+                .register(name, script)
+                .catch((e: Error): void => {
+                  if (!e.toString().includes('has been already')) {
+                    throw e
+                  }
+                })
             }),
           )
         }
