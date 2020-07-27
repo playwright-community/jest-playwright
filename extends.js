@@ -82,7 +82,6 @@ const customSkip = (skipOption, type, ...args) => {
   }
 }
 
-// TODO Put information about changes in Readme before 1.3.0
 it.jestPlaywrightSkip = (skipOption, ...args) => {
   customSkip(skipOption, 'it', ...args)
 }

@@ -231,16 +231,14 @@ which will create a HTML website in the `coverage` directory.
 It's possible to skip tests for browsers or combination of browsers and devices
 
 ```js
-jestPlaywright.skip({ browsers: ['chromium'] }, () => {
-  test('should skip this one', async () => {
+it.jestPlaywrightSkip(
+  { browsers: ['chromium'] },
+  'should skip this one',
+  async () => {
     const title = await page.title()
     expect(title).toBe('Google')
-  })
-
-  test('and this one', () => {
-    expect(1).toBe(2)
-  })
-})
+  },
+)
 ```
 
 ## Start a server
