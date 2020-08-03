@@ -302,7 +302,6 @@ You can use **jest-playwright** with the **jest-circus** runner for taking scree
 **jest.config.json**
 
 ```json
-"testRunner": "jest-circus/runner",
 "testEnvironment": "./CustomEnvironment.js"
 ```
 
