@@ -100,6 +100,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         exitOnPageError,
         selectors,
         launchType,
+        debugOptions,
       } = this._jestPlaywrightConfig
       if (wsEndpoint && !connectOptions?.wsEndpoint) {
         this._jestPlaywrightConfig.connectOptions = {
@@ -184,18 +185,24 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           let resultBrowserConfig: JestPlaywrightConfig
           let resultContextOptions: BrowserContextOptions | undefined
           if (isDebug) {
-            resultBrowserConfig = config
-            resultContextOptions = config.contextOptions
+            resultBrowserConfig = debugOptions
+              ? deepMerge(config, debugOptions)
+              : config
+            resultContextOptions =
+              debugOptions && debugOptions.contextOptions
+                ? deepMerge(
+                    config.contextOptions!,
+                    debugOptions.contextOptions!,
+                  )
+                : config.contextOptions
           } else {
-            resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, {
-              ...config,
-              launchType: LAUNCH,
-            })
+            resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, config)
             resultContextOptions = {
               ...this._jestPlaywrightConfig.contextOptions,
               ...config.contextOptions,
             }
           }
+          resultBrowserConfig.launchType = LAUNCH
           const browser = await getBrowserPerProcess(
             playwrightInstance,
             browserType,
