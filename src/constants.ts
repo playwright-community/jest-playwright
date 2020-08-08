@@ -2,6 +2,8 @@ import type { JestPlaywrightConfig, ConnectOptions } from '../types/global'
 
 export const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
+export const CONFIG_ENVIRONMENT_NAME = 'jest-playwright'
+
 export const CHROMIUM = 'chromium'
 export const FIREFOX = 'firefox'
 export const WEBKIT = 'webkit'

@@ -18,6 +18,7 @@ import {
   IMPORT_KIND_PLAYWRIGHT,
   PERSISTENT,
   LAUNCH,
+  CONFIG_ENVIRONMENT_NAME,
 } from './constants'
 import {
   deepMerge,
@@ -25,7 +26,6 @@ import {
   getBrowserType,
   getDeviceType,
   getPlaywrightInstance,
-  readConfig,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
 
@@ -77,7 +77,6 @@ const getBrowserPerProcess = async (
 }
 
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const RootEnv = require(basicEnv === 'node'
     ? 'jest-environment-node'
     : 'jest-environment-jsdom')
@@ -92,8 +91,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     }
 
     async setup(): Promise<void> {
-      const { rootDir, wsEndpoint, browserName } = this._config
-      this._jestPlaywrightConfig = await readConfig(rootDir)
+      const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
+      this._jestPlaywrightConfig =
+        testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME]
       const {
         connectOptions,
         collectCoverage,
@@ -102,7 +102,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         launchType,
         debugOptions,
       } = this._jestPlaywrightConfig
-      if (wsEndpoint && !connectOptions?.wsEndpoint) {
+      if (wsEndpoint) {
         this._jestPlaywrightConfig.connectOptions = {
           ...connectOptions,
           wsEndpoint,

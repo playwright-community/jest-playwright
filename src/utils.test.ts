@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import * as Utils from './utils'
 import { DEFAULT_CONFIG, CHROMIUM, FIREFOX } from './constants'
-import type { BrowserType } from '../types/global'
+import type { BrowserType, JestPlaywrightConfig } from '../types/global'
 
 const {
   readConfig,
@@ -35,7 +35,7 @@ describe('readConfig', () => {
       launchOptions: {
         headless: true,
       },
-      browser: 'chromium',
+      browsers: ['chromium'],
       contextOptions: {
         viewport: {
           width: 800,
@@ -50,6 +50,29 @@ describe('readConfig', () => {
       { virtual: true },
     )
     const config = await readConfig()
+    expect(config).toMatchObject(configObject)
+  })
+  it('should overwrite config if the second param is passed', async () => {
+    const configObject = {
+      launchOptions: {
+        headless: true,
+      },
+      browsers: ['chromium'],
+    }
+    jest.mock(
+      path.join(__dirname, '..', 'jest-playwright.config.js'),
+      () => ({
+        launchOptions: {
+          headless: true,
+        },
+        browsers: ['webkit'],
+      }),
+      { virtual: true },
+    )
+    const config = await readConfig(
+      process.cwd(),
+      configObject as JestPlaywrightConfig,
+    )
     expect(config).toMatchObject(configObject)
   })
   it('should overwrite with a custom configuration and spread the "launchOptions" and "contextOptions" setting', async () => {

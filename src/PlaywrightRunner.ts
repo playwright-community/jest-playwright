@@ -25,17 +25,22 @@ import {
   getPlaywrightInstance,
   getBrowserOptions,
 } from './utils'
-import { DEFAULT_TEST_PLAYWRIGHT_TIMEOUT, SERVER } from './constants'
+import {
+  DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
+  CONFIG_ENVIRONMENT_NAME,
+  SERVER,
+} from './constants'
 import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
 
 const getBrowserTest = (
   test: JestPlaywrightTest,
+  config: JestPlaywrightConfig,
   browser: BrowserType,
   wsEndpoint: WsEndpointType,
   device: DeviceType,
 ): JestPlaywrightTest => {
-  const { displayName } = test.context.config
+  const { displayName, testEnvironmentOptions } = test.context.config
   const playwrightDisplayName = getDisplayName(browser, device)
   return {
     ...test,
@@ -43,6 +48,10 @@ const getBrowserTest = (
       ...test.context,
       config: {
         ...test.context.config,
+        testEnvironmentOptions: {
+          ...testEnvironmentOptions,
+          [CONFIG_ENVIRONMENT_NAME]: config,
+        },
         browserName: browser,
         wsEndpoint,
         device,
@@ -110,6 +119,7 @@ class PlaywrightRunner extends JestRunner {
             pwTests.push(
               getBrowserTest(
                 test as JestPlaywrightTest,
+                config,
                 browser,
                 wsEndpoint,
                 device,
@@ -120,6 +130,7 @@ class PlaywrightRunner extends JestRunner {
           pwTests.push(
             getBrowserTest(
               test as JestPlaywrightTest,
+              config,
               browser,
               wsEndpoint,
               null,
@@ -140,7 +151,11 @@ class PlaywrightRunner extends JestRunner {
     onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ): Promise<void> {
-    const config = await readConfig(tests[0].context.config.rootDir)
+    const { rootDir, testEnvironmentOptions } = tests[0].context.config
+    const config = await readConfig(
+      rootDir,
+      testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME],
+    )
     const browserTests = await this.getTests(tests, config)
     if (config.collectCoverage) {
       await setupCoverage()

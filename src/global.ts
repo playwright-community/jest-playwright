@@ -26,9 +26,10 @@ const logMessage = ({
 export async function setup(
   jestConfig: JestConfig.GlobalConfig,
 ): Promise<void> {
+  // TODO It won't work if config doesn't exist in root directory or in jest.config.js file
   const config = await readConfig(jestConfig.rootDir)
 
-  // If we are in watch mode, - only setupServer() once.
+  // If we are in watch mode - only setupServer() once.
   if (jestConfig.watch || jestConfig.watchAll) {
     if (didAlreadyRunInWatchMode) return
     didAlreadyRunInWatchMode = true

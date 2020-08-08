@@ -197,7 +197,11 @@ export const getSkipFlag = (
 
 export const readConfig = async (
   rootDir: string = process.cwd(),
+  jestEnvConfig?: JestPlaywrightConfig,
 ): Promise<JestPlaywrightConfig> => {
+  if (jestEnvConfig) {
+    return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, jestEnvConfig)
+  }
   const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
   let fileExtension = 'js'
   if (process.env.npm_package_type === 'module') {
