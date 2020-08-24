@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "expect-playwright": "^0.2.5",
-    "jest-circus": "^26.4.1",
+    "jest-circus": "^26.4.2",
     "jest-environment-node": "^26.3.0",
     "jest-process-manager": "^0.2.5",
     "nyc": "^15.1.0",
@@ -68,7 +68,7 @@
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-prettier": "3.1.4",
     "husky": "4.2.5",
-    "jest": "26.4.1",
+    "jest": "26.4.2",
     "lint-staged": "10.2.11",
     "playwright": ">=1.2.0",
     "playwright-chromium": ">=1.2.0",
