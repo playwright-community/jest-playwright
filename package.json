@@ -60,7 +60,7 @@
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.3.0",
     "@typescript-eslint/eslint-plugin": "3.10.1",
-    "@typescript-eslint/parser": "3.10.0",
+    "@typescript-eslint/parser": "3.10.1",
     "coveralls": "3.1.0",
     "eslint": "7.7.0",
     "eslint-config-airbnb-base": "14.2.0",
@@ -69,10 +69,10 @@
     "eslint-plugin-prettier": "3.1.4",
     "husky": "4.2.5",
     "jest": "26.4.2",
-    "lint-staged": "10.2.11",
+    "lint-staged": "10.2.13",
     "playwright": ">=1.2.0",
     "playwright-chromium": ">=1.2.0",
-    "prettier": "2.1.0",
+    "prettier": "2.1.1",
     "ts-jest": "26.2.0",
     "typescript": "3.9.7"
   }
