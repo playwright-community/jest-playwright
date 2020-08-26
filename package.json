@@ -72,7 +72,7 @@
     "lint-staged": "10.2.11",
     "playwright": ">=1.2.0",
     "playwright-chromium": ">=1.2.0",
-    "prettier": "2.1.0",
+    "prettier": "2.1.1",
     "ts-jest": "26.2.0",
     "typescript": "3.9.7"
   }
