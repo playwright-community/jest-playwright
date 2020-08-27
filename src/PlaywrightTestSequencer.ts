@@ -1,37 +1,23 @@
-import JestRunner from 'jest-runner'
-import type {
-  Test,
-  TestRunnerContext,
-  TestWatcher,
-  OnTestStart,
-  OnTestSuccess,
-  OnTestFailure,
-  TestRunnerOptions,
-} from 'jest-runner'
-import type { Config as JestConfig } from '@jest/types'
-import type {
-  BrowserType,
-  CustomDeviceType,
-  DeviceType,
-  WsEndpointType,
-  JestPlaywrightTest,
-  JestPlaywrightConfig,
-} from '../types/global'
+import JestSequencer from '@jest/test-sequencer'
+import type { Test } from 'jest-runner'
+import type { BrowserType } from '../types/global'
 import {
   checkBrowserEnv,
   checkDeviceEnv,
-  getDisplayName,
-  readConfig,
-  getPlaywrightInstance,
   getBrowserOptions,
+  getDisplayName,
+  getPlaywrightInstance,
+  readConfig,
 } from './utils'
 import {
-  DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
-  CONFIG_ENVIRONMENT_NAME,
-  SERVER,
-} from './constants'
+  CustomDeviceType,
+  DeviceType,
+  JestPlaywrightConfig,
+  JestPlaywrightTest,
+  WsEndpointType,
+} from '../types/global'
+import { CONFIG_ENVIRONMENT_NAME, SERVER } from './constants'
 import { BrowserServer } from 'playwright-core'
-import { setupCoverage, mergeCoverage } from './coverage'
 
 const getBrowserTest = (
   test: JestPlaywrightTest,
@@ -68,16 +54,10 @@ const getBrowserTest = (
   }
 }
 
-class PlaywrightRunner extends JestRunner {
+class CustomSequencer extends JestSequencer {
   browser2Server: Partial<Record<BrowserType, BrowserServer>>
-  constructor(
-    globalConfig: JestConfig.GlobalConfig,
-    context: TestRunnerContext,
-  ) {
-    const config = { ...globalConfig }
-    // Set default timeout to 15s
-    config.testTimeout = config.testTimeout || DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
-    super(config, context)
+  constructor() {
+    super()
     this.browser2Server = {}
   }
 
@@ -142,58 +122,20 @@ class PlaywrightRunner extends JestRunner {
 
     return pwTests
   }
-
-  async runTests(
-    tests: Test[],
-    watcher: TestWatcher,
-    onStart: OnTestStart,
-    onResult: OnTestSuccess,
-    onFailure: OnTestFailure,
-    options: TestRunnerOptions,
-  ): Promise<void> {
+  //@ts-ignore
+  async sort(tests: Test[]): Promise<Test[]> {
     if (process.env.JEST_PLAYWRIGHT_EXPERIMENTAL) {
-      await super.runTests(
-        tests,
-        watcher,
-        onStart,
-        onResult,
-        onFailure,
-        options,
-      )
-    } else {
+      const copyTests = Array.from(tests)
       const { rootDir, testEnvironmentOptions } = tests[0].context.config
       const config = await readConfig(
         rootDir,
         testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME],
       )
-      const browserTests = await this.getTests(tests, config)
-      if (config.collectCoverage) {
-        await setupCoverage()
-      }
-      await (options.serial
-        ? this['_createInBandTestRun'](
-            browserTests,
-            watcher,
-            onStart,
-            onResult,
-            onFailure,
-          )
-        : this['_createParallelTestRun'](
-            browserTests,
-            watcher,
-            onStart,
-            onResult,
-            onFailure,
-          ))
-
-      for (const browser in this.browser2Server) {
-        await this.browser2Server[browser as BrowserType]!.close()
-      }
-      if (config.collectCoverage) {
-        await mergeCoverage()
-      }
+      return this.getTests(copyTests, config)
     }
+
+    return tests
   }
 }
 
-export default PlaywrightRunner
+export default CustomSequencer
