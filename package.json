@@ -28,7 +28,7 @@
     "prepublishOnly": "npm run build",
     "test": "npm run test:src && npm run test:e2e",
     "test:src": "jest",
-    "test:e2e": "jest -c jest.config.e2e.js",
+    "test:e2e": "JEST_PLAYWRIGHT_EXPERIMENTAL=1 jest -c jest.config.e2e.js",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls"
   },
   "husky": {

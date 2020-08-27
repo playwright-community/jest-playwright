@@ -20,10 +20,10 @@ import type {
 import {
   checkBrowserEnv,
   checkDeviceEnv,
-  getDisplayName,
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
+  getBrowserTest,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
@@ -32,41 +32,6 @@ import {
 } from './constants'
 import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
-
-const getBrowserTest = (
-  test: JestPlaywrightTest,
-  config: JestPlaywrightConfig,
-  browser: BrowserType,
-  wsEndpoint: WsEndpointType,
-  device: DeviceType,
-): JestPlaywrightTest => {
-  const { displayName, testEnvironmentOptions } = test.context.config
-  const playwrightDisplayName = getDisplayName(browser, device)
-  return {
-    ...test,
-    context: {
-      ...test.context,
-      config: {
-        ...test.context.config,
-        testEnvironmentOptions: {
-          ...testEnvironmentOptions,
-          [CONFIG_ENVIRONMENT_NAME]: config,
-        },
-        browserName: browser,
-        wsEndpoint,
-        device,
-        displayName: {
-          name: displayName
-            ? `${playwrightDisplayName} ${
-                typeof displayName === 'string' ? displayName : displayName.name
-              }`
-            : playwrightDisplayName,
-          color: 'yellow',
-        },
-      },
-    },
-  }
-}
 
 class PlaywrightRunner extends JestRunner {
   browser2Server: Partial<Record<BrowserType, BrowserServer>>

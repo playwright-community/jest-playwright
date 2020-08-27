@@ -16,7 +16,9 @@ import {
   IMPORT_KIND_PLAYWRIGHT,
   WEBKIT,
   PACKAGE_NAME,
+  CONFIG_ENVIRONMENT_NAME,
 } from './constants'
+import { JestPlaywrightTest, WsEndpointType } from '../types/global'
 
 const fsPromises = fs.promises
 
@@ -237,3 +239,38 @@ export const readConfig = async (
 
 export const formatError = (error: string): string =>
   `${PACKAGE_NAME}: ${error}`
+
+export const getBrowserTest = (
+  test: JestPlaywrightTest,
+  config: JestPlaywrightConfig,
+  browser: BrowserType,
+  wsEndpoint: WsEndpointType,
+  device: DeviceType,
+): JestPlaywrightTest => {
+  const { displayName, testEnvironmentOptions } = test.context.config
+  const playwrightDisplayName = getDisplayName(browser, device)
+  return {
+    ...test,
+    context: {
+      ...test.context,
+      config: {
+        ...test.context.config,
+        testEnvironmentOptions: {
+          ...testEnvironmentOptions,
+          [CONFIG_ENVIRONMENT_NAME]: config,
+        },
+        browserName: browser,
+        wsEndpoint,
+        device,
+        displayName: {
+          name: displayName
+            ? `${playwrightDisplayName} ${
+                typeof displayName === 'string' ? displayName : displayName.name
+              }`
+            : playwrightDisplayName,
+          color: 'yellow',
+        },
+      },
+    },
+  }
+}
