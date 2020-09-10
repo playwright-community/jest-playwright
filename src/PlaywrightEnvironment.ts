@@ -149,6 +149,10 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           contextOptions = { ...deviceProps, ...contextOptions }
         }
       }
+      if (browserType === 'firefox' && contextOptions.isMobile) {
+        console.warn('jest-playwright: isMobile is not supported in Firefox.')
+        delete contextOptions.isMobile
+      }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
       const browserOrContext = await getBrowserPerProcess(
