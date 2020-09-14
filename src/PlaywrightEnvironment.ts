@@ -224,10 +224,13 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         },
         resetPage: async (): Promise<void> => {
           const { context, page } = this.global
-          if (page) {
-            page.removeListener('pageerror', handleError)
-            await page.close()
-          }
+          try {
+            if (page) {
+              page.removeListener('pageerror', handleError)
+              await page.close()
+            }
+            // eslint-disable-next-line no-empty
+          } catch (e) {}
 
           this.global.page = await context.newPage()
           if (exitOnPageError) {
