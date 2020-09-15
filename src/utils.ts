@@ -128,39 +128,6 @@ export const getPlaywrightInstance = (browserName: BrowserType): Playwright => {
   }
 }
 
-const validateConfig = (config: JestPlaywrightConfig) => {
-  const renamings = [
-    {
-      from: 'launchBrowserApp',
-      to: 'launchOptions',
-    },
-    {
-      from: 'connectBrowserApp',
-      to: 'connectOptions',
-    },
-    {
-      from: 'context',
-      to: 'contextOptions',
-    },
-    {
-      from: 'server',
-      to: 'serverOptions',
-    },
-  ]
-  const hasError = renamings.some(({ from, to }) => {
-    if (from in config) {
-      console.warn(
-        formatError(`"${from}" was renamed to "${to}" in version 1.0`),
-      )
-      return true
-    }
-    return false
-  })
-  if (hasError) {
-    throw new Error(formatError('Validation error occurred'))
-  }
-}
-
 export function getBrowserOptions<T>(
   browserName: BrowserType,
   options?: Options<T>,
@@ -231,7 +198,6 @@ export const readConfig = async (
   }
 
   const localConfig = await require(absConfigPath)
-  validateConfig(localConfig)
   return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, localConfig)
 }
 
