@@ -11,6 +11,7 @@ import type {
 import type { Config as JestConfig } from '@jest/types'
 import type {
   BrowserType,
+  BrowserTest,
   CustomDeviceType,
   DeviceType,
   WsEndpointType,
@@ -35,13 +36,13 @@ import {
 import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
 
-const getBrowserTest = (
-  test: JestPlaywrightTest,
-  config: JestPlaywrightConfig,
-  browser: BrowserType,
-  wsEndpoint: WsEndpointType,
-  device: DeviceType,
-): JestPlaywrightTest => {
+const getBrowserTest = ({
+  test,
+  config,
+  browser,
+  wsEndpoint,
+  device,
+}: BrowserTest): JestPlaywrightTest => {
   const { displayName, testEnvironmentOptions } = test.context.config
   const playwrightDisplayName = getDisplayName(browser, device)
   return {
@@ -120,6 +121,13 @@ class PlaywrightRunner extends JestRunner {
           }
         }
 
+        const browserTest = {
+          test: test as JestPlaywrightTest,
+          config,
+          wsEndpoint,
+          browser,
+        }
+
         if (resultDevices.length) {
           resultDevices.forEach((device: DeviceType) => {
             if (typeof device === 'string') {
@@ -134,13 +142,11 @@ class PlaywrightRunner extends JestRunner {
                   defaultBrowserType === browser
                 ) {
                   pwTests.push(
-                    getBrowserTest(
-                      test as JestPlaywrightTest,
-                      config,
-                      defaultBrowserType,
-                      wsEndpoint,
+                    getBrowserTest({
+                      ...browserTest,
+                      browser: defaultBrowserType,
                       device,
-                    ),
+                    }),
                   )
                 } else {
                   if (defaultBrowserType !== browser) {
@@ -153,27 +159,11 @@ class PlaywrightRunner extends JestRunner {
                 }
               }
             } else {
-              pwTests.push(
-                getBrowserTest(
-                  test as JestPlaywrightTest,
-                  config,
-                  browser,
-                  wsEndpoint,
-                  device,
-                ),
-              )
+              pwTests.push(getBrowserTest({ ...browserTest, device }))
             }
           })
         } else {
-          pwTests.push(
-            getBrowserTest(
-              test as JestPlaywrightTest,
-              config,
-              browser,
-              wsEndpoint,
-              null,
-            ),
-          )
+          pwTests.push(getBrowserTest({ ...browserTest, device: null }))
         }
       }
     }

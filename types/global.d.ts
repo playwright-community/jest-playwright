@@ -194,3 +194,11 @@ interface JestPlaywrightContext extends Context {
 export interface JestPlaywrightTest extends Test {
   context: JestPlaywrightContext
 }
+
+export interface BrowserTest {
+  test: JestPlaywrightTest
+  config: JestPlaywrightConfig
+  browser: BrowserType
+  wsEndpoint: WsEndpointType
+  device: DeviceType
+}
