@@ -24,11 +24,13 @@ import {
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
+  formatError,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
+  IMPORT_KIND_PLAYWRIGHT,
 } from './constants'
 import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
@@ -82,15 +84,23 @@ class PlaywrightRunner extends JestRunner {
   }
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
-    const { browsers, devices, launchType, launchOptions } = config
+    const {
+      browsers,
+      devices,
+      launchType,
+      launchOptions,
+      useDefaultBrowserType,
+    } = config
     let resultDevices: (string | CustomDeviceType)[] = []
     const pwTests: Test[] = []
     for (const test of tests) {
       for (const browser of browsers) {
         checkBrowserEnv(browser)
-        const { devices: availableDevices, instance } = getPlaywrightInstance(
-          browser,
-        )
+        const {
+          devices: availableDevices,
+          instance,
+          name,
+        } = getPlaywrightInstance(browser)
         let wsEndpoint: WsEndpointType = null
         if (launchType === SERVER) {
           if (!this.browser2Server[browser]) {
@@ -116,15 +126,43 @@ class PlaywrightRunner extends JestRunner {
               const availableDeviceNames = Object.keys(availableDevices)
               checkDeviceEnv(device, availableDeviceNames)
             }
-            pwTests.push(
-              getBrowserTest(
-                test as JestPlaywrightTest,
-                config,
-                browser,
-                wsEndpoint,
-                device,
-              ),
-            )
+            if (useDefaultBrowserType) {
+              if (typeof device === 'string') {
+                const { defaultBrowserType } = availableDevices[device]
+                if (
+                  name === IMPORT_KIND_PLAYWRIGHT ||
+                  defaultBrowserType === browser
+                ) {
+                  pwTests.push(
+                    getBrowserTest(
+                      test as JestPlaywrightTest,
+                      config,
+                      defaultBrowserType,
+                      wsEndpoint,
+                      device,
+                    ),
+                  )
+                } else {
+                  if (defaultBrowserType !== browser) {
+                    console.warn(
+                      formatError(
+                        `You try to use ${browser} for ${device}, but it's default browser is ${defaultBrowserType}`,
+                      ),
+                    )
+                  }
+                }
+              }
+            } else {
+              pwTests.push(
+                getBrowserTest(
+                  test as JestPlaywrightTest,
+                  config,
+                  browser,
+                  wsEndpoint,
+                  device,
+                ),
+              )
+            }
           })
         } else {
           pwTests.push(
