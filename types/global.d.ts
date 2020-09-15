@@ -5,6 +5,7 @@ import {
   BrowserContextOptions,
   LaunchOptions,
   BrowserType as PlaywrightBrowserType,
+  ViewportSize,
   ChromiumBrowser,
   FirefoxBrowser,
   WebKitBrowser,
@@ -15,7 +16,7 @@ import { Context } from 'jest-runner/build/types'
 import { Test } from 'jest-runner'
 import { JestProcessManagerOptions } from 'jest-process-manager'
 
-// TODO Find out flexable ways to reuse constants
+// TODO Find out flex ways to reuse constants
 declare const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
 declare const CHROMIUM = 'chromium'
@@ -128,7 +129,16 @@ declare global {
   }
 }
 
-export type CustomDeviceType = BrowserContextOptions & {
+type DeviceDescriptor = {
+  viewport: ViewportSize
+  userAgent: string
+  deviceScaleFactor: number
+  isMobile: boolean
+  hasTouch: boolean
+  defaultBrowserType: BrowserType
+}
+
+export type CustomDeviceType = Partial<DeviceDescriptor> & {
   name: string
 }
 
