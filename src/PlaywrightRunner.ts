@@ -97,11 +97,9 @@ class PlaywrightRunner extends JestRunner {
     for (const test of tests) {
       for (const browser of browsers) {
         checkBrowserEnv(browser)
-        const {
-          devices: availableDevices,
-          instance,
-          name,
-        } = getPlaywrightInstance(browser)
+        const { devices: availableDevices, instance } = getPlaywrightInstance(
+          browser,
+        )
         let wsEndpoint: WsEndpointType = null
         if (launchType === SERVER) {
           if (!this.browser2Server[browser]) {
@@ -111,12 +109,12 @@ class PlaywrightRunner extends JestRunner {
           wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
         }
 
-        if (devices instanceof RegExp) {
-          resultDevices = Object.keys(availableDevices).filter((item) =>
-            item.match(devices),
-          )
-        } else {
-          if (devices) {
+        if (devices) {
+          if (devices instanceof RegExp) {
+            resultDevices = Object.keys(availableDevices).filter((item) =>
+              item.match(devices),
+            )
+          } else {
             resultDevices = devices
           }
         }
@@ -134,33 +132,8 @@ class PlaywrightRunner extends JestRunner {
               const availableDeviceNames = Object.keys(availableDevices)
               checkDeviceEnv(device, availableDeviceNames)
             }
-            if (useDefaultBrowserType) {
-              if (typeof device === 'string') {
-                const { defaultBrowserType } = availableDevices[device]
-                if (
-                  name === IMPORT_KIND_PLAYWRIGHT ||
-                  defaultBrowserType === browser
-                ) {
-                  pwTests.push(
-                    getBrowserTest({
-                      ...browserTest,
-                      browser: defaultBrowserType,
-                      device,
-                    }),
-                  )
-                } else {
-                  if (defaultBrowserType !== browser) {
-                    console.warn(
-                      formatError(
-                        `You try to use ${browser} for ${device}, but it's default browser is ${defaultBrowserType}`,
-                      ),
-                    )
-                  }
-                }
-              }
-            } else {
-              pwTests.push(getBrowserTest({ ...browserTest, device }))
-            }
+
+            pwTests.push(getBrowserTest({ ...browserTest, device }))
           })
         } else {
           pwTests.push(getBrowserTest({ ...browserTest, device: null }))
