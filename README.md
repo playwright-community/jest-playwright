@@ -114,7 +114,7 @@ module.exports = {
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
+- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/server/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
