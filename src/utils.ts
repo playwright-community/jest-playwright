@@ -100,9 +100,20 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
   return browser || CHROMIUM
 }
 
-export const getPlaywrightInstance = (browserName: BrowserType): Playwright => {
+export const getPlaywrightInstance = (
+  browserName?: BrowserType,
+): Playwright => {
   let pw
   let name: PlaywrightRequireType
+  if (!browserName) {
+    pw = require(IMPORT_KIND_PLAYWRIGHT)
+    name = IMPORT_KIND_PLAYWRIGHT
+    return {
+      name,
+      instance: pw,
+      devices: pw['devices'],
+    }
+  }
   try {
     pw = require(`${IMPORT_KIND_PLAYWRIGHT}-${browserName}`)
     name = browserName

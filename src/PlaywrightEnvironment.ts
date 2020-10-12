@@ -159,7 +159,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       this.global.browserName = browserType
       this.global.deviceName = deviceName
       const browserOrContext = await getBrowserPerProcess(
-        playwrightInstance,
+        playwrightInstance as GenericBrowser,
         browserType,
         this._jestPlaywrightConfig,
       )
@@ -211,7 +211,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           }
           resultBrowserConfig.launchType = LAUNCH
           const browser = await getBrowserPerProcess(
-            playwrightInstance,
+            playwrightInstance as GenericBrowser,
             browserType,
             resultBrowserConfig,
           )
@@ -265,7 +265,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           }
 
           this.global.browser = await getBrowserPerProcess(
-            playwrightInstance,
+            playwrightInstance as GenericBrowser,
             browserType,
             this._jestPlaywrightConfig,
           )

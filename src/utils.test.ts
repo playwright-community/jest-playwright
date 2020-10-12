@@ -281,6 +281,19 @@ describe('getSkipFlag', () => {
 })
 
 describe('getPlaywrightInstance', () => {
+  it('should return all instances from playwright package', async () => {
+    jest.doMock('playwright', () => ({
+      firefox: 'firefox',
+      chromium: 'chromium',
+    }))
+
+    const { instance } = getPlaywrightInstance()
+    expect(instance).toEqual({
+      firefox: 'firefox',
+      chromium: 'chromium',
+    })
+  })
+
   it('should return specified instance from playwright package', async () => {
     jest.doMock('playwright', () => ({
       firefox: 'firefox',

@@ -155,7 +155,7 @@ export type PlaywrightRequireType = BrowserType | typeof IMPORT_KIND_PLAYWRIGHT
 
 export interface Playwright {
   name: PlaywrightRequireType
-  instance: GenericBrowser
+  instance: GenericBrowser | Record<BrowserType, GenericBrowser>
   devices: typeof devices
 }
 

@@ -25,16 +25,16 @@ import {
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
-  formatError,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
-  IMPORT_KIND_PLAYWRIGHT,
+  CHROMIUM,
 } from './constants'
-import { BrowserServer } from 'playwright-core'
+import { BrowserServer, devices as PlaywrightDevices } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
+import { GenericBrowser } from '../types/global'
 
 const getBrowserTest = ({
   test,
@@ -71,6 +71,25 @@ const getBrowserTest = ({
   }
 }
 
+const getDevices = (
+  devices: JestPlaywrightConfig['devices'],
+  availableDevices: typeof PlaywrightDevices,
+) => {
+  let resultDevices: (string | CustomDeviceType)[] = []
+
+  if (devices) {
+    if (devices instanceof RegExp) {
+      resultDevices = Object.keys(availableDevices).filter((item) =>
+        item.match(devices),
+      )
+    } else {
+      resultDevices = devices
+    }
+  }
+
+  return resultDevices
+}
+
 class PlaywrightRunner extends JestRunner {
   browser2Server: Partial<Record<BrowserType, BrowserServer>>
   constructor(
@@ -84,59 +103,95 @@ class PlaywrightRunner extends JestRunner {
     this.browser2Server = {}
   }
 
+  async launchServer(
+    config: JestPlaywrightConfig,
+    wsEndpoint: WsEndpointType,
+    browser: BrowserType,
+    instance: GenericBrowser,
+  ): Promise<void> {
+    const { launchType, launchOptions } = config
+    if (launchType === SERVER && wsEndpoint === null) {
+      if (!this.browser2Server[browser]) {
+        const options = getBrowserOptions(browser, launchOptions)
+        this.browser2Server[browser] = await instance.launchServer(options)
+      }
+    }
+  }
+
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
-    const {
-      browsers,
-      devices,
-      launchType,
-      launchOptions,
-      useDefaultBrowserType,
-    } = config
-    let resultDevices: (string | CustomDeviceType)[] = []
+    const { browsers, devices, connectOptions, useDefaultBrowserType } = config
     const pwTests: Test[] = []
     for (const test of tests) {
-      for (const browser of browsers) {
-        checkBrowserEnv(browser)
-        const { devices: availableDevices, instance } = getPlaywrightInstance(
-          browser,
-        )
-        let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
-        if (launchType === SERVER && wsEndpoint === null) {
-          if (!this.browser2Server[browser]) {
-            const options = getBrowserOptions(browser, launchOptions)
-            this.browser2Server[browser] = await instance.launchServer(options)
-          }
-          wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
-        }
-
-        if (devices) {
-          if (devices instanceof RegExp) {
-            resultDevices = Object.keys(availableDevices).filter((item) =>
-              item.match(devices),
-            )
-          } else {
-            resultDevices = devices
-          }
-        }
+      if (useDefaultBrowserType) {
+        const { devices: availableDevices, instance } = getPlaywrightInstance()
+        const resultDevices = getDevices(devices, availableDevices)
 
         const browserTest = {
           test: test as JestPlaywrightTest,
           config,
-          wsEndpoint,
-          browser,
         }
-
         if (resultDevices.length) {
-          resultDevices.forEach((device: DeviceType) => {
+          for (const device of resultDevices) {
+            const browser =
+              typeof device === 'string'
+                ? availableDevices[device].defaultBrowserType
+                : CHROMIUM
+            let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
+            await this.launchServer(
+              config,
+              wsEndpoint,
+              browser,
+              (instance as Record<BrowserType, GenericBrowser>)[browser],
+            )
+
+            wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
+
             if (typeof device === 'string') {
               const availableDeviceNames = Object.keys(availableDevices)
               checkDeviceEnv(device, availableDeviceNames)
             }
 
-            pwTests.push(getBrowserTest({ ...browserTest, device }))
-          })
-        } else {
-          pwTests.push(getBrowserTest({ ...browserTest, device: null }))
+            pwTests.push(
+              getBrowserTest({ ...browserTest, browser, wsEndpoint, device }),
+            )
+          }
+        }
+      } else {
+        for (const browser of browsers) {
+          checkBrowserEnv(browser)
+          const { devices: availableDevices, instance } = getPlaywrightInstance(
+            browser,
+          )
+          const resultDevices = getDevices(devices, availableDevices)
+          let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
+          await this.launchServer(
+            config,
+            wsEndpoint,
+            browser,
+            instance as GenericBrowser,
+          )
+
+          wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
+
+          const browserTest = {
+            test: test as JestPlaywrightTest,
+            config,
+            wsEndpoint,
+            browser,
+          }
+
+          if (resultDevices.length) {
+            resultDevices.forEach((device: DeviceType) => {
+              if (typeof device === 'string') {
+                const availableDeviceNames = Object.keys(availableDevices)
+                checkDeviceEnv(device, availableDeviceNames)
+              }
+
+              pwTests.push(getBrowserTest({ ...browserTest, device }))
+            })
+          } else {
+            pwTests.push(getBrowserTest({ ...browserTest, device: null }))
+          }
         }
       }
     }
