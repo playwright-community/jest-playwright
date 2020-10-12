@@ -15,6 +15,7 @@ import type {
 } from '../types/global'
 import {
   CHROMIUM,
+  FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
   PERSISTENT,
   LAUNCH,
@@ -22,6 +23,7 @@ import {
 } from './constants'
 import {
   deepMerge,
+  formatError,
   getBrowserOptions,
   getBrowserType,
   getDeviceType,
@@ -150,14 +152,14 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           contextOptions = { ...deviceProps, ...contextOptions }
         }
       }
-      if (browserType === 'firefox' && contextOptions.isMobile) {
-        console.warn('jest-playwright: isMobile is not supported in Firefox.')
+      if (browserType === FIREFOX && contextOptions.isMobile) {
+        console.warn(formatError(`isMobile is not supported in ${FIREFOX}.`))
         delete contextOptions.isMobile
       }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
       const browserOrContext = await getBrowserPerProcess(
-        playwrightInstance,
+        playwrightInstance as GenericBrowser,
         browserType,
         this._jestPlaywrightConfig,
       )
@@ -209,7 +211,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           }
           resultBrowserConfig.launchType = LAUNCH
           const browser = await getBrowserPerProcess(
-            playwrightInstance,
+            playwrightInstance as GenericBrowser,
             browserType,
             resultBrowserConfig,
           )
@@ -263,7 +265,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           }
 
           this.global.browser = await getBrowserPerProcess(
-            playwrightInstance,
+            playwrightInstance as GenericBrowser,
             browserType,
             this._jestPlaywrightConfig,
           )
