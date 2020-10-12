@@ -30,6 +30,7 @@ export const checkBrowserEnv = (param: BrowserType): void => {
   }
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 const isObject = (item: any) => {
   return item && typeof item === 'object' && !Array.isArray(item)
 }
