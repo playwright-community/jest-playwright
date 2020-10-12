@@ -73,7 +73,38 @@ Be sure to remove any existing `testEnvironment` option from your Jest configura
 
 ## Configuration
 
-You can specify a `jest-playwright.config.js` at the root of the project or define a custom path using the `JEST_PLAYWRIGHT_CONFIG` environment variable. It should export a config object.
+Configuration options can be specified using a `jest-playwright.config.js` file at the root of your project:
+
+```js
+// jest-playwright.config.js
+
+module.exports = {
+  // Options...
+}
+```
+
+A custom path can be specified to the `jest-playwright.config.js` file within your `jest.config.js` file:
+
+```js
+process.env.JEST_PLAYWRIGHT_CONFIG = '/path/to/jest-playwright.config.js'
+```
+
+Alternatively, configuration options can specified using Jest's own [`testEnvironmentOptions`](https://jestjs.io/docs/en/configuration#testenvironmentoptions-object) option within your `jest.config.js` file:
+
+```js
+// jest.config.js
+
+module.exports = {
+  preset: 'jest-playwright-preset',
+  testEnvironmentOptions: {
+    'jest-playwright': {
+      // Options...
+    },
+  },
+}
+```
+
+### Options
 
 - `launchOptions` <[object]>. [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
 - `launchType` <[**LAUNCH**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) | [**PERSISTENT**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchpersistentcontextuserdatadir-options) | [**SERVER**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions)>. Method to launch browser instance. `jest-playwright` attaches Playwright to an existing browser instance by default.
@@ -83,7 +114,7 @@ You can specify a `jest-playwright.config.js` at the root of the project or defi
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/deviceDescriptors.ts).
+- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/server/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).

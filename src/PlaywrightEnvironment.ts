@@ -94,8 +94,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
     async setup(): Promise<void> {
       const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
-      this._jestPlaywrightConfig =
-        testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME]
+      this._jestPlaywrightConfig = testEnvironmentOptions[
+        CONFIG_ENVIRONMENT_NAME
+      ] as JestPlaywrightConfig
       const {
         connectOptions,
         collectCoverage,

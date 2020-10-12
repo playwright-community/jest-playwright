@@ -100,8 +100,8 @@ class PlaywrightRunner extends JestRunner {
         const { devices: availableDevices, instance } = getPlaywrightInstance(
           browser,
         )
-        let wsEndpoint: WsEndpointType = null
-        if (launchType === SERVER) {
+        let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
+        if (launchType === SERVER && wsEndpoint === null) {
           if (!this.browser2Server[browser]) {
             const options = getBrowserOptions(browser, launchOptions)
             this.browser2Server[browser] = await instance.launchServer(options)
@@ -155,7 +155,7 @@ class PlaywrightRunner extends JestRunner {
     const { rootDir, testEnvironmentOptions } = tests[0].context.config
     const config = await readConfig(
       rootDir,
-      testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME],
+      testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME] as JestPlaywrightConfig,
     )
     const browserTests = await this.getTests(tests, config)
     if (config.collectCoverage) {
