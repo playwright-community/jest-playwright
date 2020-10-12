@@ -68,7 +68,7 @@
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-prettier": "3.1.4",
     "husky": "4.3.0",
-    "jest": "26.5.2",
+    "jest": "26.5.3",
     "lint-staged": "10.4.0",
     "playwright": ">=1.2.0",
     "playwright-chromium": ">=1.2.0",
