@@ -326,9 +326,9 @@ It will run your tests for:
 
 If there is no defined browsers in config it will run tests for chromium browser.
 
-## Usage with [jest-circus](https://github.com/facebook/jest/tree/master/packages/jest-circus)
+## Usage with custom [testEnvironment](https://jestjs.io/docs/en/configuration#testenvironment-string)
 
-You can use **jest-playwright** with the **jest-circus** runner for taking screenshots during test failures for example:
+You can use **jest-playwright** with custom test environment for taking screenshots during test failures for example:
 
 **jest.config.json**
 
@@ -366,6 +366,32 @@ class CustomEnvironment extends PlaywrightEnvironment {
 }
 
 module.exports = CustomEnvironment
+```
+
+## Usage with custom [runner](https://jestjs.io/docs/en/configuration#runner-string)
+
+**jest-playwright** using custom runner underhood. So if you need implement your own `runner`, you should extend it:
+
+**jest.config.json**
+
+```json
+"runner": "./CustomRunner.js"
+```
+
+**CustomRunner.js**
+
+```js
+const PlaywrightRunner = require('jest-playwright-preset/lib/PlaywrightRunner')
+  .default
+
+class CustomRunner extends PlaywrightRunner {
+  constructor(...args) {
+    super(...args);
+    this.isSerial = true;
+  }
+}
+
+module.exports = CustomRunner
 ```
 
 ## Usage with Typescript
