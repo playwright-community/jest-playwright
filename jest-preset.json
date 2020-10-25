@@ -6,6 +6,6 @@
   "testRunner": "jest-circus/runner",
   "setupFilesAfterEnv": [
     "expect-playwright",
-    "jest-playwright-preset/extends.js"
+    "jest-playwright-preset/lib/extends.js"
   ]
 }
