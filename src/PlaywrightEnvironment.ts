@@ -8,6 +8,7 @@ import type {
 } from 'playwright-core'
 import type {
   BrowserType,
+  ConfigParams,
   ConnectOptions,
   GenericBrowser,
   JestPlaywrightConfig,
@@ -30,12 +31,6 @@ import {
   getPlaywrightInstance,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
-
-type ConfigParams = {
-  browser: Browser | BrowserContext | null
-  context: BrowserContext
-  page: Page
-}
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -69,7 +64,6 @@ const getBrowserPerProcess = async (
     }
 
     if (launchType === PERSISTENT) {
-      // @ts-ignore
       return playwrightInstance.launchPersistentContext(userDataDir!, options)
     }
   }
@@ -104,6 +98,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         selectors,
         launchType,
         debugOptions,
+        skipInitialization,
       } = this._jestPlaywrightConfig
       if (wsEndpoint) {
         this._jestPlaywrightConfig.connectOptions = {
@@ -158,34 +153,37 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
-      const browserOrContext = await getBrowserPerProcess(
-        playwrightInstance as GenericBrowser,
-        browserType,
-        this._jestPlaywrightConfig,
-      )
-      this.global.browser = launchType === PERSISTENT ? null : browserOrContext
-      this.global.context =
-        launchType === PERSISTENT
-          ? browserOrContext
-          : await this.global.browser.newContext(contextOptions)
-      if (collectCoverage) {
-        ;(this.global.context as BrowserContext).exposeFunction(
-          'reportCodeCoverage',
-          saveCoverageToFile,
+      if (!skipInitialization) {
+        const browserOrContext = await getBrowserPerProcess(
+          playwrightInstance as GenericBrowser,
+          browserType,
+          this._jestPlaywrightConfig,
         )
-        ;(this.global.context as BrowserContext).addInitScript(() =>
-          window.addEventListener('beforeunload', () => {
-            // @ts-ignore
-            reportCodeCoverage(window.__coverage__)
-          }),
-        )
-      }
-      this.global.page = await this.global.context.newPage()
-      if (exitOnPageError) {
-        this.global.page.on('pageerror', handleError)
+        this.global.browser =
+          launchType === PERSISTENT ? null : browserOrContext
+        this.global.context =
+          launchType === PERSISTENT
+            ? browserOrContext
+            : await this.global.browser.newContext(contextOptions)
+        if (collectCoverage) {
+          ;(this.global.context as BrowserContext).exposeFunction(
+            'reportCodeCoverage',
+            saveCoverageToFile,
+          )
+          ;(this.global.context as BrowserContext).addInitScript(() =>
+            window.addEventListener('beforeunload', () => {
+              // @ts-ignore
+              reportCodeCoverage(window.__coverage__)
+            }),
+          )
+        }
+        this.global.page = await this.global.context.newPage()
+        if (exitOnPageError) {
+          this.global.page.on('pageerror', handleError)
+        }
       }
       this.global.jestPlaywright = {
-        _configSeparateEnv: async (
+        configSeparateEnv: async (
           config: JestPlaywrightConfig,
           isDebug?: boolean,
         ): Promise<ConfigParams> => {

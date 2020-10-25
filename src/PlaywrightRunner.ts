@@ -109,8 +109,8 @@ class PlaywrightRunner extends JestRunner {
     browser: BrowserType,
     instance: GenericBrowser,
   ): Promise<void> {
-    const { launchType, launchOptions } = config
-    if (launchType === SERVER && wsEndpoint === null) {
+    const { launchType, launchOptions, skipInitialization } = config
+    if (!skipInitialization || (launchType === SERVER && wsEndpoint === null)) {
       if (!this.browser2Server[browser]) {
         const options = getBrowserOptions(browser, launchOptions)
         this.browser2Server[browser] = await instance.launchServer(options)
