@@ -8,6 +8,7 @@ import type {
 } from 'playwright-core'
 import type {
   BrowserType,
+  ConfigParams,
   ConnectOptions,
   GenericBrowser,
   JestPlaywrightConfig,
@@ -30,12 +31,6 @@ import {
   getPlaywrightInstance,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
-
-type ConfigParams = {
-  browser: Browser | BrowserContext | null
-  context: BrowserContext
-  page: Page
-}
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -69,7 +64,6 @@ const getBrowserPerProcess = async (
     }
 
     if (launchType === PERSISTENT) {
-      // @ts-ignore
       return playwrightInstance.launchPersistentContext(userDataDir!, options)
     }
   }
@@ -185,7 +179,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         this.global.page.on('pageerror', handleError)
       }
       this.global.jestPlaywright = {
-        _configSeparateEnv: async (
+        configSeparateEnv: async (
           config: JestPlaywrightConfig,
           isDebug?: boolean,
         ): Promise<ConfigParams> => {

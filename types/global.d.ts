@@ -96,6 +96,10 @@ interface JestPlaywright {
    * ```
    */
   saveCoverage: (page: Page) => Promise<void>
+  configSeparateEnv: (
+    config: JestPlaywrightConfig,
+    isDebug?: boolean,
+  ) => Promise<ConfigParams>
 }
 
 interface JestParams<T> {
@@ -201,4 +205,10 @@ export interface BrowserTest {
   browser: BrowserType
   wsEndpoint: WsEndpointType
   device: DeviceType
+}
+
+export type ConfigParams = {
+  browser: Browser | BrowserContext | null
+  context: BrowserContext
+  page: Page
 }
