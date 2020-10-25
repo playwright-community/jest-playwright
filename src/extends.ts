@@ -1,4 +1,5 @@
 /* global jestPlaywright, browserName, deviceName */
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
 import { BrowserType, JestPlaywrightConfig, SkipOption } from '../types/global'
 
