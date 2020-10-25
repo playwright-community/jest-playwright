@@ -170,6 +170,7 @@ type Options<T> = T & Partial<Record<BrowserType, T>>
 export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
 
 export interface JestPlaywrightConfig {
+  skipInitialization?: boolean
   debugOptions?: JestPlaywrightConfig
   launchType?: LaunchType
   launchOptions?: Options<LaunchOptions>
