@@ -108,7 +108,7 @@ class PlaywrightRunner extends JestRunner {
     wsEndpoint: WsEndpointType,
     browser: BrowserType,
     instance: GenericBrowser,
-  ): Promise<void> {
+  ): Promise<WsEndpointType> {
     const { launchType, launchOptions, skipInitialization } = config
     if (!skipInitialization || (launchType === SERVER && wsEndpoint === null)) {
       if (!this.browser2Server[browser]) {
@@ -116,6 +116,7 @@ class PlaywrightRunner extends JestRunner {
         this.browser2Server[browser] = await instance.launchServer(options)
       }
     }
+    return wsEndpoint || this.browser2Server[browser]!.wsEndpoint()
   }
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
@@ -136,15 +137,12 @@ class PlaywrightRunner extends JestRunner {
               typeof device === 'string'
                 ? availableDevices[device].defaultBrowserType
                 : CHROMIUM
-            let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
-            await this.launchServer(
+            const wsEndpoint: WsEndpointType = await this.launchServer(
               config,
-              wsEndpoint,
+              connectOptions?.wsEndpoint || null,
               browser,
               (instance as Record<BrowserType, GenericBrowser>)[browser],
             )
-
-            wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
 
             if (typeof device === 'string') {
               const availableDeviceNames = Object.keys(availableDevices)
@@ -163,15 +161,12 @@ class PlaywrightRunner extends JestRunner {
             browser,
           )
           const resultDevices = getDevices(devices, availableDevices)
-          let wsEndpoint: WsEndpointType = connectOptions?.wsEndpoint || null
-          await this.launchServer(
+          const wsEndpoint: WsEndpointType = await this.launchServer(
             config,
-            wsEndpoint,
+            connectOptions?.wsEndpoint || null,
             browser,
             instance as GenericBrowser,
           )
-
-          wsEndpoint = this.browser2Server[browser]!.wsEndpoint()
 
           const browserTest = {
             test: test as JestPlaywrightTest,
