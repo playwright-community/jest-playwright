@@ -253,6 +253,54 @@ beforeEach(async () => {
 
 You can use this snippet to reset current browser for each individual test. It will reset browser, context and page.
 
+## Debug helper functions
+
+`jest-playwright` provides some functions to debug your tests
+
+### jestPlaywrightDebug
+
+This helper function provide you ability to run specific tests in `debug` mode. It will run test in `headless` mode.
+You can find more information [here](https://github.com/playwright-community/jest-playwright/issues/216)
+
+```js
+test.jestPlaywrightDebug('failed', async ({ page }) => {
+  await page.goto('https://github.com/')
+  const title = await page.title()
+  await expect(title).toBe('Google')
+})
+```
+
+Also you can define options for `debug` mode with `debugOptions`:
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  debugOptions: {
+    ...
+    contextOptions: {
+      offline: true
+    }
+  }
+  ...
+}
+```
+
+### jestPlaywrightConfig
+
+This helper function provide you ability to run specific tests with passed options.
+
+```js
+test.jestPlaywrightConfig(
+  {
+    // your jest-playwright options
+  },
+  'test name',
+  async () => {
+    /* ... */
+  },
+)
+```
+
 ## Tracking the coverage
 
 It's possible to track the coverage of the end-to-end tests with the [babel-plugin-istanbul](https://github.com/istanbuljs/babel-plugin-istanbul) Babel plugin configured. It needs to be included in the web application which you are gonna test otherwise it won't work. To use it, you have to set `collectCoverage` in the `jest-playwright.config.js` to `true`. Per default the test coverage will be automatically saved after each navigation change (`beforeunload` event). If a certain code path is not covered, you can manually call and add the corresponding `saveCoverage(page)` call to your tests like that:
