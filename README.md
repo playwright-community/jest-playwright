@@ -120,6 +120,25 @@ module.exports = {
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
 - `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 
+### Specific browser options
+
+For `launchOptions`, `connectOptions` and `contextOptions` you can define special browser options.
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  connectOptions: {
+    chromium: {
+	  wsEndpoint: 'ws://chrome.proxy.com:4444'
+	},
+	firefox: {
+	  wsEndpoint: 'ws://firefox.proxy.com:4444'
+	}
+  },
+  ...
+}
+```
+
 ### Device configuration
 
 There are different ways to define browsers in your tests:
@@ -166,7 +185,7 @@ module.exports = {
 
 ### Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
 
-```javascript
+```js
 const {
   selectorEngine,
 } = require('query-selector-shadow-dom/plugins/playwright');
@@ -177,7 +196,6 @@ module.exports = {
   ],
   ...
 }
-
 ```
 
 ### Notes
@@ -199,7 +217,7 @@ All of them are available globally in each Jest test. If you are using ESLint an
 
 Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
 
-```javascript
+```js
 await jestPlaywright.debug()
 ```
 
@@ -386,8 +404,8 @@ const PlaywrightRunner = require('jest-playwright-preset/lib/PlaywrightRunner')
 
 class CustomRunner extends PlaywrightRunner {
   constructor(...args) {
-    super(...args);
-    this.isSerial = true;
+    super(...args)
+    this.isSerial = true
   }
 }
 
