@@ -119,6 +119,27 @@ module.exports = {
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
 - `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
+- `skipInitialization` <[boolean]>. Add you ability to skip first setup `playwright` process. Possible use cases can be found [here](https://github.com/playwright-community/jest-playwright/issues/424)
+- `useDefaultBrowserType` <[boolean]>. [Sometimes](https://github.com/microsoft/playwright/issues/2787) `browser` + `device` combinations don't have any sense. With this option tests will be run with [`defaultBrowserType`](https://github.com/microsoft/playwright/pull/3731) of device
+
+### Specific browser options
+
+For `launchOptions`, `connectOptions` and `contextOptions` you can define special browser options.
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  connectOptions: {
+    chromium: {
+	  wsEndpoint: 'ws://chrome.proxy.com:4444'
+	},
+	firefox: {
+	  wsEndpoint: 'ws://firefox.proxy.com:4444'
+	}
+  },
+  ...
+}
+```
 
 ### Device configuration
 
@@ -166,7 +187,7 @@ module.exports = {
 
 ### Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
 
-```javascript
+```js
 const {
   selectorEngine,
 } = require('query-selector-shadow-dom/plugins/playwright');
@@ -177,7 +198,6 @@ module.exports = {
   ],
   ...
 }
-
 ```
 
 ### Notes
@@ -199,7 +219,7 @@ All of them are available globally in each Jest test. If you are using ESLint an
 
 Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
 
-```javascript
+```js
 await jestPlaywright.debug()
 ```
 
@@ -234,6 +254,54 @@ beforeEach(async () => {
 ```
 
 You can use this snippet to reset current browser for each individual test. It will reset browser, context and page.
+
+## Debug helper functions
+
+`jest-playwright` provides some functions to debug your tests
+
+### jestPlaywrightDebug
+
+This helper function provide you ability to run specific tests in `debug` mode. It will run test in `headless` mode.
+You can find more information [here](https://github.com/playwright-community/jest-playwright/issues/216)
+
+```js
+test.jestPlaywrightDebug('failed', async ({ page }) => {
+  await page.goto('https://github.com/')
+  const title = await page.title()
+  await expect(title).toBe('Google')
+})
+```
+
+Also you can define options for `debug` mode with `debugOptions`:
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  debugOptions: {
+    ...
+    contextOptions: {
+      offline: true
+    }
+  }
+  ...
+}
+```
+
+### jestPlaywrightConfig
+
+This helper function provide you ability to run specific tests with passed options.
+
+```js
+test.jestPlaywrightConfig(
+  {
+    // your jest-playwright options
+  },
+  'test name',
+  async () => {
+    /* ... */
+  },
+)
+```
 
 ## Tracking the coverage
 
@@ -386,8 +454,8 @@ const PlaywrightRunner = require('jest-playwright-preset/lib/PlaywrightRunner')
 
 class CustomRunner extends PlaywrightRunner {
   constructor(...args) {
-    super(...args);
-    this.isSerial = true;
+    super(...args)
+    this.isSerial = true
   }
 }
 
