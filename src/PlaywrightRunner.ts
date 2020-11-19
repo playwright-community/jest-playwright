@@ -17,6 +17,7 @@ import type {
   WsEndpointType,
   JestPlaywrightTest,
   JestPlaywrightConfig,
+  ConfigDeviceType,
 } from '../types/global'
 import {
   checkBrowserEnv,
@@ -90,6 +91,21 @@ const getDevices = (
   return resultDevices
 }
 
+const getBrowser = (
+  device: ConfigDeviceType,
+  availableDevices: typeof PlaywrightDevices,
+): BrowserType => {
+  if (typeof device === 'string') {
+    return availableDevices[device].defaultBrowserType
+  }
+
+  if (device.defaultBrowserType) {
+    return device.defaultBrowserType
+  }
+
+  return CHROMIUM
+}
+
 class PlaywrightRunner extends JestRunner {
   browser2Server: Partial<Record<BrowserType, BrowserServer>>
   constructor(
@@ -133,10 +149,7 @@ class PlaywrightRunner extends JestRunner {
         }
         if (resultDevices.length) {
           for (const device of resultDevices) {
-            const browser =
-              typeof device === 'string'
-                ? availableDevices[device].defaultBrowserType
-                : CHROMIUM
+            const browser = getBrowser(device, availableDevices)
             const wsEndpoint: WsEndpointType = await this.launchServer(
               config,
               connectOptions?.wsEndpoint || null,

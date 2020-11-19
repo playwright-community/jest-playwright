@@ -146,7 +146,9 @@ export type CustomDeviceType = Partial<DeviceDescriptor> & {
   name: string
 }
 
-export type DeviceType = CustomDeviceType | string | null
+export type ConfigDeviceType = CustomDeviceType | string
+
+export type DeviceType = ConfigDeviceType | null
 
 export type WsEndpointType = string | null
 
@@ -179,7 +181,7 @@ export interface JestPlaywrightConfig {
   userDataDir?: string
   exitOnPageError: boolean
   browsers: BrowserType[]
-  devices?: (string | CustomDeviceType)[] | RegExp
+  devices?: ConfigDeviceType[] | RegExp
   useDefaultBrowserType?: boolean
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
