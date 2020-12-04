@@ -21,10 +21,13 @@ import {
 const fsPromises = fs.promises
 
 export const checkBrowserEnv = (param: BrowserType): void => {
-  if (param !== CHROMIUM && param !== FIREFOX && param !== WEBKIT) {
+  const browsers = [CHROMIUM, FIREFOX, WEBKIT]
+  if (!browsers.includes(param)) {
     throw new Error(
       formatError(
-        `Wrong browser type. Should be one of [${CHROMIUM}, ${FIREFOX}, ${WEBKIT}], but got ${param}`,
+        `Wrong browser type. Should be one of [${browsers.join(
+          ', ',
+        )}], but got ${param}`,
       ),
     )
   }
@@ -70,6 +73,16 @@ export const checkDeviceEnv = (
   }
 }
 
+export const checkDevice = (
+  device: DeviceType,
+  availableDevices: Playwright['devices'],
+): void => {
+  if (typeof device === 'string') {
+    const availableDeviceNames = Object.keys(availableDevices)
+    checkDeviceEnv(device, availableDeviceNames)
+  }
+}
+
 export const getDisplayName = (
   browser: BrowserType,
   device: DeviceType,
@@ -87,10 +100,7 @@ export const getDisplayName = (
 
 export const getDeviceType = (device: DeviceType): DeviceType => {
   const processDevice = process.env.DEVICE
-  if (processDevice) {
-    return processDevice
-  }
-  return device
+  return processDevice || device
 }
 
 export const getBrowserType = (browser?: BrowserType): BrowserType => {

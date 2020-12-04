@@ -12,7 +12,6 @@ import type { Config as JestConfig } from '@jest/types'
 import type {
   BrowserType,
   BrowserTest,
-  CustomDeviceType,
   DeviceType,
   WsEndpointType,
   JestPlaywrightTest,
@@ -21,7 +20,7 @@ import type {
 } from '../types/global'
 import {
   checkBrowserEnv,
-  checkDeviceEnv,
+  checkDevice,
   getDisplayName,
   readConfig,
   getPlaywrightInstance,
@@ -61,9 +60,7 @@ const getBrowserTest = ({
         device,
         displayName: {
           name: displayName
-            ? `${playwrightDisplayName} ${
-                typeof displayName === 'string' ? displayName : displayName.name
-              }`
+            ? `${playwrightDisplayName} ${displayName.name || displayName}`
             : playwrightDisplayName,
           color: 'yellow',
         },
@@ -76,7 +73,7 @@ const getDevices = (
   devices: JestPlaywrightConfig['devices'],
   availableDevices: typeof PlaywrightDevices,
 ) => {
-  let resultDevices: (string | CustomDeviceType)[] = []
+  let resultDevices: ConfigDeviceType[] = []
 
   if (devices) {
     if (devices instanceof RegExp) {
@@ -99,11 +96,7 @@ const getBrowser = (
     return availableDevices[device].defaultBrowserType
   }
 
-  if (device.defaultBrowserType) {
-    return device.defaultBrowserType
-  }
-
-  return CHROMIUM
+  return device?.defaultBrowserType || CHROMIUM
 }
 
 class PlaywrightRunner extends JestRunner {
@@ -132,7 +125,7 @@ class PlaywrightRunner extends JestRunner {
         this.browser2Server[browser] = await instance.launchServer(options)
       }
     }
-    return wsEndpoint || this.browser2Server[browser]!.wsEndpoint()
+    return wsEndpoint || this.browser2Server[browser]?.wsEndpoint() || null
   }
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
@@ -157,10 +150,7 @@ class PlaywrightRunner extends JestRunner {
               (instance as Record<BrowserType, GenericBrowser>)[browser],
             )
 
-            if (typeof device === 'string') {
-              const availableDeviceNames = Object.keys(availableDevices)
-              checkDeviceEnv(device, availableDeviceNames)
-            }
+            checkDevice(device, availableDevices)
 
             pwTests.push(
               getBrowserTest({ ...browserTest, browser, wsEndpoint, device }),
@@ -190,11 +180,7 @@ class PlaywrightRunner extends JestRunner {
 
           if (resultDevices.length) {
             resultDevices.forEach((device: DeviceType) => {
-              if (typeof device === 'string') {
-                const availableDeviceNames = Object.keys(availableDevices)
-                checkDeviceEnv(device, availableDeviceNames)
-              }
-
+              checkDevice(device, availableDevices)
               pwTests.push(getBrowserTest({ ...browserTest, device }))
             })
           } else {

@@ -120,7 +120,7 @@ module.exports = {
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
 - `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 - `skipInitialization` <[boolean]>. Add you ability to skip first setup `playwright` process. Possible use cases can be found [here](https://github.com/playwright-community/jest-playwright/issues/424)
-- `useDefaultBrowserType` <[boolean]>. [Sometimes](https://github.com/microsoft/playwright/issues/2787) `browser` + `device` combinations don't have any sense. With this option tests will be run with [`defaultBrowserType`](https://github.com/microsoft/playwright/pull/3731) of device
+- `useDefaultBrowserType` <[boolean]>. [Sometimes](https://github.com/microsoft/playwright/issues/2787) `browser` + `device` combinations don't have any sense. With this option tests will be run with [`defaultBrowserType`](https://github.com/microsoft/playwright/pull/3731) of device. Pay attention that you should define **devices** to correct usage of this option.
 
 ### Specific browser options
 

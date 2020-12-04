@@ -3,6 +3,7 @@ import path from 'path'
 import * as Utils from './utils'
 import { DEFAULT_CONFIG, CHROMIUM, FIREFOX } from './constants'
 import type { BrowserType, JestPlaywrightConfig } from '../types/global'
+import { Playwright } from '../types/global'
 
 const {
   readConfig,
@@ -10,6 +11,7 @@ const {
   getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
+  checkDevice,
   getPlaywrightInstance,
   getDisplayName,
   getSkipFlag,
@@ -227,6 +229,29 @@ describe('checkDeviceEnv', () => {
     const device = 'unknown'
     const devices = ['iPhone 11', 'Pixel 2', 'Nexus 4']
     expect(() => checkDeviceEnv(device, devices)).toThrow()
+  })
+})
+
+describe('checkDevice', () => {
+  const devices = {
+    'iPhone 11': {},
+    'Pixel 2': {},
+    'Nexus 4': {},
+  } as Playwright['devices']
+
+  it('should not throw Error if device is exist', async () => {
+    const device = 'Nexus 4'
+    expect(() => checkDevice(device, devices)).not.toThrow()
+  })
+
+  it('should not throw Error if device is not string', async () => {
+    const device = null
+    expect(() => checkDevice(device, devices)).not.toThrow()
+  })
+
+  it('should throw Error with unknown type', async () => {
+    const device = 'unknown'
+    expect(() => checkDevice(device, devices)).toThrow()
   })
 })
 

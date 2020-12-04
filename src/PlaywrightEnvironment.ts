@@ -241,9 +241,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         resetContext: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser, context } = this.global
 
-          if (context) {
-            await context.close()
-          }
+          await context?.close()
 
           let newContextOptions = contextOptions
 
@@ -258,9 +256,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         resetBrowser: async (newOptions?: ConnectOptions): Promise<void> => {
           const { browser } = this.global
 
-          if (browser) {
-            await browser.close()
-          }
+          await browser?.close()
 
           this.global.browser = await getBrowserPerProcess(
             playwrightInstance as GenericBrowser,
@@ -319,8 +315,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       // Hack to set testTimeout for jestPlaywright debugging
       if (
         event.name === 'add_test' &&
-        event.fn &&
-        event.fn.toString().includes('jestPlaywright.debug()')
+        event.fn?.toString().includes('jestPlaywright.debug()')
       ) {
         // Set timeout to 4 days
         state.testTimeout = 4 * 24 * 60 * 60 * 1000
@@ -330,9 +325,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     async teardown(): Promise<void> {
       const { browser, context, page } = this.global
       const { collectCoverage } = this._jestPlaywrightConfig
-      if (page) {
-        page.removeListener('pageerror', handleError)
-      }
+      page?.removeListener('pageerror', handleError)
       if (collectCoverage) {
         await Promise.all(
           (context as BrowserContext).pages().map((p) =>
@@ -345,9 +338,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
-      if (browser) {
-        await browser.close()
-      }
+      await browser?.close()
 
       await super.teardown()
     }
