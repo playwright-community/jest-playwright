@@ -130,6 +130,9 @@ declare global {
       jestPlaywrightDebug: JestPlaywrightTestDebug
       jestPlaywrightConfig: JestPlaywrightTestConfig
     }
+    interface Describe {
+      jestPlaywrightSkip: JestParams<SkipOption>
+    }
   }
 }
 
