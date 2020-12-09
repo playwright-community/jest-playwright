@@ -193,13 +193,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             resultBrowserConfig = debugOptions
               ? deepMerge(config, debugOptions)
               : config
-            resultContextOptions =
-              debugOptions && debugOptions.contextOptions
-                ? deepMerge(
-                    config.contextOptions!,
-                    debugOptions.contextOptions!,
-                  )
-                : config.contextOptions
+            resultContextOptions = debugOptions?.contextOptions
+              ? deepMerge(config.contextOptions!, debugOptions.contextOptions!)
+              : config.contextOptions
           } else {
             resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, config)
             resultContextOptions = {
