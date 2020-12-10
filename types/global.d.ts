@@ -38,7 +38,7 @@ export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
 
-type ContextOptions = Parameters<GenericBrowser['connect']>[0]
+type Nullable<T> = T | null
 
 interface JestPlaywright {
   /**
@@ -60,7 +60,7 @@ interface JestPlaywright {
    * })
    * ```
    */
-  resetContext: (newOptions?: ContextOptions) => Promise<void>
+  resetContext: (newOptions?: BrowserContextOptions) => Promise<void>
   /**
    * Reset global.browser, global.context, and global.page
    *
@@ -70,7 +70,7 @@ interface JestPlaywright {
    * })
    * ```
    */
-  resetBrowser: (newOptions?: ContextOptions) => Promise<void>
+  resetBrowser: (newOptions?: BrowserContextOptions) => Promise<void>
   /**
    * Suspends test execution and gives you opportunity to see what's going on in the browser
    * - Jest is suspended (no timeout)
@@ -119,7 +119,7 @@ interface JestPlaywrightTestConfig extends JestParams<JestPlaywrightConfig> {
 
 declare global {
   const browserName: BrowserType
-  const deviceName: string | null
+  const deviceName: Nullable<string>
   const page: Page
   const browser: Browser
   const context: BrowserContext
@@ -132,8 +132,6 @@ declare global {
     }
     interface Describe {
       jestPlaywrightSkip: JestParams<SkipOption>
-      jestPlaywrightDebug: JestPlaywrightTestDebug
-      jestPlaywrightConfig: JestPlaywrightTestConfig
     }
   }
 }
@@ -153,9 +151,9 @@ export type CustomDeviceType = Partial<DeviceDescriptor> & {
 
 export type ConfigDeviceType = CustomDeviceType | string
 
-export type DeviceType = ConfigDeviceType | null
+export type DeviceType = Nullable<ConfigDeviceType>
 
-export type WsEndpointType = string | null
+export type WsEndpointType = Nullable<string>
 
 export type SelectorType = {
   script: string | Function | { path?: string; content?: string }
@@ -216,7 +214,7 @@ export interface BrowserTest {
 }
 
 export type ConfigParams = {
-  browser: Browser | BrowserContext | null
+  browser: Nullable<Browser | BrowserContext>
   context: BrowserContext
   page: Page
 }

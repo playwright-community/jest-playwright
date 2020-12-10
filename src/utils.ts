@@ -16,19 +16,25 @@ import {
   IMPORT_KIND_PLAYWRIGHT,
   WEBKIT,
   PACKAGE_NAME,
+  CONFIG_ENVIRONMENT_NAME,
 } from './constants'
 
 const fsPromises = fs.promises
+const BROWSERS = [CHROMIUM, FIREFOX, WEBKIT]
+
+class PlaywrightError extends Error {
+  constructor(message: string) {
+    super(formatError(message))
+    this.name = 'PlaywrightError'
+  }
+}
 
 export const checkBrowserEnv = (param: BrowserType): void => {
-  const browsers = [CHROMIUM, FIREFOX, WEBKIT]
-  if (!browsers.includes(param)) {
-    throw new Error(
-      formatError(
-        `Wrong browser type. Should be one of [${browsers.join(
-          ', ',
-        )}], but got ${param}`,
-      ),
+  if (!BROWSERS.includes(param)) {
+    throw new PlaywrightError(
+      `Wrong browser type. Should be one of [${BROWSERS.join(
+        ', ',
+      )}], but got ${param}`,
     )
   }
 }
@@ -65,10 +71,8 @@ export const checkDeviceEnv = (
   availableDevices: string[],
 ): void => {
   if (!availableDevices.includes(device)) {
-    throw new Error(
-      formatError(
-        `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
-      ),
+    throw new PlaywrightError(
+      `Wrong device. Should be one of [${availableDevices}], but got ${device}`,
     )
   }
 }
@@ -133,14 +137,14 @@ export const getPlaywrightInstance = (
       pw = require(IMPORT_KIND_PLAYWRIGHT)
       name = IMPORT_KIND_PLAYWRIGHT
     } catch (e) {
-      throw new Error(
-        formatError(`Cannot find playwright package to use ${browserName}`),
+      throw new PlaywrightError(
+        `Cannot find playwright package to use ${browserName}`,
       )
     }
   }
   if (!pw[browserName]) {
-    throw new Error(
-      formatError(`Cannot find playwright package to use ${browserName}`),
+    throw new PlaywrightError(
+      `Cannot find playwright package to use ${browserName}`,
     )
   }
   return {
@@ -159,7 +163,7 @@ export function getBrowserOptions<T>(
     if (result[browserName]) {
       result = { ...result, ...result[browserName] }
     }
-    ;[CHROMIUM, FIREFOX, WEBKIT].forEach((browser) => {
+    BROWSERS.forEach((browser) => {
       delete result![browser as BrowserType]
     })
     return result
@@ -198,7 +202,7 @@ export const readConfig = async (
   }
   const configPath =
     process.env.JEST_PLAYWRIGHT_CONFIG ||
-    `jest-playwright.config.${fileExtension}`
+    `${CONFIG_ENVIRONMENT_NAME}.config.${fileExtension}`
   const absConfigPath = path.resolve(rootDir, configPath)
   let configExists = true
   try {
@@ -208,10 +212,8 @@ export const readConfig = async (
   }
 
   if (hasCustomConfigPath && !configExists) {
-    throw new Error(
-      formatError(
-        `Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
-      ),
+    throw new PlaywrightError(
+      `Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
     )
   }
 

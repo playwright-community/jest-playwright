@@ -210,21 +210,9 @@ class PlaywrightRunner extends JestRunner {
     if (config.collectCoverage) {
       await setupCoverage()
     }
-    await (options.serial
-      ? this['_createInBandTestRun'](
-          browserTests,
-          watcher,
-          onStart,
-          onResult,
-          onFailure,
-        )
-      : this['_createParallelTestRun'](
-          browserTests,
-          watcher,
-          onStart,
-          onResult,
-          onFailure,
-        ))
+    await this[
+      options.serial ? '_createInBandTestRun' : '_createParallelTestRun'
+    ](browserTests, watcher, onStart, onResult, onFailure)
 
     for (const browser in this.browser2Server) {
       await this.browser2Server[browser as BrowserType]!.close()
