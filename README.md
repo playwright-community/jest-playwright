@@ -261,7 +261,7 @@ You can use this snippet to reset current browser for each individual test. It w
 
 ### jestPlaywrightDebug
 
-This helper function provide you ability to run specific tests in `debug` mode. It will run test in `headless` mode.
+This helper function provide you ability to run specific tests in `debug` mode. It will disable `headless` mode.
 You can find more information [here](https://github.com/playwright-community/jest-playwright/issues/216)
 
 ```js
