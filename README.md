@@ -106,19 +106,19 @@ module.exports = {
 
 ### Options
 
-- `launchOptions` <[object]>. [All Playwright launch options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
-- `launchType` <[**LAUNCH**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchoptions) | [**PERSISTENT**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypelaunchpersistentcontextuserdatadir-options) | [**SERVER**](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions)>. Method to launch browser instance. `jest-playwright` attaches Playwright to an existing browser instance by default.
-- `connectOptions` <[object]>. [All Playwright connect options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypeconnectoptions) can be specified in config.
-- `contextOptions` <[object]>. [All Playwright context options](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsernewcontextoptions) can be specified in config.
-- `browsers` <[string[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/master/docs/api.md#class-browsertype) to run tests in.
+- `launchOptions` <[object]>. [All Playwright launch options](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchoptions) can be specified in config. Since it is JavaScript, you can use all stuff you need, including environment.
+- `launchType` <[**LAUNCH**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchoptions) | [**PERSISTENT**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchpersistentcontextuserdatadir-options) | [**SERVER**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchserveroptions)>. Method to launch browser instance. `jest-playwright` attaches Playwright to an existing browser instance by default.
+- `connectOptions` <[object]>. [All Playwright connect options](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypeconnectparams) can be specified in config.
+- `contextOptions` <[object]>. [All Playwright context options](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsernewcontextoptions) can be specified in config.
+- `browsers` <[string[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#class-browsertype) to run tests in.
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/master/docs/api.md#browsertypedevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/master/src/server/deviceDescriptors.ts).
+- `devices` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#playwrightdevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/v1.7.0/src/server/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
-- `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v0.11.1/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
+- `selectors` <[array]>. Define [selectors](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#class-selectors). Each selector must be an object with name and script properties.
 - `skipInitialization` <[boolean]>. Add you ability to skip first setup `playwright` process. Possible use cases can be found [here](https://github.com/playwright-community/jest-playwright/issues/424)
 - `useDefaultBrowserType` <[boolean]>. [Sometimes](https://github.com/microsoft/playwright/issues/2787) `browser` + `device` combinations don't have any sense. With this option tests will be run with [`defaultBrowserType`](https://github.com/microsoft/playwright/pull/3731) of device. Pay attention that you should define **devices** to correct usage of this option.
 
