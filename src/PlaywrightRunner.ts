@@ -62,7 +62,7 @@ const getBrowserTest = ({
           name: displayName
             ? `${playwrightDisplayName} ${displayName.name || displayName}`
             : playwrightDisplayName,
-          color: 'yellow',
+          color: displayName?.color || 'yellow',
         },
       },
     },
