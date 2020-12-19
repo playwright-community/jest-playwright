@@ -185,21 +185,6 @@ module.exports = {
 }
 ```
 
-### Usage with [query-selector-shadow-dom](https://github.com/Georgegriff/query-selector-shadow-dom) in `jest-playwright.config.js`:
-
-```js
-const {
-  selectorEngine,
-} = require('query-selector-shadow-dom/plugins/playwright');
-
-module.exports = {
-  selectors: [
-    {name: 'shadow', script: selectorEngine}
-  ],
-  ...
-}
-```
-
 ### Notes
 
 You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
