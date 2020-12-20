@@ -42,13 +42,13 @@ export async function setup(
       if (error.code === ERROR_TIMEOUT) {
         logMessage({
           message: error.message,
-          action: 'can set "server.launchTimeout"',
+          action: 'can set "serverOptions.launchTimeout"',
         })
       }
       if (error.code === ERROR_NO_COMMAND) {
         logMessage({
           message: error.message,
-          action: 'must set "server.command"',
+          action: 'must set "serverOptions.command"',
         })
       }
       throw error
