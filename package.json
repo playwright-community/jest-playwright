@@ -47,6 +47,7 @@
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jest-process-manager": "^0.2.7",
+    "jest-runner": "^26.6.3",
     "nyc": "^15.1.0",
     "playwright-core": ">=1.2.0",
     "rimraf": "^3.0.2",
