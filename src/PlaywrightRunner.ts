@@ -62,7 +62,7 @@ const getBrowserTest = ({
           name: displayName
             ? `${playwrightDisplayName} ${displayName.name || displayName}`
             : playwrightDisplayName,
-          color: 'yellow',
+          color: displayName?.color || 'yellow',
         },
       },
     },
@@ -119,7 +119,7 @@ class PlaywrightRunner extends JestRunner {
     instance: GenericBrowser,
   ): Promise<WsEndpointType> {
     const { launchType, launchOptions, skipInitialization } = config
-    if (!skipInitialization || (launchType === SERVER && wsEndpoint === null)) {
+    if (!skipInitialization && launchType === SERVER && wsEndpoint === null) {
       if (!this.browser2Server[browser]) {
         const options = getBrowserOptions(browser, launchOptions)
         this.browser2Server[browser] = await instance.launchServer(options)
@@ -145,7 +145,7 @@ class PlaywrightRunner extends JestRunner {
             const browser = getBrowser(device, availableDevices)
             const wsEndpoint: WsEndpointType = await this.launchServer(
               config,
-              connectOptions?.wsEndpoint || null,
+              getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
               browser,
               (instance as Record<BrowserType, GenericBrowser>)[browser],
             )
@@ -166,7 +166,7 @@ class PlaywrightRunner extends JestRunner {
           const resultDevices = getDevices(devices, availableDevices)
           const wsEndpoint: WsEndpointType = await this.launchServer(
             config,
-            connectOptions?.wsEndpoint || null,
+            getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
             browser,
             instance as GenericBrowser,
           )
@@ -210,21 +210,9 @@ class PlaywrightRunner extends JestRunner {
     if (config.collectCoverage) {
       await setupCoverage()
     }
-    await (options.serial
-      ? this['_createInBandTestRun'](
-          browserTests,
-          watcher,
-          onStart,
-          onResult,
-          onFailure,
-        )
-      : this['_createParallelTestRun'](
-          browserTests,
-          watcher,
-          onStart,
-          onResult,
-          onFailure,
-        ))
+    await this[
+      options.serial ? '_createInBandTestRun' : '_createParallelTestRun'
+    ](browserTests, watcher, onStart, onResult, onFailure)
 
     for (const browser in this.browser2Server) {
       await this.browser2Server[browser as BrowserType]!.close()
