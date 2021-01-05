@@ -51,7 +51,7 @@ const getBrowserPerProcess = async (
 
   if (launchType === LAUNCH || launchType === PERSISTENT) {
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
-    if (browserType !== CHROMIUM && launchOptions && launchOptions.args) {
+    if (browserType !== CHROMIUM && launchOptions?.args) {
       launchOptions.args = launchOptions.args.filter(
         (item: string) => item !== '--no-sandbox',
       )
@@ -193,13 +193,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             resultBrowserConfig = debugOptions
               ? deepMerge(config, debugOptions)
               : config
-            resultContextOptions =
-              debugOptions && debugOptions.contextOptions
-                ? deepMerge(
-                    config.contextOptions!,
-                    debugOptions.contextOptions!,
-                  )
-                : config.contextOptions
+            resultContextOptions = debugOptions?.contextOptions
+              ? deepMerge(config.contextOptions!, debugOptions.contextOptions!)
+              : config.contextOptions
           } else {
             resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, config)
             resultContextOptions = {
