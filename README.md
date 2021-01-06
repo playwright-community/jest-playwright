@@ -59,7 +59,7 @@ beforeAll(async () => {
   await page.goto('https://whatismybrowser.com/')
 })
 
-test('should display "google" text on page', async () => {
+test('should display correct browser', async () => {
   const browser = await page.$eval('.string-major', (el) => el.innerHTML)
   expect(browser).toContain('Chrome')
 })
@@ -323,6 +323,27 @@ it.jestPlaywrightSkip(
     expect(title).toBe('Google')
   },
 )
+```
+
+## Using [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) selectors
+
+Playwright engine pierces open shadow DOM by [default](https://playwright.dev/docs/selectors?_highlight=shadow#selector-engines).
+
+```js
+beforeAll(async () => {
+  await page.goto(
+    'https://mdn.github.io/web-components-examples/popup-info-box-web-component/',
+  )
+})
+
+test('should display "google" text on page', async () => {
+  const shadowElem = await page.$('.info')
+  const shadowElemText = await shadowElem.innerHTML()
+
+  expect(shadowElemText).toBe(
+    'Your card validation code (CVC) is an extra security feature — it is the last 3 or 4 numbers on the back of your card.',
+  )
+})
 ```
 
 ## Start a server
