@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, @typescript-eslint/no-unused-vars */
 import type { Event, State } from 'jest-circus'
 import type {
   Browser,
@@ -9,10 +9,14 @@ import type {
 import type {
   BrowserType,
   ConfigParams,
+  ConfigDeviceType,
   ConnectOptions,
   GenericBrowser,
   JestPlaywrightConfig,
   JestPlaywrightProjectConfig,
+  Nullable,
+  Playwright,
+  TestPlaywrightConfigOptions,
 } from '../types/global'
 import {
   CHROMIUM,
@@ -27,6 +31,7 @@ import {
   formatError,
   getBrowserOptions,
   getBrowserType,
+  getDeviceBrowserType,
   getDeviceType,
   getPlaywrightInstance,
 } from './utils'
@@ -72,6 +77,22 @@ const getBrowserPerProcess = async (
   return playwrightInstance.connect(options)
 }
 
+const getDeviceConfig = (
+  device: Nullable<ConfigDeviceType> | undefined,
+  availableDevices: Playwright['devices'],
+): BrowserContextOptions => {
+  if (device) {
+    if (typeof device === 'string') {
+      const { defaultBrowserType, ...deviceProps } = availableDevices[device]
+      return deviceProps
+    } else {
+      const { name, defaultBrowserType, ...deviceProps } = device
+      return deviceProps
+    }
+  }
+  return {}
+}
+
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
   const RootEnv = require(basicEnv === 'node'
     ? 'jest-environment-node'
@@ -112,7 +133,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         this._jestPlaywrightConfig.contextOptions,
       )
       const device = getDeviceType(this._config.device)
-      let deviceName: string | null = null
+      let deviceName: Nullable<string> = null
       const {
         name,
         instance: playwrightInstance,
@@ -120,33 +141,32 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       } = getPlaywrightInstance(browserType)
 
       if (name === IMPORT_KIND_PLAYWRIGHT) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const playwright = require('playwright')
         if (selectors) {
           await Promise.all(
-            selectors.map(({ name, script }) => {
-              return playwright.selectors
+            selectors.map(({ name, script }) =>
+              playwright.selectors
                 .register(name, script)
                 .catch((e: Error): void => {
                   if (!e.toString().includes('has been already')) {
                     throw e
                   }
-                })
-            }),
+                }),
+            ),
           )
         }
       }
 
+      const deviceBrowserContextOptions = getDeviceConfig(device, devices)
+
       if (device != null) {
         if (typeof device === 'string') {
           deviceName = device
-          contextOptions = { ...devices[device], ...contextOptions }
         } else {
-          const { name, ...deviceProps } = device
           deviceName = name
-          contextOptions = { ...deviceProps, ...contextOptions }
         }
       }
+      contextOptions = deepMerge(deviceBrowserContextOptions, contextOptions)
       if (browserType === FIREFOX && contextOptions.isMobile) {
         console.warn(formatError(`isMobile is not supported in ${FIREFOX}.`))
         delete contextOptions.isMobile
@@ -184,10 +204,15 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
       this.global.jestPlaywright = {
         configSeparateEnv: async (
-          config: JestPlaywrightConfig,
+          config: TestPlaywrightConfigOptions,
           isDebug?: boolean,
         ): Promise<ConfigParams> => {
+          const { device } = config
           let resultBrowserConfig: JestPlaywrightConfig
+          const deviceContextOptions: BrowserContextOptions = getDeviceConfig(
+            device,
+            devices,
+          )
           let resultContextOptions: BrowserContextOptions | undefined
           if (isDebug) {
             resultBrowserConfig = debugOptions
@@ -196,17 +221,28 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             resultContextOptions = debugOptions?.contextOptions
               ? deepMerge(config.contextOptions!, debugOptions.contextOptions!)
               : config.contextOptions
+            resultContextOptions = deepMerge(deviceContextOptions, {
+              ...resultContextOptions,
+            })
           } else {
             resultBrowserConfig = deepMerge(this._jestPlaywrightConfig, config)
-            resultContextOptions = {
-              ...this._jestPlaywrightConfig.contextOptions,
-              ...config.contextOptions,
-            }
+            resultContextOptions = deepMerge(
+              this._jestPlaywrightConfig.contextOptions!,
+              config.contextOptions!,
+            )
+            resultContextOptions = deepMerge(deviceContextOptions, {
+              ...resultContextOptions,
+            })
           }
           resultBrowserConfig.launchType = LAUNCH
+          const browserName =
+            config.useDefaultBrowserType && config.device
+              ? getDeviceBrowserType(config.device, devices)
+              : config.browser || browserType
+          const { instance } = getPlaywrightInstance(browserName)
           const browser = await getBrowserPerProcess(
-            playwrightInstance as GenericBrowser,
-            browserType,
+            instance as GenericBrowser,
+            browserName,
             resultBrowserConfig,
           )
           const newContextOptions = getBrowserOptions(
@@ -242,7 +278,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           let newContextOptions = contextOptions
 
           if (newOptions) {
-            newContextOptions = { ...newContextOptions, ...newOptions }
+            newContextOptions = deepMerge(newContextOptions, newOptions)
           }
 
           this.global.context = await browser.newContext(newContextOptions)

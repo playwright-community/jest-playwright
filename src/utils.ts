@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import type {
   BrowserType,
+  ConfigDeviceType,
   DeviceType,
   JestPlaywrightConfig,
   Playwright,
@@ -113,6 +114,17 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
     return processBrowser as BrowserType
   }
   return browser || CHROMIUM
+}
+
+export const getDeviceBrowserType = (
+  device: ConfigDeviceType,
+  availableDevices: Playwright['devices'],
+): BrowserType => {
+  if (typeof device === 'string') {
+    return availableDevices[device].defaultBrowserType as BrowserType
+  }
+
+  return device?.defaultBrowserType || CHROMIUM
 }
 
 export const getPlaywrightInstance = (

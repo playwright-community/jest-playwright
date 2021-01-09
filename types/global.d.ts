@@ -34,6 +34,11 @@ export type SkipOption = {
   devices?: string[] | RegExp
 }
 
+export interface TestPlaywrightConfigOptions extends JestPlaywrightConfig {
+  browser?: BrowserType
+  device?: ConfigDeviceType
+}
+
 export type GenericBrowser = PlaywrightBrowserType<
   WebKitBrowser | ChromiumBrowser | FirefoxBrowser
 >
@@ -97,7 +102,7 @@ interface JestPlaywright {
    */
   saveCoverage: (page: Page) => Promise<void>
   configSeparateEnv: (
-    config: JestPlaywrightConfig,
+    config: TestPlaywrightConfigOptions,
     isDebug?: boolean,
   ) => Promise<ConfigParams>
 }
@@ -106,15 +111,31 @@ interface JestParams<T> {
   (options: T, name: string, fn?: jest.ProvidesCallback, timeout?: number): void
 }
 
-interface JestPlaywrightTestDebug extends JestParams<JestPlaywrightConfig> {
-  (name: string, fn?: jest.ProvidesCallback, timeout?: number): void
-  skip: JestParams<JestPlaywrightConfig> | JestPlaywrightTestDebug
-  only: JestParams<JestPlaywrightConfig> | JestPlaywrightTestDebug
+type ProvidesCallback = (cb: ConfigParams) => void
+
+interface JestParamsWithConfigParams<T> {
+  (options: T, name: string, fn?: ProvidesCallback, timeout?: number): void
 }
 
-interface JestPlaywrightTestConfig extends JestParams<JestPlaywrightConfig> {
-  skip: JestParams<JestPlaywrightConfig> | JestPlaywrightTestConfig
-  only: JestParams<JestPlaywrightConfig> | JestPlaywrightTestConfig
+interface JestPlaywrightTestDebug
+  extends JestParamsWithConfigParams<JestPlaywrightConfig> {
+  (name: string, fn?: ProvidesCallback, timeout?: number): void
+  skip:
+    | JestParamsWithConfigParams<JestPlaywrightConfig>
+    | JestPlaywrightTestDebug
+  only:
+    | JestParamsWithConfigParams<JestPlaywrightConfig>
+    | JestPlaywrightTestDebug
+}
+
+interface JestPlaywrightTestConfig
+  extends JestParamsWithConfigParams<JestPlaywrightConfig> {
+  skip:
+    | JestParamsWithConfigParams<JestPlaywrightConfig>
+    | JestPlaywrightTestConfig
+  only:
+    | JestParamsWithConfigParams<JestPlaywrightConfig>
+    | JestPlaywrightTestConfig
 }
 
 declare global {
@@ -137,7 +158,7 @@ declare global {
 }
 
 type DeviceDescriptor = {
-  viewport: ViewportSize
+  viewport: ViewportSize | null
   userAgent: string
   deviceScaleFactor: number
   isMobile: boolean

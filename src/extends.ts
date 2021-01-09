@@ -1,13 +1,9 @@
 /* global jestPlaywright, browserName, deviceName */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
-import { BrowserType, JestPlaywrightConfig, SkipOption } from '../types/global'
+import { SkipOption, TestPlaywrightConfigOptions } from '../types/global'
 
 type TestType = 'it' | 'describe'
-
-interface PlaywrightOptions extends JestPlaywrightConfig {
-  browser?: BrowserType
-}
 
 const DEBUG_OPTIONS = {
   launchOptions: {
@@ -19,7 +15,7 @@ const DEBUG_OPTIONS = {
 const runDebugTest = (jestTestType: jest.It, ...args: any[]) => {
   const isConfigProvided = typeof args[0] === 'object'
   // TODO Looks weird - need to be rewritten
-  let options = DEBUG_OPTIONS as JestPlaywrightConfig
+  let options = DEBUG_OPTIONS as TestPlaywrightConfigOptions
   if (isConfigProvided) {
     options = deepMerge(DEBUG_OPTIONS, args[0])
   }
@@ -52,7 +48,7 @@ it.jestPlaywrightDebug.skip = (...args) => {
 
 const runConfigTest = (
   jestTypeTest: jest.It,
-  playwrightOptions: PlaywrightOptions,
+  playwrightOptions: TestPlaywrightConfigOptions,
   ...args: any[]
 ) => {
   if (playwrightOptions.browser && playwrightOptions.browser !== browserName) {
