@@ -40,6 +40,6 @@ describe('Debug helper functions', () => {
   it.jestPlaywrightConfig(config, 'jestPlaywrightConfig', async ({ page }) => {
     await page.goto('https://www.whatismybrowser.com/')
     const browser = await (await page.$('.string-major'))?.innerHTML()
-    expect(browser).toContain('Safari on macOS')
+    expect(browser).toContain('Safari')
   })
 })
