@@ -163,7 +163,7 @@ declare global {
 }
 
 type DeviceDescriptor = {
-  viewport: ViewportSize | null
+  viewport: Nullable<ViewportSize>
   userAgent: string
   deviceScaleFactor: number
   isMobile: boolean
