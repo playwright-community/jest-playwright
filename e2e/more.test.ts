@@ -29,17 +29,36 @@ describe.jestPlaywrightSkip(
 )
 
 describe('Debug helper functions', () => {
-  const config = {
+  const configOptions = {
     contextOptions: { locale: 'nl-NL' },
-    browsers: [],
-    exitOnPageError: true,
-    collectCoverage: false,
     browser: 'webkit',
   }
 
-  it.jestPlaywrightConfig(config, 'jestPlaywrightConfig', async ({ page }) => {
-    await page.goto('https://www.whatismybrowser.com/')
-    const browser = await (await page.$('.string-major'))?.innerHTML()
-    expect(browser).toContain('Safari')
-  })
+  it.jestPlaywrightConfig(
+    configOptions,
+    'jestPlaywrightConfig',
+    async ({ page }) => {
+      await page.goto('https://www.whatismybrowser.com/')
+      const browser = await (await page.$('.string-major'))?.innerHTML()
+      expect(browser).toContain('Safari')
+    },
+  )
+
+  const debugOptions = {
+    launchOptions: {
+      devtools: false,
+      headless: true,
+    },
+    browser: 'firefox',
+  }
+
+  it.jestPlaywrightDebug(
+    debugOptions,
+    'jestPlaywrightDebug',
+    async ({ page }) => {
+      await page.goto('https://www.whatismybrowser.com/')
+      const browser = await (await page.$('.string-major'))?.innerHTML()
+      expect(browser).toContain('Firefox')
+    },
+  )
 })

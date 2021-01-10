@@ -102,7 +102,7 @@ interface JestPlaywright {
    */
   saveCoverage: (page: Page) => Promise<void>
   configSeparateEnv: (
-    config: TestPlaywrightConfigOptions,
+    config: Partial<TestPlaywrightConfigOptions>,
     isDebug?: boolean,
   ) => Promise<ConfigParams>
 }
@@ -114,7 +114,12 @@ interface JestParams<T> {
 type ProvidesCallback = (cb: ConfigParams) => void
 
 interface JestParamsWithConfigParams<T> {
-  (options: T, name: string, fn?: ProvidesCallback, timeout?: number): void
+  (
+    options: Partial<T>,
+    name: string,
+    fn?: ProvidesCallback,
+    timeout?: number,
+  ): void
 }
 
 interface JestPlaywrightTestDebug
