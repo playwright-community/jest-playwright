@@ -48,24 +48,19 @@ it.jestPlaywrightDebug.skip = (...args) => {
 
 const runConfigTest = (
   jestTypeTest: jest.It,
-  playwrightOptions: TestPlaywrightConfigOptions,
+  playwrightOptions: Partial<TestPlaywrightConfigOptions>,
   ...args: any[]
 ) => {
-  if (playwrightOptions.browser && playwrightOptions.browser !== browserName) {
-    // @ts-ignore
-    it.skip(...args)
-  } else {
-    jestTypeTest(args[0], async () => {
-      const { browser, context, page } = await jestPlaywright.configSeparateEnv(
-        playwrightOptions,
-      )
-      try {
-        await args[1]({ browser, context, page })
-      } finally {
-        await browser!.close()
-      }
-    })
-  }
+  jestTypeTest(args[0], async () => {
+    const { browser, context, page } = await jestPlaywright.configSeparateEnv(
+      playwrightOptions,
+    )
+    try {
+      await args[1]({ browser, context, page })
+    } finally {
+      await browser!.close()
+    }
+  })
 }
 
 //@ts-ignore
