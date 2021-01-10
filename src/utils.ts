@@ -9,6 +9,7 @@ import type {
   PlaywrightRequireType,
   SkipOption,
   Options,
+  Nullable,
 } from '../types/global'
 import {
   CHROMIUM,
@@ -186,7 +187,7 @@ export function getBrowserOptions<T>(
 export const getSkipFlag = (
   skipOptions: SkipOption,
   browserName: BrowserType,
-  deviceName: string | null,
+  deviceName: Nullable<string>,
 ): boolean => {
   const { browsers, devices } = skipOptions
   const isBrowserIncluded = browsers.includes(browserName)
