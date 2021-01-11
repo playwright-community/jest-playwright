@@ -319,11 +319,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
           await context?.close()
 
-          let newContextOptions = contextOptions
-
-          if (newOptions) {
-            newContextOptions = deepMerge(newContextOptions, newOptions)
-          }
+          const newContextOptions = newOptions
+            ? deepMerge(contextOptions, newOptions)
+            : contextOptions
 
           this.global.context = await browser.newContext(newContextOptions)
 
