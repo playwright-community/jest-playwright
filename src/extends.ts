@@ -1,13 +1,9 @@
 /* global jestPlaywright, browserName, deviceName */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
-import { BrowserType, JestPlaywrightConfig, SkipOption } from '../types/global'
+import { SkipOption, TestPlaywrightConfigOptions } from '../types/global'
 
 type TestType = 'it' | 'describe'
-
-interface PlaywrightOptions extends JestPlaywrightConfig {
-  browser?: BrowserType
-}
 
 const DEBUG_OPTIONS = {
   launchOptions: {
@@ -19,7 +15,7 @@ const DEBUG_OPTIONS = {
 const runDebugTest = (jestTestType: jest.It, ...args: any[]) => {
   const isConfigProvided = typeof args[0] === 'object'
   // TODO Looks weird - need to be rewritten
-  let options = DEBUG_OPTIONS as JestPlaywrightConfig
+  let options = DEBUG_OPTIONS as TestPlaywrightConfigOptions
   if (isConfigProvided) {
     options = deepMerge(DEBUG_OPTIONS, args[0])
   }
@@ -52,24 +48,19 @@ it.jestPlaywrightDebug.skip = (...args) => {
 
 const runConfigTest = (
   jestTypeTest: jest.It,
-  playwrightOptions: PlaywrightOptions,
+  playwrightOptions: Partial<TestPlaywrightConfigOptions>,
   ...args: any[]
 ) => {
-  if (playwrightOptions.browser && playwrightOptions.browser !== browserName) {
-    // @ts-ignore
-    it.skip(...args)
-  } else {
-    jestTypeTest(args[0], async () => {
-      const { browser, context, page } = await jestPlaywright.configSeparateEnv(
-        playwrightOptions,
-      )
-      try {
-        await args[1]({ browser, context, page })
-      } finally {
-        await browser!.close()
-      }
-    })
-  }
+  jestTypeTest(args[0], async () => {
+    const { browser, context, page } = await jestPlaywright.configSeparateEnv(
+      playwrightOptions,
+    )
+    try {
+      await args[1]({ browser, context, page })
+    } finally {
+      await browser!.close()
+    }
+  })
 }
 
 //@ts-ignore

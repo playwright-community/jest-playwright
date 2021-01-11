@@ -242,7 +242,9 @@ You can use this snippet to reset current browser for each individual test. It w
 
 ## Debug helper functions
 
-`jest-playwright` provides some functions to debug your tests
+`jest-playwright` provides some functions to debug your tests.
+
+**IMPORTANT NOTE**: For these kind of tests you should use properties passed through callback function instead of [globals](https://github.com/playwright-community/jest-playwright#globals)
 
 ### jestPlaywrightDebug
 
@@ -275,6 +277,7 @@ module.exports = {
 ### jestPlaywrightConfig
 
 This helper function provide you ability to run specific tests with passed options.
+You can define `browser` and `device` properties to run test for them, otherwise test run for current configuration.
 
 ```js
 test.jestPlaywrightConfig(
@@ -282,7 +285,7 @@ test.jestPlaywrightConfig(
     // your jest-playwright options
   },
   'test name',
-  async () => {
+  async ({ browser, context, page }) => {
     /* ... */
   },
 )

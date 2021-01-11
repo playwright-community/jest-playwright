@@ -16,6 +16,7 @@ const {
   getDisplayName,
   getSkipFlag,
   getBrowserOptions,
+  getDeviceBrowserType,
 } = Utils
 
 beforeEach(() => {
@@ -252,6 +253,33 @@ describe('checkDevice', () => {
   it('should throw Error with unknown type', async () => {
     const device = 'unknown'
     expect(() => checkDevice(device, devices)).toThrow()
+  })
+})
+
+describe('getDeviceBrowserType', () => {
+  const devices = {
+    'iPhone 11': {
+      defaultBrowserType: 'webkit',
+    },
+  } as Playwright['devices']
+
+  it('should return "chromium" as default', async () => {
+    const device = {
+      name: 'Custom',
+    }
+    expect(getDeviceBrowserType(device, devices)).toBe(CHROMIUM)
+  })
+
+  it('should return default browser if it is defined', async () => {
+    const device = {
+      name: 'Custom',
+      defaultBrowserType: FIREFOX as BrowserType,
+    }
+    expect(getDeviceBrowserType(device, devices)).toBe(FIREFOX)
+  })
+
+  it('should return default browser for string device', async () => {
+    expect(getDeviceBrowserType('iPhone 11', devices)).toBe('webkit')
   })
 })
 

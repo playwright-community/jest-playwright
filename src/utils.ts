@@ -2,12 +2,14 @@ import fs from 'fs'
 import path from 'path'
 import type {
   BrowserType,
+  ConfigDeviceType,
   DeviceType,
   JestPlaywrightConfig,
   Playwright,
   PlaywrightRequireType,
   SkipOption,
   Options,
+  Nullable,
 } from '../types/global'
 import {
   CHROMIUM,
@@ -115,6 +117,17 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
   return browser || CHROMIUM
 }
 
+export const getDeviceBrowserType = (
+  device: ConfigDeviceType,
+  availableDevices: Playwright['devices'],
+): BrowserType => {
+  if (typeof device === 'string') {
+    return availableDevices[device].defaultBrowserType as BrowserType
+  }
+
+  return device?.defaultBrowserType || CHROMIUM
+}
+
 export const getPlaywrightInstance = (
   browserName?: BrowserType,
 ): Playwright => {
@@ -174,7 +187,7 @@ export function getBrowserOptions<T>(
 export const getSkipFlag = (
   skipOptions: SkipOption,
   browserName: BrowserType,
-  deviceName: string | null,
+  deviceName: Nullable<string>,
 ): boolean => {
   const { browsers, devices } = skipOptions
   const isBrowserIncluded = browsers.includes(browserName)

@@ -17,6 +17,7 @@ import type {
   JestPlaywrightTest,
   JestPlaywrightConfig,
   ConfigDeviceType,
+  Playwright,
 } from '../types/global'
 import {
   checkBrowserEnv,
@@ -25,14 +26,14 @@ import {
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
+  getDeviceBrowserType,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
-  CHROMIUM,
 } from './constants'
-import { BrowserServer, devices as PlaywrightDevices } from 'playwright-core'
+import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
 import { GenericBrowser } from '../types/global'
 
@@ -71,7 +72,7 @@ const getBrowserTest = ({
 
 const getDevices = (
   devices: JestPlaywrightConfig['devices'],
-  availableDevices: typeof PlaywrightDevices,
+  availableDevices: Playwright['devices'],
 ) => {
   let resultDevices: ConfigDeviceType[] = []
 
@@ -86,17 +87,6 @@ const getDevices = (
   }
 
   return resultDevices
-}
-
-const getBrowser = (
-  device: ConfigDeviceType,
-  availableDevices: typeof PlaywrightDevices,
-): BrowserType => {
-  if (typeof device === 'string') {
-    return availableDevices[device].defaultBrowserType
-  }
-
-  return device?.defaultBrowserType || CHROMIUM
 }
 
 class PlaywrightRunner extends JestRunner {
@@ -142,7 +132,7 @@ class PlaywrightRunner extends JestRunner {
         }
         if (resultDevices.length) {
           for (const device of resultDevices) {
-            const browser = getBrowser(device, availableDevices)
+            const browser = getDeviceBrowserType(device, availableDevices)
             const wsEndpoint: WsEndpointType = await this.launchServer(
               config,
               getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
