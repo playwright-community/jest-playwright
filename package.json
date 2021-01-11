@@ -43,7 +43,7 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
-    "expect-playwright": "^0.2.6",
+    "expect-playwright": "^0.3.0",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jest-process-manager": "^0.2.9",
