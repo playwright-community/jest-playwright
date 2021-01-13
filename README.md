@@ -519,9 +519,12 @@ It's important to not change the `testEnvironment` to `node`. Otherwise it won't
 
 ### Error reporting with Jest
 
-If you face into error messages like `UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.` or
-
-```txt
+If you face into error messages like 
+```
+UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.
+``` 
+or
+```
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
 
