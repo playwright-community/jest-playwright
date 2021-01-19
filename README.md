@@ -185,11 +185,6 @@ module.exports = {
 }
 ```
 
-### Notes
-
-You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
-You can specify device with `DEVICE` environment variable.
-
 ## Globals
 
 - `browserName` <[string]> - name of the current browser (chromium, firefox or webkit)
@@ -519,11 +514,14 @@ It's important to not change the `testEnvironment` to `node`. Otherwise it won't
 
 ### Error reporting with Jest
 
-If you face into error messages like 
+If you face into error messages like
+
 ```
 UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.
-``` 
+```
+
 or
+
 ```
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
