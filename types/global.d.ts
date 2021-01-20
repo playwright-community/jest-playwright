@@ -209,7 +209,8 @@ export interface JestPlaywrightConfig {
   contextOptions?: Options<BrowserContextOptions>
   userDataDir?: string
   exitOnPageError: boolean
-  browsers: BrowserType[]
+  displayName?: string
+  browsers: (BrowserType | (JestPlaywrightConfig & { name: BrowserType }))[]
   devices?: ConfigDeviceType[] | RegExp
   useDefaultBrowserType?: boolean
   serverOptions?: JestProcessManagerOptions

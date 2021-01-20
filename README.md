@@ -67,7 +67,7 @@ test('should display correct browser', async () => {
 
 ### Notes
 
-It's recommend to use a separate Jest configuration `jest.e2e.config.js` for `jest-playwright` to gain speed improvments and by that to only use Playwright in the end-to-end tests. For that you have to use the `-c` flag when calling Jest and use the [`testMatch`](https://jestjs.io/docs/en/configuration#testmatch-arraystring) or [`testRegex`](https://jestjs.io/docs/en/configuration#testregex-string--arraystring) in your Jest config to split them.
+It's recommend to use a separate Jest configuration `jest.e2e.config.js` for `jest-playwright` to gain speed improvements and by that to only use Playwright in the end-to-end tests. For that you have to use the `-c` flag when calling Jest and use the [`testMatch`](https://jestjs.io/docs/en/configuration#testmatch-arraystring) or [`testRegex`](https://jestjs.io/docs/en/configuration#testregex-string--arraystring) in your Jest config to split them.
 
 Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
 
@@ -519,11 +519,14 @@ It's important to not change the `testEnvironment` to `node`. Otherwise it won't
 
 ### Error reporting with Jest
 
-If you face into error messages like 
+If you face into error messages like
+
 ```
 UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.
-``` 
+```
+
 or
+
 ```
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```
