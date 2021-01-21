@@ -122,6 +122,17 @@ module.exports = {
 - `skipInitialization` <[boolean]>. Add you ability to skip first setup `playwright` process. Possible use cases can be found [here](https://github.com/playwright-community/jest-playwright/issues/424)
 - `useDefaultBrowserType` <[boolean]>. [Sometimes](https://github.com/microsoft/playwright/issues/2787) `browser` + `device` combinations don't have any sense. With this option tests will be run with [`defaultBrowserType`](https://github.com/microsoft/playwright/pull/3731) of device. Pay attention that you should define **devices** to correct usage of this option.
 
+### Usage of process environment to define browser
+
+You can control the browser with passing environment variable.
+
+```js
+// jest-playwright.config.js
+module.exports = {
+  browsers: [process.env.BROWSER],
+}
+```
+
 ### Specific browser options
 
 For `launchOptions`, `connectOptions` and `contextOptions` you can define special browser options.
@@ -184,11 +195,6 @@ module.exports = {
   hasTouch: boolean
 }
 ```
-
-### Notes
-
-You can also specify browser with the `BROWSER` environment variable. You should do it only if you are using the whole playwright package.
-You can specify device with `DEVICE` environment variable.
 
 ## Globals
 
@@ -519,11 +525,14 @@ It's important to not change the `testEnvironment` to `node`. Otherwise it won't
 
 ### Error reporting with Jest
 
-If you face into error messages like 
+If you face into error messages like
+
 ```
 UnhandledPromiseRejectionWarning: Error: Protocol error (Runtime.callFunctionOn): Target closed.
-``` 
+```
+
 or
+
 ```
 Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Timeout - Async callback was not invoked within the 20000ms timeout specified by jest.setTimeout.Error:
 ```

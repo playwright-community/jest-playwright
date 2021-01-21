@@ -104,16 +104,7 @@ export const getDisplayName = (
   return `browser: ${browser}`
 }
 
-export const getDeviceType = (device: DeviceType): DeviceType => {
-  const processDevice = process.env.DEVICE
-  return processDevice || device
-}
-
 export const getBrowserType = (browser?: BrowserType): BrowserType => {
-  const processBrowser = process.env.BROWSER
-  if (processBrowser) {
-    return processBrowser as BrowserType
-  }
   return browser || CHROMIUM
 }
 
