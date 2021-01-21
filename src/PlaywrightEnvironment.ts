@@ -28,12 +28,12 @@ import {
   LAUNCH,
 } from './constants'
 import {
+  checkDevice,
   deepMerge,
   formatError,
   getBrowserOptions,
   getBrowserType,
   getDeviceBrowserType,
-  getDeviceType,
   getPlaywrightInstance,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
@@ -205,7 +205,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         browserName,
         this._jestPlaywrightConfig.contextOptions,
       )
-      const device = getDeviceType(this._config.device)
+      const device = this._config.device
       const deviceName: Nullable<string> = getDeviceName(device)
       const {
         name,
@@ -277,6 +277,8 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             config.useDefaultBrowserType && device
               ? getDeviceBrowserType(device, devices)
               : config.browser || browserType
+          const deviceName = device ? getDeviceName(device) : null
+          checkDevice(deviceName, devices)
           const resultBrowserConfig: JestPlaywrightConfig = this._getSeparateEnvBrowserConfig(
             isDebug,
             config,
@@ -297,7 +299,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             resultContextOptions,
           )
           const page = await context!.newPage()
-          return { browser, context, page }
+          return { browserName, deviceName, browser, context, page }
         },
         resetPage: async (): Promise<void> => {
           const { context, page } = this.global

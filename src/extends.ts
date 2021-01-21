@@ -21,14 +21,11 @@ const runDebugTest = (jestTestType: jest.It, ...args: any[]) => {
   }
 
   jestTestType(args[isConfigProvided ? 1 : 0], async () => {
-    const { browser, context, page } = await jestPlaywright.configSeparateEnv(
-      options,
-      true,
-    )
+    const envArgs = await jestPlaywright.configSeparateEnv(options, true)
     try {
-      await args[isConfigProvided ? 2 : 1]({ browser, context, page })
+      await args[isConfigProvided ? 2 : 1](envArgs)
     } finally {
-      await browser!.close()
+      await envArgs.browser!.close()
     }
   })
 }
@@ -52,13 +49,11 @@ const runConfigTest = (
   ...args: any[]
 ) => {
   jestTypeTest(args[0], async () => {
-    const { browser, context, page } = await jestPlaywright.configSeparateEnv(
-      playwrightOptions,
-    )
+    const envArgs = await jestPlaywright.configSeparateEnv(playwrightOptions)
     try {
-      await args[1]({ browser, context, page })
+      await args[1](envArgs)
     } finally {
-      await browser!.close()
+      await envArgs.browser!.close()
     }
   })
 }
