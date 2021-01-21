@@ -26,6 +26,7 @@ import {
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
+  getBrowserType,
   getDeviceBrowserType,
   deepMerge,
 } from './utils'
@@ -153,10 +154,13 @@ class PlaywrightRunner extends JestRunner {
         }
       } else {
         for (const browser of browsers) {
-          const browserType =
-            typeof browser === 'string' ? browser : browser.name
+          const browserType = getBrowserType(
+            typeof browser === 'string' ? browser : browser?.name,
+          )
           const browserConfig =
-            typeof browser === 'string' ? config : deepMerge(config, browser)
+            typeof browser === 'string'
+              ? config
+              : deepMerge(config, browser || {})
           checkBrowserEnv(browserType)
           const { devices: availableDevices, instance } = getPlaywrightInstance(
             browserType,
