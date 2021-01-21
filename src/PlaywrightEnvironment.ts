@@ -33,7 +33,6 @@ import {
   getBrowserOptions,
   getBrowserType,
   getDeviceBrowserType,
-  getDeviceType,
   getPlaywrightInstance,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
@@ -205,7 +204,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         browserName,
         this._jestPlaywrightConfig.contextOptions,
       )
-      const device = getDeviceType(this._config.device)
+      const device = this._config.device
       const deviceName: Nullable<string> = getDeviceName(device)
       const {
         name,

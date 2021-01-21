@@ -8,7 +8,6 @@ import { Playwright } from '../types/global'
 const {
   readConfig,
   getBrowserType,
-  getDeviceType,
   checkBrowserEnv,
   checkDeviceEnv,
   checkDevice,
@@ -172,11 +171,9 @@ describe('getBrowserType', () => {
     const browserType = getBrowserType()
     expect(browserType).toBe(CHROMIUM)
   })
-  it('should return BROWSER if defined', async () => {
-    process.env.BROWSER = 'webkit'
+  it('should return passed browser if it is passed', async () => {
     const browserType = getBrowserType('firefox')
-    expect(browserType).toBe(process.env.BROWSER)
-    delete process.env.BROWSER
+    expect(browserType).toBe('firefox')
   })
 })
 
@@ -202,19 +199,6 @@ describe('getBrowserOptions', () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(FIREFOX, launchOptions)
     expect(options).toStrictEqual({ headless: false })
-  })
-})
-
-describe('getDeviceType', () => {
-  it('should return "null" when there is no device', async () => {
-    const device = getDeviceType(null)
-    expect(device).toBe(null)
-  })
-  it('should return BROWSER if defined', async () => {
-    process.env.DEVICE = 'iPhone 11'
-    const device = getDeviceType(null)
-    expect(device).toBe(process.env.DEVICE)
-    delete process.env.DEVICE
   })
 })
 
