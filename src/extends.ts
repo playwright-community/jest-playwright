@@ -25,7 +25,7 @@ const runDebugTest = (jestTestType: jest.It, ...args: any[]) => {
     try {
       await args[isConfigProvided ? 2 : 1](envArgs)
     } finally {
-      await browser!.close()
+      await envArgs.browser!.close()
     }
   })
 }
@@ -53,7 +53,7 @@ const runConfigTest = (
     try {
       await args[1](envArgs)
     } finally {
-      await browser!.close()
+      await envArgs.browser!.close()
     }
   })
 }
