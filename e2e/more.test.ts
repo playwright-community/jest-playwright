@@ -32,15 +32,15 @@ describe('Debug helper functions', () => {
   const configOptions = {
     contextOptions: { locale: 'nl-NL' },
     browser: 'webkit',
+    device: 'iPhone 11',
   }
 
   it.jestPlaywrightConfig(
     configOptions,
     'jestPlaywrightConfig',
-    async ({ page }) => {
-      await page.goto('https://www.whatismybrowser.com/')
-      const browser = await (await page.$('.string-major'))?.innerHTML()
-      expect(browser).toContain('Safari')
+    async ({ browserName, page }) => {
+      expect(browserName).toBe('webkit')
+      expect(page.viewportSize()).toEqual({ width: 414, height: 896 })
     },
   )
 
@@ -55,10 +55,8 @@ describe('Debug helper functions', () => {
   it.jestPlaywrightDebug(
     debugOptions,
     'jestPlaywrightDebug',
-    async ({ page }) => {
-      await page.goto('https://www.whatismybrowser.com/')
-      const browser = await (await page.$('.string-major'))?.innerHTML()
-      expect(browser).toContain('Firefox')
+    async ({ browserName }) => {
+      expect(browserName).toBe('firefox')
     },
   )
 })
