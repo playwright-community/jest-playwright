@@ -240,6 +240,8 @@ export interface BrowserTest {
 }
 
 export type ConfigParams = {
+  browserName: BrowserType
+  deviceName: Nullable<string>
   browser: Nullable<Browser | BrowserContext>
   context: BrowserContext
   page: Page
