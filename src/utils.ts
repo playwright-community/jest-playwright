@@ -89,10 +89,7 @@ export const checkDevice = (
   }
 }
 
-export const getDisplayName = (
-  browser: BrowserType,
-  device: DeviceType,
-): string => {
+export const getDisplayName = (browser: string, device: DeviceType): string => {
   if (device !== null) {
     if (typeof device === 'string') {
       return `browser: ${browser} device: ${device}`

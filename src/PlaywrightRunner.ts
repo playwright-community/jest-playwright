@@ -26,7 +26,9 @@ import {
   readConfig,
   getPlaywrightInstance,
   getBrowserOptions,
+  getBrowserType,
   getDeviceBrowserType,
+  deepMerge,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
@@ -45,7 +47,10 @@ const getBrowserTest = ({
   device,
 }: BrowserTest): JestPlaywrightTest => {
   const { displayName, testEnvironmentOptions } = test.context.config
-  const playwrightDisplayName = getDisplayName(browser, device)
+  const playwrightDisplayName = getDisplayName(
+    config.displayName || browser,
+    device,
+  )
   return {
     ...test,
     context: {
@@ -149,23 +154,30 @@ class PlaywrightRunner extends JestRunner {
         }
       } else {
         for (const browser of browsers) {
-          checkBrowserEnv(browser)
+          const browserType = getBrowserType(
+            typeof browser === 'string' ? browser : browser?.name,
+          )
+          const browserConfig =
+            typeof browser === 'string'
+              ? config
+              : deepMerge(config, browser || {})
+          checkBrowserEnv(browserType)
           const { devices: availableDevices, instance } = getPlaywrightInstance(
-            browser,
+            browserType,
           )
           const resultDevices = getDevices(devices, availableDevices)
           const wsEndpoint: WsEndpointType = await this.launchServer(
-            config,
-            getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
-            browser,
+            browserConfig,
+            getBrowserOptions(browserType, connectOptions)?.wsEndpoint || null,
+            browserType,
             instance as GenericBrowser,
           )
 
           const browserTest = {
             test: test as JestPlaywrightTest,
-            config,
+            config: browserConfig,
             wsEndpoint,
-            browser,
+            browser: browserType,
           }
 
           if (resultDevices.length) {
