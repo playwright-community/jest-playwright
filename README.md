@@ -110,11 +110,11 @@ module.exports = {
 - `launchType` <[**LAUNCH**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchoptions) | [**PERSISTENT**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchpersistentcontextuserdatadir-options) | [**SERVER**](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypelaunchserveroptions)>. Method to launch browser instance. `jest-playwright` attaches Playwright to an existing browser instance by default.
 - `connectOptions` <[object]>. [All Playwright connect options](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsertypeconnectparams) can be specified in config.
 - `contextOptions` <[object]>. [All Playwright context options](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#browsernewcontextoptions) can be specified in config.
-- `[browsers](#browser-configuration)` <[(string | object)[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#class-browsertype) to run tests in.
+- [browsers](#browser-configuration) <[(string | object)[]]>. Define [browsers](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#class-browsertype) to run tests in.
   - `chromium` Each test runs Chromium (default).
   - `firefox` Each test runs Firefox.
   - `webkit` Each test runs Webkit.
-- `[devices](#device-configuration)` <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#playwrightdevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/v1.7.0/src/server/deviceDescriptors.ts).
+- [devices](#device-configuration) <[(string | object)[] | RegExp]>. Define a [devices](https://github.com/microsoft/playwright/blob/v1.7.0/docs/api.md#playwrightdevices) to run tests in. Actual list of devices can be found [here](https://github.com/Microsoft/playwright/blob/v1.7.0/src/server/deviceDescriptors.ts).
 - `exitOnPageError` <[boolean]>. Exits process on any page error. Defaults to `true`.
 - `collectCoverage` <[boolean]>. Enables the coverage collection of the `saveCoverage(page)` calls to the `.nyc_output/coverage.json` file.
 - `serverOptions` <[object]>. [All `jest-process-manager` options](https://github.com/playwright-community/jest-process-manager#options).
