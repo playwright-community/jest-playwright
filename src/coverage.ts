@@ -33,7 +33,7 @@ export const saveCoverageToFile = async (coverage: unknown): Promise<void> => {
 
 export const saveCoverageOnPage = async (
   page: Page,
-  collectCoverage: boolean,
+  collectCoverage = false,
 ): Promise<void> => {
   if (!collectCoverage) {
     console.warn(

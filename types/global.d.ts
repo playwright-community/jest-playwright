@@ -208,14 +208,14 @@ export interface JestPlaywrightConfig {
   connectOptions?: Options<ConnectOptions>
   contextOptions?: Options<BrowserContextOptions>
   userDataDir?: string
-  exitOnPageError: boolean
+  exitOnPageError?: boolean
   displayName?: string
   browsers: (BrowserType | (JestPlaywrightConfig & { name: BrowserType }))[]
   devices?: ConfigDeviceType[] | RegExp
   useDefaultBrowserType?: boolean
   serverOptions?: JestProcessManagerOptions
   selectors?: SelectorType[]
-  collectCoverage: boolean
+  collectCoverage?: boolean
 }
 
 export interface JestPlaywrightProjectConfig extends JestConfig.ProjectConfig {

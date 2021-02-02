@@ -162,7 +162,7 @@ export function getBrowserOptions<T>(
   let result: Options<T> | undefined = options
   if (result) {
     if (result[browserName]) {
-      result = { ...result, ...result[browserName] }
+      result = deepMerge(result, result[browserName]!)
     }
     BROWSERS.forEach((browser) => {
       delete result![browser as BrowserType]

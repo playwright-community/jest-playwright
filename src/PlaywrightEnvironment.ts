@@ -122,6 +122,22 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       this._config = config
     }
 
+    _getContextOptions(devices: Playwright['devices']): BrowserContextOptions {
+      const { browserName, device } = this._config
+      const browserType = getBrowserType(browserName)
+      const { contextOptions } = this._jestPlaywrightConfig
+      const deviceBrowserContextOptions = getDeviceConfig(device, devices)
+      const resultContextOptions = deepMerge(
+        deviceBrowserContextOptions,
+        getBrowserOptions(browserName, contextOptions),
+      )
+      if (browserType === FIREFOX && resultContextOptions.isMobile) {
+        console.warn(formatError(`isMobile is not supported in ${FIREFOX}.`))
+        delete resultContextOptions.isMobile
+      }
+      return resultContextOptions
+    }
+
     _getSeparateEnvBrowserConfig(
       isDebug: boolean,
       config: TestPlaywrightConfigOptions,
@@ -201,10 +217,6 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         }
       }
       const browserType = getBrowserType(browserName)
-      let contextOptions = getBrowserOptions(
-        browserName,
-        this._jestPlaywrightConfig.contextOptions,
-      )
       const device = this._config.device
       const deviceName: Nullable<string> = getDeviceName(device)
       const {
@@ -212,6 +224,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         instance: playwrightInstance,
         devices,
       } = getPlaywrightInstance(browserType)
+      const contextOptions = this._getContextOptions(devices)
 
       if (name === IMPORT_KIND_PLAYWRIGHT) {
         const playwright = require('playwright')
@@ -230,12 +243,6 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         }
       }
 
-      const deviceBrowserContextOptions = getDeviceConfig(device, devices)
-      contextOptions = deepMerge(deviceBrowserContextOptions, contextOptions)
-      if (browserType === FIREFOX && contextOptions.isMobile) {
-        console.warn(formatError(`isMobile is not supported in ${FIREFOX}.`))
-        delete contextOptions.isMobile
-      }
       this.global.browserName = browserType
       this.global.deviceName = deviceName
       if (!skipInitialization) {
@@ -251,11 +258,11 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             ? browserOrContext
             : await this.global.browser.newContext(contextOptions)
         if (collectCoverage) {
-          ;(this.global.context as BrowserContext).exposeFunction(
+          await (this.global.context as BrowserContext).exposeFunction(
             'reportCodeCoverage',
             saveCoverageToFile,
           )
-          ;(this.global.context as BrowserContext).addInitScript(() =>
+          await (this.global.context as BrowserContext).addInitScript(() =>
             window.addEventListener('beforeunload', () => {
               // @ts-ignore
               reportCodeCoverage(window.__coverage__)
