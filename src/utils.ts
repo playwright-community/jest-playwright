@@ -105,6 +105,11 @@ export const getBrowserType = (browser?: BrowserType): BrowserType => {
   return browser || CHROMIUM
 }
 
+export const generateKey = (
+  browser: BrowserType,
+  config: JestPlaywrightConfig,
+): string => `${browser}${JSON.stringify(config)}`
+
 export const getDeviceBrowserType = (
   device: ConfigDeviceType,
   availableDevices: Playwright['devices'],

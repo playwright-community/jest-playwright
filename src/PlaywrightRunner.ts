@@ -29,6 +29,7 @@ import {
   getBrowserType,
   getDeviceBrowserType,
   deepMerge,
+  generateKey,
 } from './utils'
 import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
@@ -95,7 +96,7 @@ const getDevices = (
 }
 
 class PlaywrightRunner extends JestRunner {
-  browser2Server: Partial<Record<BrowserType, BrowserServer>>
+  browser2Server: Partial<Record<string, BrowserServer>>
   constructor(
     globalConfig: JestConfig.GlobalConfig,
     context: TestRunnerContext,
@@ -114,13 +115,14 @@ class PlaywrightRunner extends JestRunner {
     instance: GenericBrowser,
   ): Promise<WsEndpointType> {
     const { launchType, launchOptions, skipInitialization } = config
+    const key = generateKey(browser, config)
     if (!skipInitialization && launchType === SERVER && wsEndpoint === null) {
-      if (!this.browser2Server[browser]) {
+      if (!this.browser2Server[key]) {
         const options = getBrowserOptions(browser, launchOptions)
-        this.browser2Server[browser] = await instance.launchServer(options)
+        this.browser2Server[key] = await instance.launchServer(options)
       }
     }
-    return wsEndpoint || this.browser2Server[browser]?.wsEndpoint() || null
+    return wsEndpoint || this.browser2Server[key]?.wsEndpoint() || null
   }
 
   async getTests(tests: Test[], config: JestPlaywrightConfig): Promise<Test[]> {
@@ -216,8 +218,8 @@ class PlaywrightRunner extends JestRunner {
       options.serial ? '_createInBandTestRun' : '_createParallelTestRun'
     ](browserTests, watcher, onStart, onResult, onFailure)
 
-    for (const browser in this.browser2Server) {
-      await this.browser2Server[browser as BrowserType]!.close()
+    for (const key in this.browser2Server) {
+      await this.browser2Server[key]!.close()
     }
     if (config.collectCoverage) {
       await mergeCoverage()
