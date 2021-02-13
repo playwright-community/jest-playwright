@@ -502,7 +502,15 @@ class CustomRunner extends PlaywrightRunner {
 
 module.exports = CustomRunner
 ```
+## Usage with create-react-app
 
+### Requirements
+
+- [react](https://create-react-app.dev/docs/getting-started) >= 17.0.0
+
+### example
+
+[Jest create-react-app Playwright example](https://github.com/playwright-community/playwright-jest-examples/tree/master/create-react-app)
 ## Usage with Typescript
 
 Example Jest configuration in combination with [ts-jest](https://github.com/kulshekhar/ts-jest):
@@ -546,16 +554,6 @@ or via `types`:
 ```
 
 It's important to not change the `testEnvironment` to `node`. Otherwise it won't work.
-
-## Usage with create-react-app
-
-### Requirements
-
-- [react](https://create-react-app.dev/docs/getting-started) >= 17.0.0
-
-### example
-
-[Jest create-react-app Playwright example](https://github.com/playwright-community/playwright-jest-examples/tree/master/create-react-app)
 
 ## Known issues
 
