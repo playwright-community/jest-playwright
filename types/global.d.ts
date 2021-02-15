@@ -213,7 +213,7 @@ export interface JestPlaywrightConfig {
   browsers: (BrowserType | (JestPlaywrightConfig & { name: BrowserType }))[]
   devices?: ConfigDeviceType[] | RegExp
   useDefaultBrowserType?: boolean
-  serverOptions?: JestProcessManagerOptions
+  serverOptions?: JestProcessManagerOptions | JestProcessManagerOptions[]
   selectors?: SelectorType[]
   collectCoverage?: boolean
 }
