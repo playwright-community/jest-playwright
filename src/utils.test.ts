@@ -16,6 +16,7 @@ const {
   getSkipFlag,
   getBrowserOptions,
   getDeviceBrowserType,
+  generateKey,
 } = Utils
 
 beforeEach(() => {
@@ -138,6 +139,32 @@ describe('readConfig', () => {
     expect(config).toMatchObject(expectedConfig)
     delete process.env.npm_package_type
     fs.unlinkSync(configPath)
+  })
+})
+
+describe('generateKey', () => {
+  const config = {
+    launchOptions: {
+      headless: false,
+      executablePath: '/usr/bin/microsoft-edge',
+    },
+  } as JestPlaywrightConfig
+  it('should generate same key for same objects', () => {
+    const key1 = generateKey('chromium', config)
+    const key2 = generateKey('chromium', config)
+    expect(key1).toBe(key2)
+  })
+
+  it('should generate different key for different objects', () => {
+    const chromiumConfig = {
+      launchOptions: {
+        headless: false,
+        executablePath: '/usr/bin/google-chrome-stable',
+      },
+    } as JestPlaywrightConfig
+    const key1 = generateKey('chromium', config)
+    const key2 = generateKey('chromium', chromiumConfig)
+    expect(key1).not.toBe(key2)
   })
 })
 
