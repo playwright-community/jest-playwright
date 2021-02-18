@@ -112,7 +112,7 @@ class PlaywrightRunner extends JestRunner {
     config: JestPlaywrightConfig,
     wsEndpoint: WsEndpointType,
     browser: BrowserType,
-    key: string, 
+    key: string,
     instance: GenericBrowser,
   ): Promise<WsEndpointType> {
     const { launchType, launchOptions, skipInitialization } = config
