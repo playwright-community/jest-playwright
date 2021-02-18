@@ -112,10 +112,10 @@ class PlaywrightRunner extends JestRunner {
     config: JestPlaywrightConfig,
     wsEndpoint: WsEndpointType,
     browser: BrowserType,
+    key: string, 
     instance: GenericBrowser,
   ): Promise<WsEndpointType> {
     const { launchType, launchOptions, skipInitialization } = config
-    const key = generateKey(browser, config)
     if (!skipInitialization && launchType === SERVER && wsEndpoint === null) {
       if (!this.browser2Server[key]) {
         const options = getBrowserOptions(browser, launchOptions)
@@ -144,6 +144,7 @@ class PlaywrightRunner extends JestRunner {
               config,
               getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
               browser,
+              browser,
               (instance as Record<BrowserType, GenericBrowser>)[browser],
             )
 
@@ -157,7 +158,7 @@ class PlaywrightRunner extends JestRunner {
       } else {
         for (const browser of browsers) {
           const browserType = getBrowserType(
-            typeof browser === 'string' ? browser : browser?.name,
+            typeof browser === 'string' ? browser : browser.name,
           )
           const browserConfig =
             typeof browser === 'string'
@@ -168,10 +169,15 @@ class PlaywrightRunner extends JestRunner {
             browserType,
           )
           const resultDevices = getDevices(devices, availableDevices)
+          const key =
+            typeof browser === 'string'
+              ? browser
+              : generateKey(browser.name, browserConfig)
           const wsEndpoint: WsEndpointType = await this.launchServer(
             browserConfig,
             getBrowserOptions(browserType, connectOptions)?.wsEndpoint || null,
             browserType,
+            key,
             instance as GenericBrowser,
           )
 
