@@ -113,12 +113,12 @@ export const generateKey = (
 export const getDeviceBrowserType = (
   device: ConfigDeviceType,
   availableDevices: Playwright['devices'],
-): BrowserType => {
+): BrowserType | null => {
   if (typeof device === 'string') {
     return availableDevices[device].defaultBrowserType as BrowserType
   }
 
-  return device?.defaultBrowserType || CHROMIUM
+  return device?.defaultBrowserType || null
 }
 
 export const getPlaywrightInstance = (
