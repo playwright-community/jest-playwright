@@ -207,7 +207,7 @@ describe('getBrowserType', () => {
 describe('getBrowserOptions', () => {
   it('should return empty object for empty options', () => {
     const options = getBrowserOptions(CHROMIUM)
-    expect(options).toBe({})
+    expect(options).toStrictEqual({})
   })
 
   it('should return root options', () => {
