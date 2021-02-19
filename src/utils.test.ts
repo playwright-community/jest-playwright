@@ -205,27 +205,37 @@ describe('getBrowserType', () => {
 })
 
 describe('getBrowserOptions', () => {
-  it('should return undefined for empty options', async () => {
+  it('should return empty object for empty options', () => {
     const options = getBrowserOptions(CHROMIUM)
-    expect(options).toBe(undefined)
+    expect(options).toBe({})
   })
 
-  it('should return root options', async () => {
+  it('should return root options', () => {
     const launchOptions = { headless: false }
     const options = getBrowserOptions(CHROMIUM, launchOptions)
-    expect(options).toBe(launchOptions)
+    expect(options).toStrictEqual(launchOptions)
   })
 
-  it('should return options for defined browser', async () => {
+  it('should return options for defined browser',  () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(CHROMIUM, launchOptions)
     expect(options).toStrictEqual({ headless: true })
   })
 
-  it('should return root options for other browser', async () => {
+  it('should return root options for other browser',  () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(FIREFOX, launchOptions)
     expect(options).toStrictEqual({ headless: false })
+  })
+
+  it('should not mutate original options', () => {
+    const launchOptions = { headless: false, chromium: { headless: true } }
+    const options = getBrowserOptions(FIREFOX, launchOptions)
+    expect(options).toStrictEqual({ headless: false })
+    expect(launchOptions).toStrictEqual({
+      headless: false,
+      chromium: { headless: true },
+    })
   })
 })
 
