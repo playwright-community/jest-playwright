@@ -164,17 +164,14 @@ export function getBrowserOptions<T>(
   browserName: BrowserType,
   options?: Options<T>,
 ): T {
-  let result: Options<T> | undefined = { ...options }
-  if (result) {
-    if (result[browserName]) {
-      result = deepMerge(result, result[browserName]!)
-    }
-    BROWSERS.forEach((browser) => {
-      delete result![browser as BrowserType]
-    })
-    return result
+  let result: Options<T> = options ? { ...options } : ({} as T)
+  if (result[browserName]) {
+    result = deepMerge(result, result[browserName]!)
   }
-  return result as T
+  BROWSERS.forEach((browser) => {
+    delete result![browser as BrowserType]
+  })
+  return result
 }
 
 export const getSkipFlag = (
