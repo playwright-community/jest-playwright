@@ -219,6 +219,8 @@ module.exports = {
   isMobile: boolean
   // support of touch events
   hasTouch: boolean
+  // device default browser
+  defaultBrowserType: chromium, firefox or webkit
 }
 ```
 
@@ -587,4 +589,4 @@ Thanks to [Smooth Code](https://github.com/smooth-code) for the great [jest-pupp
 
 ## License
 
-MIT
+[MIT](https://github.com/playwright-community/jest-playwright/blob/master/LICENSE)
