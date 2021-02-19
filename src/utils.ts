@@ -164,7 +164,7 @@ export function getBrowserOptions<T>(
   browserName: BrowserType,
   options?: Options<T>,
 ): T {
-  let result: Options<T> | undefined = options
+  let result: Options<T> | undefined = { ...options }
   if (result) {
     if (result[browserName]) {
       result = deepMerge(result, result[browserName]!)
