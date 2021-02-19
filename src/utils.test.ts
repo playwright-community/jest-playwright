@@ -216,13 +216,13 @@ describe('getBrowserOptions', () => {
     expect(options).toStrictEqual(launchOptions)
   })
 
-  it('should return options for defined browser',  () => {
+  it('should return options for defined browser', () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(CHROMIUM, launchOptions)
     expect(options).toStrictEqual({ headless: true })
   })
 
-  it('should return root options for other browser',  () => {
+  it('should return root options for other browser', () => {
     const launchOptions = { headless: false, chromium: { headless: true } }
     const options = getBrowserOptions(FIREFOX, launchOptions)
     expect(options).toStrictEqual({ headless: false })
