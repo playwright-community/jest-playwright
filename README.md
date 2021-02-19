@@ -142,11 +142,11 @@ For `launchOptions`, `connectOptions` and `contextOptions` you can define specia
 module.exports = {
   connectOptions: {
     chromium: {
-	  wsEndpoint: 'ws://chrome.proxy.com:4444'
-	},
-	firefox: {
-	  wsEndpoint: 'ws://firefox.proxy.com:4444'
-	}
+      wsEndpoint: 'ws://chrome.proxy.com:4444'
+    },
+    firefox: {
+      wsEndpoint: 'ws://firefox.proxy.com:4444'
+    }
   },
   ...
 }
