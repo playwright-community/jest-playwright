@@ -284,11 +284,11 @@ describe('getDeviceBrowserType', () => {
     },
   } as Playwright['devices']
 
-  it('should return "chromium" as default', async () => {
+  it('should return "null" as default', async () => {
     const device = {
       name: 'Custom',
     }
-    expect(getDeviceBrowserType(device, devices)).toBe(CHROMIUM)
+    expect(getDeviceBrowserType(device, devices)).toBe(null)
   })
 
   it('should return default browser if it is defined', async () => {

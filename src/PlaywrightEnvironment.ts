@@ -282,7 +282,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           const { device } = config
           const browserName =
             config.useDefaultBrowserType && device
-              ? getDeviceBrowserType(device, devices)
+              ? getDeviceBrowserType(device, devices) || CHROMIUM
               : config.browser || browserType
           const deviceName = device ? getDeviceName(device) : null
           checkDevice(deviceName, devices)

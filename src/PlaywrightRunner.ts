@@ -129,73 +129,52 @@ class PlaywrightRunner extends JestRunner {
     const { browsers, devices, connectOptions, useDefaultBrowserType } = config
     const pwTests: Test[] = []
     for (const test of tests) {
-      if (useDefaultBrowserType) {
-        const { devices: availableDevices, instance } = getPlaywrightInstance()
+      for (const browser of browsers) {
+        const browserType = getBrowserType(
+          typeof browser === 'string' ? browser : browser.name,
+        )
+        const browserConfig =
+          typeof browser === 'string'
+            ? config
+            : deepMerge(config, browser || {})
+        checkBrowserEnv(browserType)
+        const { devices: availableDevices, instance } = getPlaywrightInstance(
+          browserType,
+        )
         const resultDevices = getDevices(devices, availableDevices)
+        const key =
+          typeof browser === 'string'
+            ? browser
+            : generateKey(browser.name, browserConfig)
+        const wsEndpoint: WsEndpointType = await this.launchServer(
+          browserConfig,
+          getBrowserOptions(browserType, connectOptions)?.wsEndpoint || null,
+          browserType,
+          key,
+          instance as GenericBrowser,
+        )
 
         const browserTest = {
           test: test as JestPlaywrightTest,
-          config,
+          config: browserConfig,
+          wsEndpoint,
+          browser: browserType,
         }
+
         if (resultDevices.length) {
-          for (const device of resultDevices) {
-            const browser = getDeviceBrowserType(device, availableDevices)
-            const wsEndpoint: WsEndpointType = await this.launchServer(
-              config,
-              getBrowserOptions(browser, connectOptions)?.wsEndpoint || null,
-              browser,
-              browser,
-              (instance as Record<BrowserType, GenericBrowser>)[browser],
-            )
-
+          resultDevices.forEach((device: DeviceType) => {
             checkDevice(device, availableDevices)
-
-            pwTests.push(
-              getBrowserTest({ ...browserTest, browser, wsEndpoint, device }),
-            )
-          }
-        }
-      } else {
-        for (const browser of browsers) {
-          const browserType = getBrowserType(
-            typeof browser === 'string' ? browser : browser.name,
-          )
-          const browserConfig =
-            typeof browser === 'string'
-              ? config
-              : deepMerge(config, browser || {})
-          checkBrowserEnv(browserType)
-          const { devices: availableDevices, instance } = getPlaywrightInstance(
-            browserType,
-          )
-          const resultDevices = getDevices(devices, availableDevices)
-          const key =
-            typeof browser === 'string'
-              ? browser
-              : generateKey(browser.name, browserConfig)
-          const wsEndpoint: WsEndpointType = await this.launchServer(
-            browserConfig,
-            getBrowserOptions(browserType, connectOptions)?.wsEndpoint || null,
-            browserType,
-            key,
-            instance as GenericBrowser,
-          )
-
-          const browserTest = {
-            test: test as JestPlaywrightTest,
-            config: browserConfig,
-            wsEndpoint,
-            browser: browserType,
-          }
-
-          if (resultDevices.length) {
-            resultDevices.forEach((device: DeviceType) => {
-              checkDevice(device, availableDevices)
-              pwTests.push(getBrowserTest({ ...browserTest, device }))
-            })
-          } else {
-            pwTests.push(getBrowserTest({ ...browserTest, device: null }))
-          }
+            if (useDefaultBrowserType) {
+              const deviceBrowser = getDeviceBrowserType(
+                device!,
+                availableDevices,
+              )
+              if (deviceBrowser !== null && deviceBrowser !== browser) return
+            }
+            pwTests.push(getBrowserTest({ ...browserTest, device }))
+          })
+        } else {
+          pwTests.push(getBrowserTest({ ...browserTest, device: null }))
         }
       }
     }
