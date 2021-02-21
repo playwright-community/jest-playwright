@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -43,7 +43,7 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
-    "expect-playwright": "^0.3.1",
+    "expect-playwright": "^0.3.2",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jest-process-manager": "^0.2.9",
@@ -57,11 +57,11 @@
     "@types/debug": "4.1.5",
     "@types/jest": "26.0.20",
     "@types/jest-dev-server": "4.2.0",
-    "@types/node": "14.14.28",
+    "@types/node": "14.14.31",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "4.15.0",
-    "@typescript-eslint/parser": "4.15.0",
+    "@typescript-eslint/eslint-plugin": "4.15.1",
+    "@typescript-eslint/parser": "4.15.1",
     "coveralls": "3.1.0",
     "eslint": "7.20.0",
     "eslint-config-airbnb-base": "14.2.1",
