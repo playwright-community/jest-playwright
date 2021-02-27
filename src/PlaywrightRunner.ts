@@ -32,6 +32,7 @@ import {
   generateKey,
 } from './utils'
 import {
+  DEBUG_TIMEOUT,
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
@@ -95,6 +96,13 @@ const getDevices = (
   return resultDevices
 }
 
+const getJestTimeout = (configTimeout?: number) => {
+  if (configTimeout) {
+    return configTimeout
+  }
+  return process.env.PWDEBUG ? DEBUG_TIMEOUT : DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
+}
+
 class PlaywrightRunner extends JestRunner {
   browser2Server: Partial<Record<string, BrowserServer>>
   constructor(
@@ -102,8 +110,8 @@ class PlaywrightRunner extends JestRunner {
     context: TestRunnerContext,
   ) {
     const config = { ...globalConfig }
-    // Set default timeout to 15s
-    config.testTimeout = config.testTimeout || DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
+    // Set testTimeout
+    config.testTimeout = getJestTimeout(config.testTimeout)
     super(config, context)
     this.browser2Server = {}
   }

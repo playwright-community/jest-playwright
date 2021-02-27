@@ -23,5 +23,7 @@ export const DEFAULT_CONFIG: JestPlaywrightConfig = {
 }
 
 export const DEFAULT_TEST_PLAYWRIGHT_TIMEOUT = 15000
+// Set timeout to 4 days
+export const DEBUG_TIMEOUT = 4 * 24 * 60 * 60 * 1000
 
 export const PACKAGE_NAME = 'jest-playwright-preset'
