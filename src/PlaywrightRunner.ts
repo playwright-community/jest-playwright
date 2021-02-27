@@ -96,13 +96,11 @@ const getDevices = (
   return resultDevices
 }
 
-const setJestTimeout = (configTimeout?: number) => {
+const getJestTimeout = (configTimeout?: number) => {
   if (configTimeout) {
     return configTimeout
   }
-  return process.env.PWDEBUG === '1'
-    ? DEBUG_TIMEOUT
-    : DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
+  return process.env.PWDEBUG ? DEBUG_TIMEOUT : DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
 }
 
 class PlaywrightRunner extends JestRunner {
@@ -113,7 +111,7 @@ class PlaywrightRunner extends JestRunner {
   ) {
     const config = { ...globalConfig }
     // Set testTimeout
-    config.testTimeout = setJestTimeout(config.testTimeout)
+    config.testTimeout = getJestTimeout(config.testTimeout)
     super(config, context)
     this.browser2Server = {}
   }
