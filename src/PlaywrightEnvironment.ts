@@ -21,6 +21,7 @@ import type {
 import {
   CHROMIUM,
   CONFIG_ENVIRONMENT_NAME,
+  DEBUG_TIMEOUT,
   DEFAULT_CONFIG,
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
@@ -396,8 +397,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         event.name === 'add_test' &&
         event.fn?.toString().includes('jestPlaywright.debug()')
       ) {
-        // Set timeout to 4 days
-        state.testTimeout = 4 * 24 * 60 * 60 * 1000
+        state.testTimeout = DEBUG_TIMEOUT
       }
     }
 
