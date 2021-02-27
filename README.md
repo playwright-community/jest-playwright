@@ -234,9 +234,16 @@ module.exports = {
 
 All of them are available globally in each Jest test. If you are using ESLint and JavaScript, its recommend to use it in combination with the [eslint-plugin-jest-playwright](https://github.com/playwright-community/eslint-plugin-jest-playwright).
 
-## Put in debug mode
+## Debug mode
 
-Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
+Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. There are two ways to put your tests in debug mode:
+
+- Playwright give you [ability](https://playwright.dev/docs/next/debug/#run-in-debug-mode) to configure the browser for debugging with `PWDEBUG` environment:
+```js
+PWDEBUG=1 jest
+```
+
+- Jest Playwright exposes a method `jestPlaywright.debug()` that suspends test execution and gives you opportunity to see what's going on in the browser.
 
 ```js
 await jestPlaywright.debug()
