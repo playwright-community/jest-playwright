@@ -67,11 +67,14 @@ test('should display correct browser', async () => {
 
 ### Notes
 
+`playwright` actions can take some time for execution, because of it `jest-playwright` overrides jest default timeout interval from 5 to 15 seconds.
+You can change this interval with [`testTimeout`](https://jestjs.io/docs/en/configuration#testtimeout-number) in your `jest` configuration.
+
+## Configuration
+
 It's recommend to use a separate Jest configuration `jest.e2e.config.js` for `jest-playwright` to gain speed improvements and by that to only use Playwright in the end-to-end tests. For that you have to use the `-c` flag when calling Jest and use the [`testMatch`](https://jestjs.io/docs/en/configuration#testmatch-arraystring) or [`testRegex`](https://jestjs.io/docs/en/configuration#testregex-string--arraystring) in your Jest config to split them.
 
 Be sure to remove any existing `testEnvironment` option from your Jest configuration. The `jest-playwright-preset` preset needs to manage that option itself.
-
-## Configuration
 
 Configuration options can be specified using a `jest-playwright.config.js` file at the root of your project:
 
@@ -238,7 +241,7 @@ All of them are available globally in each Jest test. If you are using ESLint an
 
 Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. There are two ways to put your tests in debug mode:
 
-- Playwright give you [ability](https://playwright.dev/docs/debug/#run-in-debug-mode) to configure the browser for debugging with the `PWDEBUG` environment variable:
+  - Playwright give you [ability](https://playwright.dev/docs/debug/#run-in-debug-mode) to configure the browser for debugging with the `PWDEBUG` environment variable. It will launch browser in headful mode and disables playwright timeout:
 ```js
 PWDEBUG=1 jest
 ```
@@ -248,6 +251,8 @@ PWDEBUG=1 jest
 ```js
 await jestPlaywright.debug()
 ```
+
+In these cases **jest** `testTimeout` will be set to huge value otherwise Jest will simply stop the tests execution.
 
 ## Reset helper functions
 
