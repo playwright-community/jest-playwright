@@ -10,7 +10,6 @@ import type {
   BrowserType,
   ConfigDeviceType,
   ConfigParams,
-  ConnectOptions,
   GenericBrowser,
   JestPlaywrightConfig,
   JestPlaywrightProjectConfig,
@@ -198,6 +197,15 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       return getBrowserOptions(browserName, resultContextOptions)
     }
 
+    async _setNewPageInstance(context = this.global.context) {
+      const { exitOnPageError } = this._jestPlaywrightConfig
+      const page = await context.newPage()
+      if (exitOnPageError) {
+        page.on('pageerror', handleError)
+      }
+      return page
+    }
+
     async setup(): Promise<void> {
       const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
       this._jestPlaywrightConfig = testEnvironmentOptions[
@@ -206,7 +214,6 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       const {
         connectOptions,
         collectCoverage,
-        exitOnPageError,
         selectors,
         launchType,
         skipInitialization,
@@ -270,10 +277,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             }),
           )
         }
-        this.global.page = await this.global.context.newPage()
-        if (exitOnPageError) {
-          this.global.page.on('pageerror', handleError)
-        }
+        this.global.page = await this._setNewPageInstance()
       }
       this.global.jestPlaywright = {
         configSeparateEnv: async (
@@ -310,23 +314,13 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           return { browserName, deviceName, browser, context, page }
         },
         resetPage: async (): Promise<void> => {
-          const { context, page } = this.global
-          try {
-            if (page) {
-              page.removeListener('pageerror', handleError)
-              await page.close()
-            }
-            // eslint-disable-next-line no-empty
-          } catch (e) {}
-
-          this.global.page = await context.newPage()
-          if (exitOnPageError) {
-            this.global.page.addListener('pageerror', handleError)
-          }
+          await this.global.page?.close()
+          this.global.page = await this._setNewPageInstance()
         },
-        resetContext: async (newOptions?: ConnectOptions): Promise<void> => {
+        resetContext: async (
+          newOptions?: BrowserContextOptions,
+        ): Promise<void> => {
           const { browser, context } = this.global
-
           await context?.close()
 
           const newContextOptions = newOptions
@@ -334,12 +328,12 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             : contextOptions
 
           this.global.context = await browser.newContext(newContextOptions)
-
-          await this.global.jestPlaywright.resetPage()
+          this.global.page = await this._setNewPageInstance()
         },
-        resetBrowser: async (newOptions?: ConnectOptions): Promise<void> => {
+        resetBrowser: async (
+          newOptions?: BrowserContextOptions,
+        ): Promise<void> => {
           const { browser } = this.global
-
           await browser?.close()
 
           this.global.browser = await getBrowserPerProcess(
@@ -348,9 +342,14 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             this._jestPlaywrightConfig,
           )
 
-          await this.global.jestPlaywright.resetContext(newOptions)
+          const newContextOptions = newOptions
+            ? deepMerge(contextOptions, newOptions)
+            : contextOptions
 
-          await this.global.jestPlaywright.resetPage()
+          this.global.context = await this.global.browser.newContext(
+            newContextOptions,
+          )
+          this.global.page = await this._setNewPageInstance()
         },
         debug: async (): Promise<void> => {
           // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
