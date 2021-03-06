@@ -252,7 +252,7 @@ PWDEBUG=1 jest
 await jestPlaywright.debug()
 ```
 
-In these cases **jest** `testTimeout` will be set to huge value otherwise Jest will simply stop the tests execution.
+In these cases **Jest** won't timeout anymore.
 
 ## Reset helper functions
 
