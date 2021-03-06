@@ -241,7 +241,7 @@ All of them are available globally in each Jest test. If you are using ESLint an
 
 Debugging tests can be hard sometimes and it is very useful to be able to pause tests in order to inspect the browser. There are two ways to put your tests in debug mode:
 
-  - Playwright give you [ability](https://playwright.dev/docs/debug/#run-in-debug-mode) to configure the browser for debugging with the `PWDEBUG` environment variable. It will launch browser in headful mode and disables playwright timeout:
+  - Playwright give you [ability](https://playwright.dev/docs/debug/#run-in-debug-mode) to configure the browser for debugging with the `PWDEBUG` environment variable. It will launch the browser in headful mode and disables playwright timeout:
 ```js
 PWDEBUG=1 jest
 ```
