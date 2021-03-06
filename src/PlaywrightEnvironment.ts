@@ -1,5 +1,4 @@
 /* eslint-disable no-console, @typescript-eslint/no-unused-vars */
-import type { Event, State } from 'jest-circus'
 import type {
   Browser,
   BrowserContext,
@@ -20,7 +19,6 @@ import type {
 import {
   CHROMIUM,
   CONFIG_ENVIRONMENT_NAME,
-  DEBUG_TIMEOUT,
   DEFAULT_CONFIG,
   FIREFOX,
   IMPORT_KIND_PLAYWRIGHT,
@@ -40,12 +38,6 @@ import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
-}
-
-const KEYS = {
-  CONTROL_C: '\u0003',
-  CONTROL_D: '\u0004',
-  ENTER: '\r',
 }
 
 const getBrowserPerProcess = async (
@@ -351,52 +343,8 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           )
           this.global.page = await this._setNewPageInstance()
         },
-        debug: async (): Promise<void> => {
-          // Run a debugger (in case Playwright has been launched with `{ devtools: true }`)
-          await this.global.page.evaluate(() => {
-            // eslint-disable-next-line no-debugger
-            debugger
-          })
-          // eslint-disable-next-line no-console
-          console.log('\n\n🕵️‍  Code is paused, press enter to resume')
-          // Run an infinite promise
-          return new Promise((resolve) => {
-            const { stdin } = process
-            const listening = stdin.listenerCount('data') > 0
-            const onKeyPress = (key: string): void => {
-              if (Object.values(KEYS).includes(key)) {
-                stdin.removeListener('data', onKeyPress)
-                if (!listening) {
-                  if (stdin.isTTY) {
-                    stdin.setRawMode(false)
-                  }
-                  stdin.pause()
-                }
-                resolve()
-              }
-            }
-            if (!listening) {
-              if (stdin.isTTY) {
-                stdin.setRawMode(true)
-              }
-              stdin.resume()
-              stdin.setEncoding('utf8')
-            }
-            stdin.on('data', onKeyPress)
-          })
-        },
         saveCoverage: async (page: Page): Promise<void> =>
           saveCoverageOnPage(page, collectCoverage),
-      }
-    }
-
-    async handleTestEvent(event: Event, state: State): Promise<void> {
-      // Hack to set testTimeout for jestPlaywright debugging
-      if (
-        event.name === 'add_test' &&
-        event.fn?.toString().includes('jestPlaywright.debug()')
-      ) {
-        state.testTimeout = DEBUG_TIMEOUT
       }
     }
 
