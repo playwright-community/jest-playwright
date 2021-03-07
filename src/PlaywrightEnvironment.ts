@@ -226,21 +226,19 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       } = getPlaywrightInstance(browserType)
       const contextOptions = this._getContextOptions(devices)
 
-      if (name === IMPORT_KIND_PLAYWRIGHT) {
+      if (name === IMPORT_KIND_PLAYWRIGHT && selectors) {
         const playwright = require('playwright')
-        if (selectors) {
-          await Promise.all(
-            selectors.map(({ name, script }) =>
-              playwright.selectors
-                .register(name, script)
-                .catch((e: Error): void => {
-                  if (!e.toString().includes('has been already')) {
-                    throw e
-                  }
-                }),
-            ),
-          )
-        }
+        await Promise.all(
+          selectors.map(({ name, script }) =>
+            playwright.selectors
+              .register(name, script)
+              .catch((e: Error): void => {
+                if (!e.toString().includes('has been already')) {
+                  throw e
+                }
+              }),
+          ),
+        )
       }
 
       this.global.browserName = browserType
