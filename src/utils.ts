@@ -198,30 +198,22 @@ export const readConfig = async (
   if (jestEnvConfig) {
     return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, jestEnvConfig)
   }
-  const hasCustomConfigPath = !!process.env.JEST_PLAYWRIGHT_CONFIG
-  let fileExtension = 'js'
-  if (process.env.npm_package_type === 'module') {
-    fileExtension = 'cjs'
-  }
+  const { JEST_PLAYWRIGHT_CONFIG, npm_package_type } = process.env
+  const fileExtension = npm_package_type === 'module' ? 'cjs' : 'js'
   const configPath =
-    process.env.JEST_PLAYWRIGHT_CONFIG ||
+    JEST_PLAYWRIGHT_CONFIG ||
     `${CONFIG_ENVIRONMENT_NAME}.config.${fileExtension}`
   const absConfigPath = path.resolve(rootDir, configPath)
-  let configExists = true
   try {
     await fsPromises.access(absConfigPath)
   } catch (e) {
-    configExists = false
-  }
-
-  if (hasCustomConfigPath && !configExists) {
-    throw new PlaywrightError(
-      `Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
-    )
-  }
-
-  if (!hasCustomConfigPath && !configExists) {
-    return DEFAULT_CONFIG
+    if (JEST_PLAYWRIGHT_CONFIG) {
+      throw new PlaywrightError(
+        `Can't find a root directory while resolving a config file path.\nProvided path to resolve: ${configPath}`,
+      )
+    } else {
+      return DEFAULT_CONFIG
+    }
   }
 
   const localConfig = await require(absConfigPath)
