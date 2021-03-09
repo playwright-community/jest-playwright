@@ -1,10 +1,10 @@
 import * as uuid from 'uuid'
 import path from 'path'
 import fs from 'fs'
+import type { Page } from 'playwright-core'
 import { promisify } from 'util'
 import rimraf from 'rimraf'
 const fsAsync = fs.promises
-import { Page } from 'playwright-core'
 
 // @ts-ignore
 import NYC from 'nyc'

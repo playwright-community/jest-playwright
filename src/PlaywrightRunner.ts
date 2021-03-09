@@ -1,4 +1,5 @@
 import JestRunner from 'jest-runner'
+import type { BrowserServer } from 'playwright-core'
 import type {
   Test,
   TestRunnerContext,
@@ -37,7 +38,6 @@ import {
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
 } from './constants'
-import { BrowserServer } from 'playwright-core'
 import { setupCoverage, mergeCoverage } from './coverage'
 import { GenericBrowser } from '../types/global'
 
