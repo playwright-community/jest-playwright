@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -23,7 +23,7 @@
   "scripts": {
     "start": "npm run build -- --watch",
     "build": "tsc",
-    "format": "prettier --write \"*.{js,md}\" \"src/**/*.js\"",
+    "format": "prettier --write \"*.{ts,md}\" \"src/**/*.ts\"",
     "lint": "tsc --noEmit && eslint . --ext .js,.ts",
     "prepublishOnly": "npm run build",
     "test": "npm run test:src && npm run test:e2e",

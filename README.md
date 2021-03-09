@@ -240,6 +240,7 @@ All of them are available globally in each Jest test. If you are using ESLint an
 ## Debug mode
 
 Playwright give you [ability](https://playwright.dev/docs/debug/#run-in-debug-mode) to configure the browser for debugging with the `PWDEBUG` environment variable. It will launch the browser in headful mode, disables playwright timeout and **Jest** won't timeout anymore.:
+
 ```js
 PWDEBUG=1 jest
 ```
