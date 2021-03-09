@@ -44,7 +44,7 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
-    "expect-playwright": "^0.3.2",
+    "expect-playwright": "^0.3.3",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
     "jest-process-manager": "^0.2.9",
@@ -61,8 +61,8 @@
     "@types/node": "14.14.32",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "4.16.1",
-    "@typescript-eslint/parser": "4.16.1",
+    "@typescript-eslint/eslint-plugin": "4.17.0",
+    "@typescript-eslint/parser": "4.17.0",
     "coveralls": "3.1.0",
     "eslint": "7.21.0",
     "eslint-config-airbnb-base": "14.2.1",
