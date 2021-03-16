@@ -365,6 +365,7 @@ it.jestPlaywrightSkip(
 )
 ```
 
+
 ## Using [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) selectors
 
 Playwright engine pierces open shadow DOM by [default](https://playwright.dev/docs/selectors?_highlight=shadow#selector-engines).
@@ -507,6 +508,55 @@ class CustomRunner extends PlaywrightRunner {
 
 module.exports = CustomRunner
 ```
+
+## Usage with custom [`globalSetup`](https://facebook.github.io/jest/docs/en/configuration.html#globalsetup-string) and [`globalTeardown`](https://facebook.github.io/jest/docs/en/configuration.html#globalteardown-string)
+
+For this use case, `jest-playwright-preset` exposes two methods: `globalSetup` and `globalTeardown`, so that you can wrap them with your own global setup and global teardown methods as the following example:
+
+### Getting authentication state once for all test cases [as per playwright reference](https://playwright.dev/docs/auth?_highlight=globals#reuse-authentication-state):
+```js
+// global-setup.js
+import { globalSetup as playwrightGlobalSetup } from 'jest-playwright-preset';
+
+module.exports = async function globalSetup(globalConfig) {
+  await playwrightGlobalSetup(globalConfig);
+
+  const browserServer = await chromium.launchServer();
+  const wsEndpoint = browserServer.wsEndpoint();
+  const browser = await chromium.connect({ wsEndpoint: wsEndpoint });
+  const page = await browser.newPage();
+
+  // your login function
+  await doLogin(page);
+
+  // store authentication data
+  const storage = await page.context().storageState();
+  process.env.STORAGE = JSON.stringify(storage);
+};
+```
+
+```js
+// global-teardown.js
+import { globalTeardown as playwrightGlobalTeardown } from 'jest-playwright-preset';
+
+module.exports = async function globalTeardown(globalConfig) {
+  // Your global teardown
+  await playwrightGlobalTeardown(globalConfig);
+}
+```
+
+Then assigning your js file paths to the [`globalSetup`](https://facebook.github.io/jest/docs/en/configuration.html#globalsetup-string) and [`globalTeardown`](https://facebook.github.io/jest/docs/en/configuration.html#globalteardown-string) property in your Jest configuration.
+
+```js
+{
+  // ...
+  "globalSetup": "./global-setup.js",
+  "globalTeardown": "./global-teardown.js"
+}
+```
+
+Now your custom `globalSetup` and `globalTeardown` will be triggered once before and after all test suites.
+
 
 ## Usage with Typescript
 
