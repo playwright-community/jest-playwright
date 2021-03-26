@@ -33,6 +33,17 @@ describe('readConfig', () => {
     const config = await readConfig()
     expect(config).toMatchObject(DEFAULT_CONFIG)
   })
+  it('should execute function if it was specified in configuration', async () => {
+    jest.mock(
+      path.join(__dirname, '..', 'jest-playwright.config.js'),
+      () => () => ({
+        browsers: ['webkit'],
+      }),
+      { virtual: true },
+    )
+    const config = await readConfig()
+    expect(config.browsers).toEqual(['webkit'])
+  })
   it('should overwrite with a custom configuration', async () => {
     const configObject = {
       launchOptions: {
@@ -65,9 +76,7 @@ describe('readConfig', () => {
     jest.mock(
       path.join(__dirname, '..', 'jest-playwright.config.js'),
       () => ({
-        launchOptions: {
-          headless: true,
-        },
+        ...configObject,
         browsers: ['webkit'],
       }),
       { virtual: true },
