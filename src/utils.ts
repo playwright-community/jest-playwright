@@ -90,15 +90,16 @@ export const checkDevice = (
 }
 
 export const getDisplayName = (browser: string, device: DeviceType): string => {
+  const result = `browser: ${browser}`
   if (device !== null) {
     if (typeof device === 'string') {
-      return `browser: ${browser} device: ${device}`
+      return `${result} device: ${device}`
     }
     if (device.name) {
-      return `browser: ${browser} device: ${device.name}`
+      return `${result} device: ${device.name}`
     }
   }
-  return `browser: ${browser}`
+  return result
 }
 
 export const getBrowserType = (browser?: BrowserType): BrowserType => {
@@ -113,7 +114,7 @@ export const generateKey = (
 export const getDeviceBrowserType = (
   device: ConfigDeviceType,
   availableDevices: Playwright['devices'],
-): BrowserType | null => {
+): Nullable<BrowserType> => {
   if (typeof device === 'string') {
     return availableDevices[device].defaultBrowserType as BrowserType
   }
@@ -192,7 +193,7 @@ export const getSkipFlag = (
 }
 
 export const readConfig = async (
-  rootDir: string = process.cwd(),
+  rootDir = process.cwd(),
   jestEnvConfig?: JestPlaywrightConfig,
 ): Promise<JestPlaywrightConfig> => {
   if (jestEnvConfig) {
@@ -217,6 +218,10 @@ export const readConfig = async (
   }
 
   const localConfig = await require(absConfigPath)
+  if (typeof localConfig === 'function') {
+    const config = await localConfig()
+    return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, config)
+  }
   return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, localConfig)
 }
 
