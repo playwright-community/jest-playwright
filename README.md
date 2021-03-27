@@ -20,7 +20,8 @@ npm install -D jest jest-playwright-preset playwright-firefox
 ## Requirements
 
 - Node.js >= 10.15.0
-- Playwright >=0.12.1
+- Playwright >= 0.12.1
+- Jest >= 25
 
 ## Usage
 
