@@ -188,6 +188,10 @@ type Options<T> = T & Partial<Record<BrowserType, T>>
 
 export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
 
+export type ServerOptions = JestProcessManagerOptions & {
+  teardown?: string
+}
+
 export interface JestPlaywrightConfig {
   skipInitialization?: boolean
   debugOptions?: JestPlaywrightConfig
@@ -201,7 +205,7 @@ export interface JestPlaywrightConfig {
   browsers: (BrowserType | (JestPlaywrightConfig & { name: BrowserType }))[]
   devices?: ConfigDeviceType[] | RegExp
   useDefaultBrowserType?: boolean
-  serverOptions?: JestProcessManagerOptions | JestProcessManagerOptions[]
+  serverOptions?: ServerOptions | ServerOptions[]
   selectors?: SelectorType[]
   collectCoverage?: boolean
 }

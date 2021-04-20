@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -44,10 +44,10 @@
     "*.{js,ts}": "eslint --fix"
   },
   "dependencies": {
-    "expect-playwright": "^0.3.3",
+    "expect-playwright": "^0.3.4",
     "jest-circus": "^26.6.3",
     "jest-environment-node": "^26.6.2",
-    "jest-process-manager": "^0.2.9",
+    "jest-process-manager": "^0.3.1",
     "jest-runner": "^26.6.3",
     "nyc": "^15.1.0",
     "playwright-core": ">=1.2.0",

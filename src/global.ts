@@ -7,6 +7,7 @@ import {
 } from 'jest-process-manager'
 import { readConfig } from './utils'
 import type { Config as JestConfig } from '@jest/types'
+import { ServerOptions } from '../types/global'
 
 let didAlreadyRunInWatchMode = false
 
@@ -59,7 +60,9 @@ export async function setup(
 export async function teardown(
   jestConfig: JestConfig.GlobalConfig,
 ): Promise<void> {
+  const { serverOptions } = await readConfig(jestConfig.rootDir)
+
   if (!jestConfig.watch && !jestConfig.watchAll) {
-    await teardownServer()
+    await teardownServer((serverOptions as ServerOptions)?.teardown)
   }
 }
