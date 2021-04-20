@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
 import { SkipOption, TestPlaywrightConfigOptions } from '../types/global'
+import { DEBUG_TIMEOUT, DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
 
 type TestType = 'it' | 'describe'
 
@@ -14,20 +15,26 @@ const DEBUG_OPTIONS = {
 
 const runDebugTest = (jestTestType: jest.It, ...args: any[]) => {
   const isConfigProvided = typeof args[0] === 'object'
+  const lastArg = args[args.length - 1]
+  const timer = typeof lastArg === 'number' ? lastArg : DEBUG_TIMEOUT
   // TODO Looks weird - need to be rewritten
   let options = DEBUG_OPTIONS as TestPlaywrightConfigOptions
   if (isConfigProvided) {
     options = deepMerge(DEBUG_OPTIONS, args[0])
   }
 
-  jestTestType(args[isConfigProvided ? 1 : 0], async () => {
-    const envArgs = await jestPlaywright.configSeparateEnv(options, true)
-    try {
-      await args[isConfigProvided ? 2 : 1](envArgs)
-    } finally {
-      await envArgs.browser!.close()
-    }
-  })
+  jestTestType(
+    args[isConfigProvided ? 1 : 0],
+    async () => {
+      const envArgs = await jestPlaywright.configSeparateEnv(options, true)
+      try {
+        await args[isConfigProvided ? 2 : 1](envArgs)
+      } finally {
+        await envArgs.browser!.close()
+      }
+    },
+    timer,
+  )
 }
 
 // @ts-ignore
@@ -48,14 +55,21 @@ const runConfigTest = (
   playwrightOptions: Partial<TestPlaywrightConfigOptions>,
   ...args: any[]
 ) => {
-  jestTypeTest(args[0], async () => {
-    const envArgs = await jestPlaywright.configSeparateEnv(playwrightOptions)
-    try {
-      await args[1](envArgs)
-    } finally {
-      await envArgs.browser!.close()
-    }
-  })
+  const lastArg = args[args.length - 1]
+  const timer =
+    typeof lastArg === 'number' ? lastArg : DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
+  jestTypeTest(
+    args[0],
+    async () => {
+      const envArgs = await jestPlaywright.configSeparateEnv(playwrightOptions)
+      try {
+        await args[1](envArgs)
+      } finally {
+        await envArgs.browser!.close()
+      }
+    },
+    timer,
+  )
 }
 
 //@ts-ignore
