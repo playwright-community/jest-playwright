@@ -411,7 +411,7 @@ describe('getPlaywrightInstance', () => {
 })
 
 describe('deepMerge', () => {
-  it.only('should return deeply merged object', () => {
+  it('should return deeply merged object', () => {
     const source = {
       viewport: { width: 1440, height: 900 },
       isMobile: false,
