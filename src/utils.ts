@@ -54,7 +54,9 @@ export const deepMerge = <T extends Record<string, any>>(
   const keys: (keyof T)[] = Object.keys(source)
   if (isObject(target) && isObject(source)) {
     keys.forEach((key) => {
-      if (isObject(source[key])) {
+      if (Array.isArray(source[key]) && Array.isArray(target[key])) {
+        output = { ...output, [key]: [ ...source[key], ...target[key] ] }
+      } else if (isObject(source[key])) {
         if (!(key in target)) {
           output = { ...output, [key]: source[key] }
         } else {

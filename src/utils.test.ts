@@ -17,6 +17,7 @@ const {
   getBrowserOptions,
   getDeviceBrowserType,
   generateKey,
+  deepMerge,
 } = Utils
 
 beforeEach(() => {
@@ -406,5 +407,74 @@ describe('getPlaywrightInstance', () => {
     expect(getMissedPlaywrightInstance).toThrowError(
       'jest-playwright-preset: Cannot find playwright package to use firefox',
     )
+  })
+})
+
+describe('deepMerge', () => {
+  it.only('should return deeply merged object', () => {
+    const source = {
+      viewport: { width: 1440, height: 900 },
+      isMobile: false,
+      storageState: {
+        origins: [
+          {
+            origin: 'https://google.com',
+            localStorage: [
+              {
+                name: 'name',
+                value: 'google'
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+    const target = {
+      viewport: { width: 1920, height: 900 },
+      isMobile: false,
+      hasTouch: true,
+      storageState: {
+        origins: [
+          {
+            origin: 'https://bing.com',
+            localStorage: [
+              {
+                name: 'name',
+                value: 'bing'
+              }
+            ]
+          }
+        ]
+      }
+    }
+
+    expect(deepMerge(source, target)).toEqual({
+      viewport: { width: 1920, height: 900 },
+      isMobile: false,
+      hasTouch: true,
+      storageState: {
+        origins: [
+          {
+            origin: 'https://bing.com',
+            localStorage: [
+              {
+                name: 'name',
+                value: 'bing'
+              }
+            ]
+          },
+          {
+            origin: 'https://google.com',
+            localStorage: [
+              {
+                name: 'name',
+                value: 'google'
+              }
+            ]
+          }
+        ]
+      }
+    })
   })
 })
