@@ -27,6 +27,12 @@ declare const LAUNCH = 'LAUNCH'
 declare const PERSISTENT = 'PERSISTENT'
 declare const SERVER = 'SERVER'
 
+declare module 'jest-playwright-preset' {
+  const globalSetup: (config: JestConfig.GlobalConfig) => void
+  const globalTeardown: (config: JestConfig.GlobalConfig) => void
+  const getPlaywrightEnv: (env?: string) => void
+}
+
 export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 
 export type SkipOption = {
