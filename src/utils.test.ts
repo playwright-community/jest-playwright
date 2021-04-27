@@ -422,12 +422,12 @@ describe('deepMerge', () => {
             localStorage: [
               {
                 name: 'name',
-                value: 'google'
-              }
-            ]
-          }
-        ]
-      }
+                value: 'google',
+              },
+            ],
+          },
+        ],
+      },
     }
 
     const target = {
@@ -441,12 +441,12 @@ describe('deepMerge', () => {
             localStorage: [
               {
                 name: 'name',
-                value: 'bing'
-              }
-            ]
-          }
-        ]
-      }
+                value: 'bing',
+              },
+            ],
+          },
+        ],
+      },
     }
 
     expect(deepMerge(source, target)).toEqual({
@@ -460,21 +460,21 @@ describe('deepMerge', () => {
             localStorage: [
               {
                 name: 'name',
-                value: 'bing'
-              }
-            ]
+                value: 'bing',
+              },
+            ],
           },
           {
             origin: 'https://google.com',
             localStorage: [
               {
                 name: 'name',
-                value: 'google'
-              }
-            ]
-          }
-        ]
-      }
+                value: 'google',
+              },
+            ],
+          },
+        ],
+      },
     })
   })
 })
