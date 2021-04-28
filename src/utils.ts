@@ -199,7 +199,7 @@ export const readConfig = async (
   jestEnvConfig?: JestPlaywrightConfig,
 ): Promise<JestPlaywrightConfig> => {
   if (jestEnvConfig) {
-    return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, jestEnvConfig)
+    return { ...DEFAULT_CONFIG, ...jestEnvConfig }
   }
   const { JEST_PLAYWRIGHT_CONFIG, npm_package_type } = process.env
   const fileExtension = npm_package_type === 'module' ? 'cjs' : 'js'
@@ -222,9 +222,9 @@ export const readConfig = async (
   const localConfig = await require(absConfigPath)
   if (typeof localConfig === 'function') {
     const config = await localConfig()
-    return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, config)
+    return { ...DEFAULT_CONFIG, ...config }
   }
-  return deepMerge<JestPlaywrightConfig>(DEFAULT_CONFIG, localConfig)
+  return { ...DEFAULT_CONFIG, ...localConfig }
 }
 
 export const formatError = (error: string): string =>
