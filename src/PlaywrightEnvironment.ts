@@ -139,10 +139,10 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         ...DEFAULT_CONFIG,
         launchType: LAUNCH,
       }
-      let resultBrowserConfig: JestPlaywrightConfig = deepMerge(
-        defaultBrowserConfig,
-        config,
-      )
+      let resultBrowserConfig: JestPlaywrightConfig = {
+        ...defaultBrowserConfig,
+        ...config,
+      }
       if (isDebug) {
         if (debugOptions) {
           resultBrowserConfig = deepMerge(resultBrowserConfig, debugOptions)
