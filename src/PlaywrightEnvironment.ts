@@ -281,16 +281,15 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
               : config.browser || browserType
           const deviceName = device ? getDeviceName(device) : null
           checkDevice(deviceName, devices)
-          const resultBrowserConfig: JestPlaywrightConfig = this._getSeparateEnvBrowserConfig(
-            isDebug,
-            config,
-          )
-          const resultContextOptions: BrowserContextOptions = this._getSeparateEnvContextConfig(
-            isDebug,
-            config,
-            browserName,
-            devices,
-          )
+          const resultBrowserConfig: JestPlaywrightConfig =
+            this._getSeparateEnvBrowserConfig(isDebug, config)
+          const resultContextOptions: BrowserContextOptions =
+            this._getSeparateEnvContextConfig(
+              isDebug,
+              config,
+              browserName,
+              devices,
+            )
           const { instance } = getPlaywrightInstance(browserName)
           const browser = await getBrowserPerProcess(
             instance as GenericBrowser,
