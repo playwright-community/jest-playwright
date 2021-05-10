@@ -146,9 +146,8 @@ class PlaywrightRunner extends JestRunner {
             ? config
             : deepMerge(config, browser || {})
         checkBrowserEnv(browserType)
-        const { devices: availableDevices, instance } = getPlaywrightInstance(
-          browserType,
-        )
+        const { devices: availableDevices, instance } =
+          getPlaywrightInstance(browserType)
         const resultDevices = getDevices(devices, availableDevices)
         const key =
           typeof browser === 'string'
