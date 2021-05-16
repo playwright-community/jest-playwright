@@ -199,6 +199,7 @@ export type ServerOptions = JestProcessManagerOptions & {
 }
 
 export interface JestPlaywrightConfig {
+  haveSkippedTests?: boolean
   skipInitialization?: boolean
   debugOptions?: JestPlaywrightConfig
   launchType?: LaunchType
