@@ -40,7 +40,7 @@ describe('Debug helper functions', () => {
     'jestPlaywrightConfig',
     async ({ browserName, page }) => {
       expect(browserName).toBe('webkit')
-      expect(page.viewportSize()).toEqual({ width: 414, height: 896 })
+      expect(page.viewportSize()).toEqual({ width: 414, height: 715 })
     },
   )
 
