@@ -199,6 +199,16 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       return page
     }
 
+    async _setCollectCoverage(context: BrowserContext) {
+      await context.exposeFunction('reportCodeCoverage', saveCoverageToFile)
+      await context.addInitScript(() =>
+        window.addEventListener('beforeunload', () => {
+          // @ts-ignore
+          reportCodeCoverage(window.__coverage__)
+        }),
+      )
+    }
+
     async setup(): Promise<void> {
       const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
       this._jestPlaywrightConfig = testEnvironmentOptions[
@@ -257,16 +267,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             ? browserOrContext
             : await this.global.browser.newContext(contextOptions)
         if (collectCoverage) {
-          await (this.global.context as BrowserContext).exposeFunction(
-            'reportCodeCoverage',
-            saveCoverageToFile,
-          )
-          await (this.global.context as BrowserContext).addInitScript(() =>
-            window.addEventListener('beforeunload', () => {
-              // @ts-ignore
-              reportCodeCoverage(window.__coverage__)
-            }),
-          )
+          await this._setCollectCoverage(this.global.context as BrowserContext)
         }
         this.global.page = await this._setNewPageInstance()
       }
@@ -346,7 +347,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       }
     }
 
-    async handleTestEvent(event: Event, state: State) {
+    async handleTestEvent(event: Event) {
       const { browserName } = this._config
       const { collectCoverage, haveSkippedTests } = this._jestPlaywrightConfig
       const browserType = getBrowserType(browserName)
@@ -362,16 +363,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
           contextOptions,
         )
         if (collectCoverage) {
-          await this.global.context.exposeFunction(
-            'reportCodeCoverage',
-            saveCoverageToFile,
-          )
-          await this.global.context.addInitScript(() =>
-            window.addEventListener('beforeunload', () => {
-              // @ts-ignore
-              reportCodeCoverage(window.__coverage__)
-            }),
-          )
+          await this._setCollectCoverage(this.global.context)
         }
         this.global.page = await this._setNewPageInstance()
       }

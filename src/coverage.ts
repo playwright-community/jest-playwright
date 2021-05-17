@@ -8,6 +8,7 @@ const fsAsync = fs.promises
 
 // @ts-ignore
 import NYC from 'nyc'
+import { PACKAGE_NAME } from './constants'
 
 const NYC_DIR = '.nyc_output'
 const COV_MERGE_DIR = path.join(NYC_DIR, 'merge')
@@ -37,7 +38,7 @@ export const saveCoverageOnPage = async (
 ): Promise<void> => {
   if (!collectCoverage) {
     console.warn(
-      'jest-playwright: saveCoverage was called but collectCoverage is not true in jest-playwright.js',
+      `${PACKAGE_NAME}: saveCoverage was called but collectCoverage is not true in config file`,
     )
     return
   }
