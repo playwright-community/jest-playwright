@@ -5,7 +5,7 @@ import type {
   BrowserContextOptions,
   Page,
 } from 'playwright-core'
-import { Event, State } from 'jest-circus'
+import { Event } from 'jest-circus'
 import type {
   BrowserType,
   ConfigDeviceType,
