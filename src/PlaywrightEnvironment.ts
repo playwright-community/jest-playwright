@@ -5,6 +5,7 @@ import type {
   BrowserContextOptions,
   Page,
 } from 'playwright-core'
+import { Event } from 'jest-circus'
 import type {
   BrowserType,
   ConfigDeviceType,
@@ -198,6 +199,16 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       return page
     }
 
+    async _setCollectCoverage(context: BrowserContext) {
+      await context.exposeFunction('reportCodeCoverage', saveCoverageToFile)
+      await context.addInitScript(() =>
+        window.addEventListener('beforeunload', () => {
+          // @ts-ignore
+          reportCodeCoverage(window.__coverage__)
+        }),
+      )
+    }
+
     async setup(): Promise<void> {
       const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
       this._jestPlaywrightConfig = testEnvironmentOptions[
@@ -256,16 +267,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             ? browserOrContext
             : await this.global.browser.newContext(contextOptions)
         if (collectCoverage) {
-          await (this.global.context as BrowserContext).exposeFunction(
-            'reportCodeCoverage',
-            saveCoverageToFile,
-          )
-          await (this.global.context as BrowserContext).addInitScript(() =>
-            window.addEventListener('beforeunload', () => {
-              // @ts-ignore
-              reportCodeCoverage(window.__coverage__)
-            }),
-          )
+          await this._setCollectCoverage(this.global.context as BrowserContext)
         }
         this.global.page = await this._setNewPageInstance()
       }
@@ -342,6 +344,28 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         },
         saveCoverage: async (page: Page): Promise<void> =>
           saveCoverageOnPage(page, collectCoverage),
+      }
+    }
+
+    async handleTestEvent(event: Event) {
+      const { browserName } = this._config
+      const { collectCoverage, haveSkippedTests } = this._jestPlaywrightConfig
+      const browserType = getBrowserType(browserName)
+      const { instance, devices } = getPlaywrightInstance(browserType)
+      const contextOptions = this._getContextOptions(devices)
+      if (haveSkippedTests && event.name === 'test_fn_start') {
+        this.global.browser = await getBrowserPerProcess(
+          instance as GenericBrowser,
+          browserType,
+          this._jestPlaywrightConfig,
+        )
+        this.global.context = await this.global.browser.newContext(
+          contextOptions,
+        )
+        if (collectCoverage) {
+          await this._setCollectCoverage(this.global.context)
+        }
+        this.global.page = await this._setNewPageInstance()
       }
     }
 

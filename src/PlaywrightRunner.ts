@@ -37,6 +37,7 @@ import {
   DEFAULT_TEST_PLAYWRIGHT_TIMEOUT,
   CONFIG_ENVIRONMENT_NAME,
   SERVER,
+  LAUNCH,
 } from './constants'
 import { setupCoverage, mergeCoverage } from './coverage'
 import { GenericBrowser } from '../types/global'
@@ -105,6 +106,7 @@ const getJestTimeout = (configTimeout?: number) => {
 
 class PlaywrightRunner extends JestRunner {
   browser2Server: Partial<Record<string, BrowserServer>>
+  config: JestConfig.GlobalConfig
   constructor(
     globalConfig: JestConfig.GlobalConfig,
     context: TestRunnerContext,
@@ -114,6 +116,7 @@ class PlaywrightRunner extends JestRunner {
     config.testTimeout = getJestTimeout(config.testTimeout)
     super(config, context)
     this.browser2Server = {}
+    this.config = config
   }
 
   async launchServer(
@@ -202,6 +205,11 @@ class PlaywrightRunner extends JestRunner {
       rootDir,
       testEnvironmentOptions[CONFIG_ENVIRONMENT_NAME] as JestPlaywrightConfig,
     )
+    if (this.config.testNamePattern) {
+      config.launchType = LAUNCH
+      config.skipInitialization = true
+      config.haveSkippedTests = true
+    }
     const browserTests = await this.getTests(tests, config)
     if (config.collectCoverage) {
       await setupCoverage()
