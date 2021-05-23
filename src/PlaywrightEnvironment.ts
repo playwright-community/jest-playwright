@@ -353,7 +353,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
       const browserType = getBrowserType(browserName)
       const { instance, devices } = getPlaywrightInstance(browserType)
       const contextOptions = this._getContextOptions(devices)
-      if (haveSkippedTests && event.name === 'test_fn_start') {
+      if (haveSkippedTests && event.name === 'run_start') {
         this.global.browser = await getBrowserPerProcess(
           instance as GenericBrowser,
           browserType,
