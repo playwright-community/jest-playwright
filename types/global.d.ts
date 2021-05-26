@@ -221,6 +221,7 @@ export interface JestPlaywrightProjectConfig extends JestConfig.ProjectConfig {
   browserName: BrowserType
   wsEndpoint: WsEndpointType
   device: DeviceType
+  extensionsToTreatAsEsm: string[]
 }
 
 interface JestPlaywrightContext extends Context {
