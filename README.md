@@ -87,6 +87,14 @@ module.exports = {
 }
 ```
 
+Similar to Jest [globalSetup](https://jestjs.io/docs/next/configuration#globalsetup-string) configuration can except the export of an async function:
+
+```js
+module.exports = async () => {
+  await ...
+};
+```
+
 A custom path can be specified to the `jest-playwright.config.js` file within your `jest.config.js` file:
 
 ```js
