@@ -42,11 +42,11 @@ it.jestPlaywrightDebug = (...args) => {
   runDebugTest(it, ...args)
 }
 
-it.jestPlaywrightDebug.only = (...args) => {
+it.jestPlaywrightDebug.only = (...args: any[]) => {
   runDebugTest(it.only, ...args)
 }
 
-it.jestPlaywrightDebug.skip = (...args) => {
+it.jestPlaywrightDebug.skip = (...args: any[]) => {
   runDebugTest(it.skip, ...args)
 }
 
