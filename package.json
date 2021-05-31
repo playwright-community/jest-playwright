@@ -73,7 +73,7 @@
     "eslint-plugin-import": "2.23.4",
     "eslint-plugin-prettier": "3.4.0",
     "husky": "6.0.0",
-    "jest": "27.0.1",
+    "jest": "27.0.3",
     "jest-circus": "27.0.3",
     "jest-environment-node": "27.0.1",
     "jest-runner": "27.0.1",
