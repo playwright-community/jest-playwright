@@ -478,6 +478,7 @@ class CustomEnvironment extends PlaywrightEnvironment {
   }
 
   async handleTestEvent(event) {
+    await super.handleTestEvent(event);
     if (event.name === 'test_done' && event.test.errors.length > 0) {
       const parentName = event.test.parent.name.replace(/\W/g, '-')
       const specName = event.test.name.replace(/\W/g, '-')
