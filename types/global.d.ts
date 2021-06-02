@@ -192,7 +192,9 @@ type LaunchType = typeof LAUNCH | typeof SERVER | typeof PERSISTENT
 
 type Options<T> = T & Partial<Record<BrowserType, T>>
 
-export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
+export type ConnectOptions = Parameters<GenericBrowser['connect']>[0] & {
+  endpointURL?: string
+}
 
 export type ServerOptions = JestProcessManagerOptions & {
   teardown?: string
