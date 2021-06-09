@@ -4,6 +4,8 @@ import {
   Page,
   BrowserContextOptions,
   LaunchOptions,
+  ConnectOptions,
+  ConnectOverCDPOptions,
   BrowserType as PlaywrightBrowserType,
   ViewportSize,
   ChromiumBrowser,
@@ -191,8 +193,6 @@ type LaunchType = typeof LAUNCH | typeof SERVER | typeof PERSISTENT
 
 type Options<T> = T & Partial<Record<BrowserType, T>>
 
-export type ConnectOptions = Parameters<GenericBrowser['connect']>[0]
-
 export type ServerOptions = JestProcessManagerOptions & {
   teardown?: string
 }
@@ -203,7 +203,7 @@ export interface JestPlaywrightConfig {
   debugOptions?: JestPlaywrightConfig
   launchType?: LaunchType
   launchOptions?: Options<LaunchOptions>
-  connectOptions?: Options<ConnectOptions>
+  connectOptions?: Options<ConnectOptions | ConnectOverCDPOptions>
   contextOptions?: Options<BrowserContextOptions>
   userDataDir?: string
   exitOnPageError?: boolean
