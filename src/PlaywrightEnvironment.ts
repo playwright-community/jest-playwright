@@ -71,8 +71,8 @@ const getBrowserPerProcess = async (
 
   const options = getBrowserOptions(browserType, connectOptions)
   return options && 'endpointURL' in options
-    ? playwrightInstance.connectOverCDP(options as ConnectOverCDPOptions)
-    : playwrightInstance.connect(options as ConnectOptions)
+    ? playwrightInstance.connectOverCDP(options)
+    : playwrightInstance.connect(options)
 }
 
 const getDeviceConfig = (
