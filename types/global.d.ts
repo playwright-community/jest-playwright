@@ -12,7 +12,6 @@ import {
   devices,
 } from 'playwright-core'
 import { Config as JestConfig } from '@jest/types'
-import { Context } from 'jest-runner/build/types'
 import { Test } from 'jest-runner'
 import { JestProcessManagerOptions } from 'jest-process-manager'
 
@@ -217,18 +216,17 @@ export interface JestPlaywrightConfig {
   collectCoverage?: boolean
 }
 
-export interface JestPlaywrightProjectConfig extends JestConfig.ProjectConfig {
+export type JestPlaywrightProjectConfig = Test['context']['config'] & {
   browserName: BrowserType
   wsEndpoint: WsEndpointType
   device: DeviceType
-  extensionsToTreatAsEsm: string[]
 }
 
-interface JestPlaywrightContext extends Context {
+export type JestPlaywrightContext = Omit<Test['context'], 'config'> & {
   config: JestPlaywrightProjectConfig
 }
 
-export interface JestPlaywrightTest extends Test {
+export type JestPlaywrightTest = Omit<Test, 'context'> & {
   context: JestPlaywrightContext
 }
 
