@@ -3,6 +3,8 @@ import type {
   Browser,
   BrowserContext,
   BrowserContextOptions,
+  ConnectOptions,
+  ConnectOverCDPOptions,
   Page,
 } from 'playwright-core'
 import { Event } from 'jest-circus'
@@ -68,7 +70,9 @@ const getBrowserPerProcess = async (
   }
 
   const options = getBrowserOptions(browserType, connectOptions)
-  return playwrightInstance.connect(options)
+  return options && 'endpointURL' in options
+    ? playwrightInstance.connectOverCDP(options)
+    : playwrightInstance.connect(options)
 }
 
 const getDeviceConfig = (

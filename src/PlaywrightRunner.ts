@@ -156,9 +156,10 @@ class PlaywrightRunner extends JestRunner {
           typeof browser === 'string'
             ? browser
             : generateKey(browser.name, browserConfig)
+        const browserOptions = getBrowserOptions(browserType, connectOptions)
         const wsEndpoint: WsEndpointType = await this.launchServer(
           browserConfig,
-          getBrowserOptions(browserType, connectOptions)?.wsEndpoint || null,
+          'wsEndpoint' in browserOptions ? browserOptions.wsEndpoint : null,
           browserType,
           key,
           instance as GenericBrowser,
