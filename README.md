@@ -4,6 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/mmarkelov/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/mmarkelov/jest-playwright?branch=master)
 ![npm](https://img.shields.io/npm/v/jest-playwright-preset)
 
+#### ⚠️ We recommend the official [Playwright test-runner](https://playwright.dev/docs/test-intro) ⚠️
+
+It's more flexible, lightweight, optimized for Playwright, and has TypeScript support out of the box. This doesn't mean, that we stop with maintaining this package.
+
+---
+
 Running your tests using [Jest](https://github.com/facebook/jest) & [Playwright](https://github.com/microsoft/playwright)
 
 ```bash
