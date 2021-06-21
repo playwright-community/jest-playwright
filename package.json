@@ -82,6 +82,6 @@
     "playwright-chromium": ">=1.2.0",
     "prettier": "2.3.1",
     "ts-jest": "27.0.3",
-    "typescript": "4.3.2"
+    "typescript": "4.3.4"
   }
 }
