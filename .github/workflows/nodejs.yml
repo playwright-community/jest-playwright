@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         platform: [ubuntu-latest, windows-latest]
         node: [12.x, 14.x]
@@ -24,8 +25,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
     - name: Install dependencies
-      run: npm install
-    - uses: microsoft/playwright-github-action@v1
+      run: npm ci
+    - run: npx playwright install-deps
     - name: Lint Source Code
       run: npm run lint
     - name: Build project
