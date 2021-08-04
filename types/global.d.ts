@@ -236,6 +236,7 @@ export interface BrowserTest {
   browser: BrowserType
   wsEndpoint: WsEndpointType
   device: DeviceType
+  testTimeout?: number
 }
 
 export type ConfigParams = {

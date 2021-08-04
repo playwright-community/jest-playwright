@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
 import { SkipOption, TestPlaywrightConfigOptions } from '../types/global'
-import { DEBUG_TIMEOUT, DEFAULT_TEST_PLAYWRIGHT_TIMEOUT } from './constants'
+import { CONFIG_ENVIRONMENT_NAME, DEBUG_TIMEOUT } from './constants'
 
 type TestType = 'it' | 'describe'
 
@@ -57,7 +57,9 @@ const runConfigTest = (
 ) => {
   const lastArg = args[args.length - 1]
   const timer =
-    typeof lastArg === 'number' ? lastArg : DEFAULT_TEST_PLAYWRIGHT_TIMEOUT
+    typeof lastArg === 'number'
+      ? lastArg
+      : (global as any)[CONFIG_ENVIRONMENT_NAME].testTimeout
   jestTypeTest(
     args[0],
     async () => {

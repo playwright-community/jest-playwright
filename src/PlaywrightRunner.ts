@@ -48,6 +48,7 @@ const getBrowserTest = ({
   browser,
   wsEndpoint,
   device,
+  testTimeout,
 }: BrowserTest): JestPlaywrightTest => {
   const { displayName, testEnvironmentOptions } = test.context.config
   const playwrightDisplayName = getDisplayName(
@@ -62,7 +63,7 @@ const getBrowserTest = ({
         ...test.context.config,
         testEnvironmentOptions: {
           ...testEnvironmentOptions,
-          [CONFIG_ENVIRONMENT_NAME]: config,
+          [CONFIG_ENVIRONMENT_NAME]: { ...config, testTimeout },
         },
         browserName: browser,
         wsEndpoint,
@@ -170,6 +171,7 @@ class PlaywrightRunner extends JestRunner {
           config: browserConfig,
           wsEndpoint,
           browser: browserType,
+          testTimeout: this.config.testTimeout,
         }
 
         if (resultDevices.length) {
