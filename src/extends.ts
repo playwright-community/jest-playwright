@@ -1,8 +1,14 @@
 /* global jestPlaywright, browserName, deviceName */
 /* eslint-disable @typescript-eslint/no-explicit-any*/
 import { getSkipFlag, deepMerge } from './utils'
-import { SkipOption, TestPlaywrightConfigOptions } from '../types/global'
+import {
+  JestPlaywrightGlobal,
+  SkipOption,
+  TestPlaywrightConfigOptions,
+} from '../types/global'
 import { CONFIG_ENVIRONMENT_NAME, DEBUG_TIMEOUT } from './constants'
+
+declare const global: JestPlaywrightGlobal
 
 type TestType = 'it' | 'describe'
 
@@ -59,7 +65,7 @@ const runConfigTest = (
   const timer =
     typeof lastArg === 'number'
       ? lastArg
-      : (global as any)[CONFIG_ENVIRONMENT_NAME].testTimeout
+      : global[CONFIG_ENVIRONMENT_NAME].testTimeout
   jestTypeTest(
     args[0],
     async () => {
@@ -106,3 +112,9 @@ it.jestPlaywrightSkip = (skipOption, ...args) => {
 describe.jestPlaywrightSkip = (skipOption: SkipOption, ...args) => {
   customSkip(skipOption, 'describe', ...args)
 }
+
+beforeEach(async () => {
+  if (global[CONFIG_ENVIRONMENT_NAME].resetContextPerTest) {
+    await jestPlaywright.resetContext()
+  }
+})

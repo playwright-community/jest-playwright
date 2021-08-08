@@ -20,6 +20,8 @@ import { JestProcessManagerOptions } from 'jest-process-manager'
 // TODO Find out flex ways to reuse constants
 declare const IMPORT_KIND_PLAYWRIGHT = 'playwright'
 
+declare const CONFIG_ENVIRONMENT_NAME = 'jest-playwright'
+
 declare const CHROMIUM = 'chromium'
 declare const FIREFOX = 'firefox'
 declare const WEBKIT = 'webkit'
@@ -39,6 +41,10 @@ export type BrowserType = typeof CHROMIUM | typeof FIREFOX | typeof WEBKIT
 export type SkipOption = {
   browsers: BrowserType[]
   devices?: string[] | RegExp
+}
+
+export interface JestPlaywrightGlobal extends NodeJS.Global {
+  [CONFIG_ENVIRONMENT_NAME]: JestPlaywrightConfig
 }
 
 export interface TestPlaywrightConfigOptions extends JestPlaywrightConfig {
@@ -200,6 +206,8 @@ export type ServerOptions = JestProcessManagerOptions & {
 export interface JestPlaywrightConfig {
   haveSkippedTests?: boolean
   skipInitialization?: boolean
+  resetContextPerTest?: boolean
+  testTimeout?: number
   debugOptions?: JestPlaywrightConfig
   launchType?: LaunchType
   launchOptions?: Options<LaunchOptions>
