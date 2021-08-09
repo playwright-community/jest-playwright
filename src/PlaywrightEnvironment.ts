@@ -224,6 +224,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         selectors,
         launchType,
         skipInitialization,
+        tracing,
       } = this._jestPlaywrightConfig
       if (wsEndpoint) {
         this._jestPlaywrightConfig.connectOptions = {
@@ -272,6 +273,14 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
             : await this.global.browser.newContext(contextOptions)
         if (collectCoverage) {
           await this._setCollectCoverage(this.global.context as BrowserContext)
+        }
+        if (tracing) {
+          const { name, screenshots, snapshots } = tracing
+          await this.global.context.tracing.start({
+            name,
+            screenshots,
+            snapshots,
+          })
         }
         this.global.page = await this._setNewPageInstance()
       }
@@ -375,7 +384,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
     async teardown(): Promise<void> {
       const { browser, context, page } = this.global
-      const { collectCoverage } = this._jestPlaywrightConfig
+      const { collectCoverage, tracing } = this._jestPlaywrightConfig
       page?.removeListener('pageerror', handleError)
       if (collectCoverage) {
         await Promise.all(
@@ -387,6 +396,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         )
         // wait until coverage data was sent successfully to the exposed function
         await new Promise((resolve) => setTimeout(resolve, 10))
+      }
+      if (tracing) {
+        await context.tracing.stop({ path: tracing.path })
       }
 
       await browser?.close()

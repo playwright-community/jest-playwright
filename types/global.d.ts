@@ -222,6 +222,12 @@ export interface JestPlaywrightConfig {
   serverOptions?: ServerOptions | ServerOptions[]
   selectors?: SelectorType[]
   collectCoverage?: boolean
+  tracing?: {
+    name?: string
+    path: string
+    screenshots?: boolean
+    snapshots?: boolean
+  }
 }
 
 export type JestPlaywrightProjectConfig = Test['context']['config'] & {
