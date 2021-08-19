@@ -43,7 +43,9 @@ export type SkipOption = {
   devices?: string[] | RegExp
 }
 
-export interface JestPlaywrightGlobal extends NodeJS.Global {
+type Global = typeof globalThis
+
+export interface JestPlaywrightGlobal extends Global {
   [CONFIG_ENVIRONMENT_NAME]: JestPlaywrightConfig
 }
 
