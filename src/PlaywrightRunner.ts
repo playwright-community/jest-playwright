@@ -198,9 +198,6 @@ class PlaywrightRunner extends JestRunner {
   async runTests(
     tests: Test[],
     watcher: TestWatcher,
-    onStart: OnTestStart,
-    onResult: OnTestSuccess,
-    onFailure: OnTestFailure,
     options: TestRunnerOptions,
   ): Promise<void> {
     const { rootDir, testEnvironmentOptions } = tests[0].context.config
@@ -217,9 +214,7 @@ class PlaywrightRunner extends JestRunner {
     if (config.collectCoverage) {
       await setupCoverage()
     }
-    await this[
-      options.serial ? '_createInBandTestRun' : '_createParallelTestRun'
-    ](browserTests, watcher, onStart, onResult, onFailure)
+    await this.runTests(browserTests, watcher, options)
 
     for (const key in this.browser2Server) {
       await this.browser2Server[key]!.close()

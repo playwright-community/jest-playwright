@@ -106,21 +106,21 @@ const getDeviceName = (
 }
 
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
-  const RootEnv = require(basicEnv === 'node'
-    ? 'jest-environment-node'
-    : 'jest-environment-jsdom')
+  const RootEnv = basicEnv === 'node'
+    ? require('jest-environment-node')
+    : require('jest-environment-jsdom').default
 
   return class PlaywrightEnvironment extends RootEnv {
     readonly _config: JestPlaywrightProjectConfig
     _jestPlaywrightConfig!: JestPlaywrightConfig
 
-    constructor(config: JestPlaywrightProjectConfig) {
-      super(config)
+    constructor(config: JestPlaywrightProjectConfig, ...rest) {
+      super(config, ...rest)
       this._config = config
     }
 
     _getContextOptions(devices: Playwright['devices']): BrowserContextOptions {
-      const { browserName, device } = this._config
+      const { browserName, device } = this._config.projectConfig
       const browserType = getBrowserType(browserName)
       const { contextOptions } = this._jestPlaywrightConfig
       const deviceBrowserContextOptions = getDeviceConfig(device, devices)
@@ -214,7 +214,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     }
 
     async setup(): Promise<void> {
-      const { wsEndpoint, browserName, testEnvironmentOptions } = this._config
+      const { wsEndpoint, browserName, testEnvironmentOptions } = this._config.projectConfig
       this._jestPlaywrightConfig = testEnvironmentOptions[
         CONFIG_ENVIRONMENT_NAME
       ] as JestPlaywrightConfig
@@ -232,7 +232,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
         }
       }
       const browserType = getBrowserType(browserName)
-      const device = this._config.device
+      const device = this._config.device.projectConfig
       const deviceName: Nullable<string> = getDeviceName(device)
       const {
         name,
@@ -352,7 +352,7 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     }
 
     async handleTestEvent(event: Event) {
-      const { browserName } = this._config
+      const { browserName } = this._config.projectConfig
       const { collectCoverage, haveSkippedTests } = this._jestPlaywrightConfig
       const browserType = getBrowserType(browserName)
       const { instance, devices } = getPlaywrightInstance(browserType)
