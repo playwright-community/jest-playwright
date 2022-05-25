@@ -204,7 +204,12 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     }
 
     async _setCollectCoverage(context: BrowserContext) {
-      await context.exposeFunction('reportCodeCoverage', saveCoverageToFile)
+      await context.exposeFunction(
+        'reportCodeCoverage',
+        (coverage: unknown) => {
+          if (coverage) saveCoverageToFile(coverage)
+        },
+      )
       await context.addInitScript(() =>
         window.addEventListener('beforeunload', () => {
           // @ts-ignore
