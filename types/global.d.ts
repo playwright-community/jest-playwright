@@ -213,7 +213,9 @@ export interface JestPlaywrightConfig {
   debugOptions?: JestPlaywrightConfig
   launchType?: LaunchType
   launchOptions?: Options<LaunchOptions>
-  connectOptions?: Options<ConnectOptions | ConnectOverCDPOptions>
+  connectOptions?: Options<
+    (ConnectOptions & { wsEndpoint: string }) | ConnectOverCDPOptions
+  >
   contextOptions?: Options<BrowserContextOptions>
   userDataDir?: string
   exitOnPageError?: boolean
