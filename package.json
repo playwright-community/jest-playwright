@@ -59,7 +59,7 @@
   },
   "devDependencies": {
     "@types/debug": "4.1.7",
-    "@types/jest": "27.5.1",
+    "@types/jest": "^28.1.0",
     "@types/jest-dev-server": "4.2.1",
     "@types/node": "16.6.2",
     "@types/rimraf": "^3.0.2",
