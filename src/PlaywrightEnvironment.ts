@@ -38,6 +38,7 @@ import {
   getPlaywrightInstance,
 } from './utils'
 import { saveCoverageOnPage, saveCoverageToFile } from './coverage'
+import NodeEnvironment from 'jest-environment-node'
 
 const handleError = (error: Error): void => {
   process.emit('uncaughtException', error)
@@ -106,19 +107,26 @@ const getDeviceName = (
 }
 
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
-  const RootEnv = require(basicEnv === 'node'
+  let RootEnv = require(basicEnv === 'node'
     ? 'jest-environment-node'
-    : 'jest-environment-jsdom').default
+    : 'jest-environment-jsdom')
+
+  console.error(RootEnv)
+  if (RootEnv.default != null) {
+    RootEnv = RootEnv.default
+  }
+  console.error(RootEnv)
 
   return class PlaywrightEnvironment extends RootEnv {
     readonly _config: JestPlaywrightProjectConfig
     _jestPlaywrightConfig!: JestPlaywrightConfig
 
     constructor(config: JestPlaywrightProjectConfig) {
-      super(config)
       if (config.projectConfig != null) {
+        super(config)
         this._config = config.projectConfig
       } else {
+        super(config)
         this._config = config
       }
     }

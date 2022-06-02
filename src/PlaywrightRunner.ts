@@ -4,6 +4,9 @@ import type {
   Test,
   TestRunnerContext,
   TestWatcher,
+  OnTestStart,
+  OnTestSuccess,
+  OnTestFailure,
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
@@ -192,10 +195,14 @@ class PlaywrightRunner extends JestRunner {
     return pwTests
   }
 
+  // @ts-ignore
   async runTests(
     tests: Test[],
     watcher: TestWatcher,
-    options: TestRunnerOptions,
+    onStart: OnTestStart | TestRunnerOptions | undefined,
+    onResult?: OnTestSuccess,
+    onFailure?: OnTestFailure,
+    options?: TestRunnerOptions,
   ): Promise<void> {
     const { rootDir, testEnvironmentOptions } = tests[0].context.config
     const config = await readConfig(
@@ -211,7 +218,17 @@ class PlaywrightRunner extends JestRunner {
     if (config.collectCoverage) {
       await setupCoverage()
     }
-    await super.runTests(browserTests, watcher, options)
+
+    await super.runTests(
+      browserTests,
+      watcher,
+      // @ts-ignore - using new shape
+      onStart,
+      // @ts-ignore - using new shape
+      onResult,
+      onFailure,
+      options,
+    )
 
     for (const key in this.browser2Server) {
       await this.browser2Server[key]!.close()
