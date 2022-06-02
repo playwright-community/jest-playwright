@@ -111,11 +111,9 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
     ? 'jest-environment-node'
     : 'jest-environment-jsdom')
 
-  console.error(RootEnv)
   if (RootEnv.default != null) {
     RootEnv = RootEnv.default
   }
-  console.error(RootEnv)
 
   return class PlaywrightEnvironment extends RootEnv {
     readonly _config: JestPlaywrightProjectConfig
