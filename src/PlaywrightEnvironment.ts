@@ -108,7 +108,7 @@ const getDeviceName = (
 export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
   const RootEnv = require(basicEnv === 'node'
     ? 'jest-environment-node'
-    : 'jest-environment-jsdom')
+    : 'jest-environment-jsdom').default
 
   return class PlaywrightEnvironment extends RootEnv {
     readonly _config: JestPlaywrightProjectConfig
@@ -116,7 +116,11 @@ export const getPlaywrightEnv = (basicEnv = 'node'): unknown => {
 
     constructor(config: JestPlaywrightProjectConfig) {
       super(config)
-      this._config = config
+      if (config.projectConfig != null) {
+        this._config = config.projectConfig
+      } else {
+        this._config = config
+      }
     }
 
     _getContextOptions(devices: Playwright['devices']): BrowserContextOptions {
