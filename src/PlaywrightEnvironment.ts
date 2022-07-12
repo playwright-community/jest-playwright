@@ -54,7 +54,7 @@ const getBrowserPerProcess = async (
     // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchOptions?.args) {
       launchOptions.args = launchOptions.args.filter(
-        (item: string) => item !== '--no-sandbox',
+        (item: string) => item !== '--no-sandbox' && !item.startsWith("--font-render-hinting="),
       )
     }
 
