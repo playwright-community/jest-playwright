@@ -40,13 +40,14 @@ export async function setup(
     try {
       await setupServer(config.serverOptions)
     } catch (error) {
-      if (error.code === ERROR_TIMEOUT) {
+      if (!(error instanceof Error)) throw error
+      if ((error as NodeJS.ErrnoException).code === ERROR_TIMEOUT) {
         logMessage({
           message: error.message,
           action: 'can set "serverOptions.launchTimeout"',
         })
       }
-      if (error.code === ERROR_NO_COMMAND) {
+      if ((error as NodeJS.ErrnoException).code === ERROR_NO_COMMAND) {
         logMessage({
           message: error.message,
           action: 'must set "serverOptions.command"',

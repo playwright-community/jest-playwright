@@ -26,7 +26,7 @@ npm install -D jest jest-playwright-preset playwright-firefox
 ## Requirements
 
 - Node.js 14+
-- Playwright 1.0.0+
+- Playwright 1.2.0+
 - Jest 28+
 
 ## Usage
@@ -62,6 +62,7 @@ And add the Jest command as in the script section of your `package.json`:
 Now you can use Playwright in your tests:
 
 ```js
+// example.test.js
 beforeAll(async () => {
   await page.goto('https://whatismybrowser.com/')
 })
@@ -381,7 +382,6 @@ it.jestPlaywrightSkip(
 )
 ```
 
-
 ## Using [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) selectors
 
 Playwright engine pierces open shadow DOM by [default](https://playwright.dev/docs/selectors?_highlight=shadow#selector-engines).
@@ -470,8 +470,8 @@ You can use **jest-playwright** with custom test environment for taking screensh
 **CustomEnvironment.js**
 
 ```js
-const PlaywrightEnvironment = require('jest-playwright-preset/lib/PlaywrightEnvironment')
-  .default
+const PlaywrightEnvironment =
+  require('jest-playwright-preset/lib/PlaywrightEnvironment').default
 
 class CustomEnvironment extends PlaywrightEnvironment {
   async setup() {
@@ -485,7 +485,7 @@ class CustomEnvironment extends PlaywrightEnvironment {
   }
 
   async handleTestEvent(event) {
-    await super.handleTestEvent(event);
+    await super.handleTestEvent(event)
     if (event.name === 'test_done' && event.test.errors.length > 0) {
       const parentName = event.test.parent.name.replace(/\W/g, '-')
       const specName = event.test.name.replace(/\W/g, '-')
@@ -513,8 +513,8 @@ module.exports = CustomEnvironment
 **CustomRunner.js**
 
 ```js
-const PlaywrightRunner = require('jest-playwright-preset/lib/PlaywrightRunner')
-  .default
+const PlaywrightRunner =
+  require('jest-playwright-preset/lib/PlaywrightRunner').default
 
 class CustomRunner extends PlaywrightRunner {
   constructor(...args) {
@@ -531,34 +531,35 @@ module.exports = CustomRunner
 For this use case, `jest-playwright-preset` exposes two methods: `globalSetup` and `globalTeardown`, so that you can wrap them with your own global setup and global teardown methods as the following example:
 
 ### Getting authentication state once for all test cases [as per playwright reference](https://playwright.dev/docs/auth?_highlight=globals#reuse-authentication-state):
+
 ```js
 // global-setup.js
-import { globalSetup as playwrightGlobalSetup } from 'jest-playwright-preset';
+import { globalSetup as playwrightGlobalSetup } from 'jest-playwright-preset'
 
 module.exports = async function globalSetup(globalConfig) {
-  await playwrightGlobalSetup(globalConfig);
+  await playwrightGlobalSetup(globalConfig)
 
-  const browserServer = await chromium.launchServer();
-  const wsEndpoint = browserServer.wsEndpoint();
-  const browser = await chromium.connect({ wsEndpoint: wsEndpoint });
-  const page = await browser.newPage();
+  const browserServer = await chromium.launchServer()
+  const wsEndpoint = browserServer.wsEndpoint()
+  const browser = await chromium.connect({ wsEndpoint: wsEndpoint })
+  const page = await browser.newPage()
 
   // your login function
-  await doLogin(page);
+  await doLogin(page)
 
   // store authentication data
-  const storage = await page.context().storageState();
-  process.env.STORAGE = JSON.stringify(storage);
-};
+  const storage = await page.context().storageState()
+  process.env.STORAGE = JSON.stringify(storage)
+}
 ```
 
 ```js
 // global-teardown.js
-import { globalTeardown as playwrightGlobalTeardown } from 'jest-playwright-preset';
+import { globalTeardown as playwrightGlobalTeardown } from 'jest-playwright-preset'
 
 module.exports = async function globalTeardown(globalConfig) {
   // Your global teardown
-  await playwrightGlobalTeardown(globalConfig);
+  await playwrightGlobalTeardown(globalConfig)
 }
 ```
 
@@ -573,7 +574,6 @@ Then assigning your js file paths to the [`globalSetup`](https://facebook.github
 ```
 
 Now your custom `globalSetup` and `globalTeardown` will be triggered once before and after all test suites.
-
 
 ## Usage with Typescript
 

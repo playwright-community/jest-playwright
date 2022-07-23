@@ -4,9 +4,6 @@ import type {
   Test,
   TestRunnerContext,
   TestWatcher,
-  OnTestStart,
-  OnTestSuccess,
-  OnTestFailure,
   TestRunnerOptions,
 } from 'jest-runner'
 import type { Config as JestConfig } from '@jest/types'
