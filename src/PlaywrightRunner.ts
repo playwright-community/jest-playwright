@@ -195,14 +195,10 @@ class PlaywrightRunner extends JestRunner {
     return pwTests
   }
 
-  // @ts-ignore
   async runTests(
-    tests: Test[],
+    tests: Array<Test>,
     watcher: TestWatcher,
-    onStart: OnTestStart | TestRunnerOptions | undefined,
-    onResult?: OnTestSuccess,
-    onFailure?: OnTestFailure,
-    options?: TestRunnerOptions,
+    options: TestRunnerOptions,
   ): Promise<void> {
     const { rootDir, testEnvironmentOptions } = tests[0].context.config
     const config = await readConfig(
@@ -219,16 +215,7 @@ class PlaywrightRunner extends JestRunner {
       await setupCoverage()
     }
 
-    await super.runTests(
-      browserTests,
-      watcher,
-      // @ts-ignore - using new shape
-      onStart,
-      // @ts-ignore - using new shape
-      onResult,
-      onFailure,
-      options,
-    )
+    await super.runTests(browserTests, watcher, options)
 
     for (const key in this.browser2Server) {
       await this.browser2Server[key]!.close()
