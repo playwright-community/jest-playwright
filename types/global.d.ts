@@ -228,7 +228,10 @@ export interface JestPlaywrightConfig {
   collectCoverage?: boolean
 }
 
-export type JestPlaywrightProjectConfig = Test['context']['config'] & {
+export type JestPlaywrightProjectConfig = (
+  | Test['context']['config']
+  | JestConfig
+) & {
   browserName: BrowserType
   wsEndpoint: WsEndpointType
   device: DeviceType
