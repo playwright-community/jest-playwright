@@ -52,7 +52,7 @@ const getBrowserPerProcess = async (
   const { launchType, userDataDir, launchOptions, connectOptions } = config
 
   if (launchType === LAUNCH || launchType === PERSISTENT) {
-    // https://github.com/mmarkelov/jest-playwright/issues/42#issuecomment-589170220
+    // https://github.com/playwright-community/jest-playwright/issues/42#issuecomment-589170220
     if (browserType !== CHROMIUM && launchOptions?.args) {
       launchOptions.args = launchOptions.args.filter(
         (item: string) => item !== '--no-sandbox',
