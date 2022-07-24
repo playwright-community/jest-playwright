@@ -1,7 +1,7 @@
 # Jest Playwright
 
 ![CI](https://github.com/playwright-community/jest-playwright/workflows/Node.js/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/mmarkelov/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/mmarkelov/jest-playwright?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/playwright-community/jest-playwright/badge.svg?branch=master)](https://coveralls.io/github/playwright-community/jest-playwright?branch=master)
 ![npm](https://img.shields.io/npm/v/jest-playwright-preset)
 
 ## ⚠️ We recommend the official [Playwright test-runner (@playwright/test)](https://playwright.dev/docs/test-intro) ⚠️
