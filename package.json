@@ -1,6 +1,6 @@
 {
   "name": "jest-playwright-preset",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "main": "index.js",
   "description": "Running tests using Jest & Playwright.",
   "license": "MIT",
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "expect-playwright": "^0.8.0",
-    "jest-process-manager": "^0.3.1",
+    "jest-process-manager": "^0.4.0",
     "nyc": "^15.1.0",
     "playwright-core": ">=1.2.0",
     "rimraf": "^3.0.2",
